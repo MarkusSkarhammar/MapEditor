@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="renders">
+      <UniqueIdentifier>{103b3bfa-477d-492a-9c53-f1b35821e849}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{cf7491bf-286d-4e0f-b629-dbb2ed39b2b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\World">
+      <UniqueIdentifier>{0712faf4-d5b9-4dab-94ea-86eb9ea9cc0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Items">
+      <UniqueIdentifier>{be115640-c139-41e9-b66c-1f0446daf602}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Serializer">
+      <UniqueIdentifier>{6c325fa4-582a-435d-a5ab-220938ee4936}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemAtlas.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Serialize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ElementCreator.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ElementCreator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Global.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ColorFragmentShader.fragmentshader">
+      <Filter>renders</Filter>
+    </None>
+    <None Include="TransformVertexShader.vertexshader">
+      <Filter>renders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="shader.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.h">
+      <Filter>Resource Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemAtlas.h">
+      <Filter>Resource Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemInfo.h">
+      <Filter>Resource Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Resource Files\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="floor.h">
+      <Filter>Resource Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Serializer.h">
+      <Filter>Resource Files\Serializer</Filter>
+    </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>Resource Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
