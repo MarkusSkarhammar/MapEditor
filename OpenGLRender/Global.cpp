@@ -256,6 +256,8 @@ float nextRight = 0;
 float speed(200);
 size_t lastCheckedX(0);
 size_t lastCheckedY(0);
+size_t targetMoveX(10000);
+size_t targetMoveY(10000);
 
 //-----------------------------------
 //			DONE Character stuff

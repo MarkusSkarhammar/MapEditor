@@ -250,6 +250,8 @@ extern float nextRight;
 extern float speed;
 extern size_t lastCheckedX;
 extern size_t lastCheckedY;
+extern size_t targetMoveX;
+extern size_t targetMoveY;
 
 //-----------------------------------
 //			DONE Character stuff

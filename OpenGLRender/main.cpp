@@ -58,7 +58,8 @@ ElementCreator ec;
 bool runMapUpdater(true);
 bool updateMap(false);
 
-
+void setCameraPosition(float xPos, float yPos);
+void handlePlayerMovement();
 bool checkCollision(float speed, size_t direction);
 void generateVBOs();
 void updateMapContinuously();
@@ -467,6 +468,7 @@ void render(game_state const &, GLFWwindow* window, size_t& amount) {
 	
 	if (!updateGUI) {
 		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 }
 
@@ -483,7 +485,6 @@ bool handle_events(GLFWwindow* window) {
 }
 
 void update(game_state* state, GLFWwindow* window, size_t& amount) {
-	glfwPollEvents();
 	glfwGetCursorPos(window, &xPos, &yPos);
 
 	// Check hovering and update
@@ -492,60 +493,10 @@ void update(game_state* state, GLFWwindow* window, size_t& amount) {
 	// Add/remove tile/item
 	mapUpdate();
 
-	speed = (imgScale / 960.0f) * 0.03 * (150 / 100);
+	// Do logic player movement logic here
+	handlePlayerMovement();
 
-	if (moveRight) {
-		if (!moving) {
-			moving = true;
-			if (checkCollision(speed, 0)) {
-				updateCameraPosition(speed, 0);
-			}
-			//updateAll = true;
-		}
-		else {
-			if (checkCollision(speed, 0)) updateCameraPosition(speed, 0);
-			//updateAll = true;
-		}
-	}
-	if (moveLeft) {
-		if (!moving) {
-			moving = true;
-			if (xCameraPos - (imgScale / 960.0f) * 0.03 * (150 / 100) > 0.0f) {
-				updateCameraPosition(-(imgScale / 960.0f) * 0.03 * (150 / 100), 0);
-				//updateAll = true;
-			}
-		}
-		else
-			if (xCameraPos - (imgScale / 960.0f) * 0.03 * (150 / 100) > 0.0f) {
-				updateCameraPosition(-(imgScale / 960.0f) * 0.03 * (150 / 100), 0);
-				//updateAll = true;
-			}
-	}
-	if (moveUp) {
-		if (!moving) {
-			moving = true;
-			if (yCameraPos + (imgScale / 960.0f) * 0.03 * (150 / 100) < 0.0f) {
-				updateCameraPosition(0, (imgScale / 960.0f) * 0.03 * (150 / 100));
-				//updateAll = true;
-			}
-		}
-		else
-			if (yCameraPos + (imgScale / 960.0f) * 0.03 * (150 / 100) < 0.0f) {
-				updateCameraPosition(0, (imgScale / 960.0f) * 0.03 * (150 / 100));
-				//updateAll = true;
-			}
-	}
-	if (moveDown) {
-		if (!moving) {
-			moving = true;
-			if (checkCollision(-speed, 2)) updateCameraPosition(0, -speed);
-			//updateAll = true;
-		}
-		else {
-			if (checkCollision(-speed, 2)) updateCameraPosition(0, -speed);
-		}
-	}
-
+	// Update what to render onto the screen here
 	createThingsToRender(window, amount, tiles);
 }
 
@@ -935,12 +886,10 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 	if (key == GLFW_KEY_D) {
 		if (action == GLFW_PRESS) {
 			 if (!tileInfoWindow) {
-				//updateCameraPosition((imgScale / (1920 / 2)), 0);
 				moveRight = true;
 			}
 		}
 		else if (action == GLFW_RELEASE) {
-			moving = false;
 			moveRight = false;
 		}
 	}
@@ -960,7 +909,6 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 			}
 		}
 		else if (action == GLFW_RELEASE) {
-			moving = false;
 			moveLeft = false;
 		}
 	}
@@ -975,7 +923,6 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 			}
 		}
 		else if (action == GLFW_RELEASE) {
-			moving = false;
 			moveUp = false;
 		}
 	}
@@ -988,7 +935,6 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 			}
 		}
 		else if (action == GLFW_RELEASE) {
-			moving = false;
 			moveDown = false;
 		}
 	}
@@ -1496,6 +1442,26 @@ void updateCameraPosition(float xPos, float yPos) {
 	updateGUI = true;
 }
 
+void setCameraPosition(float xPos, float yPos) {
+	xCameraPos = xPos;
+	yCameraPos = yPos;
+
+	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+	glm::mat4 Projection = glm::perspective(glm::radians(zoom), 1.0f, 0.1f, 100.0f);
+	// Camera matrix
+	glm::mat4 View = glm::lookAt(
+		glm::vec3(xCameraPos, yCameraPos, 1.0f), // Camera is at (4,3,-3), in World Space
+		glm::vec3(xCameraPos, yCameraPos, 0), // and looks at the origin
+		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
+	);
+	// Model matrix : an identity matrix (model will be at the origin)
+	glm::mat4 Model = glm::mat4(1.0f);
+	// Our ModelViewProjection : multiplication of our 3 matrices
+	MVP = Projection * View * Model; // Remember, matrix multiplication is the other way around
+
+	updateGUI = true;
+}
+
 void setCameraZoom(float scale) {
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
@@ -1800,5 +1766,61 @@ bool checkCollision(float speed, size_t direction) {
 		break;
 	}
 	return true;
+}
+
+void handlePlayerMovement() {
+	speed = (imgScale / 960.0f) * 0.03 * (150 / 100);
+	if (moveRight) {
+		if (!moving) {
+			moving = true;
+			targetMoveX = size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale) + 1;
+			targetMoveY = size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale);
+		}
+
+	}
+	if (moveLeft) {
+		if (!moving) {
+			moving = true;
+			targetMoveX = size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale) - 1;
+			targetMoveY = size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale);
+		}
+	}
+	if (moveUp) {
+		if (!moving) {
+			moving = true;
+			targetMoveX = size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale);
+			targetMoveY = size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale) - 1;
+		}
+	}
+	if (moveDown) {
+		if (!moving) {
+			moving = true;
+			targetMoveX = size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale);
+			targetMoveY = size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale) + 1;
+		}
+	}
+	if (moving) {
+
+		if (size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale) < targetMoveX &&
+			size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale) == targetMoveY) {
+			updateCameraPosition(speed, 0);
+		}
+		else if (size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale) > targetMoveX &&
+			size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale) == targetMoveY) {
+			updateCameraPosition(-speed, 0);
+		}
+		else if (size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale) == targetMoveX &&
+			size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale) > targetMoveY) {
+			updateCameraPosition(0, speed);
+		}
+		else if (size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale) == targetMoveX &&
+			size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale) < targetMoveY) {
+			updateCameraPosition(0, -speed);
+		}
+		else {
+			//setCameraPosition(targetMoveX * (imgScale / 960) - 1.0f, -((targetMoveY) * (imgScale / 540)) + 1.0f);
+			moving = false;
+		}
+	}
 }
 
