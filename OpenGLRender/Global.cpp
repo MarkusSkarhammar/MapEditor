@@ -243,8 +243,12 @@ float yCameraPos = 0.0f;
 bool dKey;
 
 bool moving;
-bool moveLeft;
-bool moveRight;
+bool movingLeft(false);
+bool movingRight(false);
+bool movingUp(false);
+bool movingDown(false);
+bool moveLeft(false);
+bool moveRight(false);
 bool moveUp(false);
 bool moveDown(false);
 float nextRight = 0;

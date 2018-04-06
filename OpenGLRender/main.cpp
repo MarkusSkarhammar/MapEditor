@@ -58,7 +58,7 @@ ElementCreator ec;
 bool runMapUpdater(true);
 bool updateMap(false);
 
-void setCameraPosition(float xPos, float yPos);
+void setCameraPosition(size_t xPos, size_t yPos);
 void handlePlayerMovement();
 bool checkCollision(float speed, size_t direction);
 void generateVBOs();
@@ -1060,57 +1060,6 @@ void mapUpdate() {
 		updateMap = true;
 	}
 
-	//if (updateMap) updateWhatToDrawOnAllCurrentFloors();
-		/*
-	if (updateTiles || updateItems) {
-		size_t xSection = size_t(((xCoord / 64) / 200));
-		size_t ySection = size_t(((yCoord / 64) / 200)) * SECTION_LENGTH;
-		if (ySection != currentSection || xSection != currentSection) {
-			if (ySection == currentSection + SECTION_LENGTH || ySection == currentSection - SECTION_LENGTH) {
-				sectionBelow = false;
-				sectionSouthEast = false;
-			}
-			if (xSection != currentSection) {
-				sectionRight = false;
-				sectionSouthEast = false;
-			}
-			currentSection = xSection;
-			currentSection += ySection;
-		}
-
-		size_t checkAboveBelow = (size_t(yCoord / 64) % 200);
-		if (!sectionBelow && checkAboveBelow + 17 > 200) {
-			std::vector<tile> temp = world.getFloor(z).getSection(currentSection + SECTION_LENGTH);
-			if (temp.size() > 0) {
-				updateTiles = true;
-				updateItems = true;
-			}
-			sectionBelow = true;
-		}
-		else if (sectionBelow && !(checkAboveBelow > 183 && checkAboveBelow < 200)  ) {
-			sectionBelow = false;
-			sectionSouthEast = false;
-		}
-
-		size_t checkRightLeft = (size_t((xCoord / 64)) % 200);
-		if (!sectionRight && checkRightLeft + 22 >= 200) {
-			std::vector<tile> temp = world.getFloor(z).getSection(currentSection + 1);
-			if (temp.size() > 0) {
-			updateTiles = true;
-			updateItems = true;
-			}
-			sectionRight = true;
-		}
-		else if (sectionRight && !(checkRightLeft > 177 && checkRightLeft < 200)) {
-			sectionRight = false;
-			sectionSouthEast = false;
-		}
-
-		if (sectionBelow && sectionRight) {
-			sectionSouthEast = true;
-		}
-	}
-	*/
 	//---------------------------------------------------
 	//			Add/remove/modify tiles/items
 	//---------------------------------------------------
@@ -1442,9 +1391,9 @@ void updateCameraPosition(float xPos, float yPos) {
 	updateGUI = true;
 }
 
-void setCameraPosition(float xPos, float yPos) {
-	xCameraPos = xPos;
-	yCameraPos = yPos;
+void setCameraPosition(size_t xPos, size_t yPos) {
+	xCameraPos = (xPos - size_t((960 / 64) / 2)) * (imgScale / 960);
+	//yCameraPos = -((targetMoveY + 8) * (imgScale / 1080));
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	glm::mat4 Projection = glm::perspective(glm::radians(zoom), 1.0f, 0.1f, 100.0f);
@@ -1773,6 +1722,7 @@ void handlePlayerMovement() {
 	if (moveRight) {
 		if (!moving) {
 			moving = true;
+			movingRight = true;
 			targetMoveX = size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale) + 1;
 			targetMoveY = size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale);
 		}
@@ -1781,6 +1731,7 @@ void handlePlayerMovement() {
 	if (moveLeft) {
 		if (!moving) {
 			moving = true;
+			movingLeft = true;
 			targetMoveX = size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale) - 1;
 			targetMoveY = size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale);
 		}
@@ -1788,6 +1739,7 @@ void handlePlayerMovement() {
 	if (moveUp) {
 		if (!moving) {
 			moving = true;
+			movingUp = true;
 			targetMoveX = size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale);
 			targetMoveY = size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale) - 1;
 		}
@@ -1795,32 +1747,51 @@ void handlePlayerMovement() {
 	if (moveDown) {
 		if (!moving) {
 			moving = true;
+			movingDown = true;
 			targetMoveX = size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale);
 			targetMoveY = size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale) + 1;
 		}
 	}
 	if (moving) {
+		size_t currentX = size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale),
+			currentY = size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale);
+		if (movingRight) {
+			if(xCameraPos < (targetMoveX - ((1920 / 64) / 2)) * (imgScale / 960)) updateCameraPosition(speed, 0);
+			else {
+				//setCameraPosition(targetMoveX, targetMoveY);
+				movingRight = false;
+				moving = false;
+			}
+		}
+		else if (movingLeft) {
+			if (xCameraPos > (targetMoveX - ((1920 / 64) / 2) + 1) * (imgScale / 960)) updateCameraPosition(-speed, 0);
+			else {
+				//setCameraPosition(targetMoveX, targetMoveY);
+				movingLeft = false;
+				moving = false;
+			}
+		}
+		else if (movingUp) {
+			if (yCameraPos < -((targetMoveY - size_t((1080 / 64) / 2) + 1) * (imgScale / 540))) {
+				updateCameraPosition(0, speed);
+			}
+			else {
+				//setCameraPosition(targetMoveX, targetMoveY);
+				movingUp = false;
+				moving = false;
+			}
+		}
+		else if (movingDown) {
+			if (yCameraPos > -((targetMoveY - size_t((1080 / 64) / 2)) * (imgScale / 540))) {
+				updateCameraPosition(0, -speed);
+			}
+			else {
+				//setCameraPosition(targetMoveX, targetMoveY);
+				movingDown = false;
+				moving = false;
+			}
+		}
 
-		if (size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale) < targetMoveX &&
-			size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale) == targetMoveY) {
-			updateCameraPosition(speed, 0);
-		}
-		else if (size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale) > targetMoveX &&
-			size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale) == targetMoveY) {
-			updateCameraPosition(-speed, 0);
-		}
-		else if (size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale) == targetMoveX &&
-			size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale) > targetMoveY) {
-			updateCameraPosition(0, speed);
-		}
-		else if (size_t(xCameraPos / (imgScale / 960)) + size_t(960 / imgScale) == targetMoveX &&
-			size_t(-yCameraPos / (imgScale / 540)) + size_t(540 / imgScale) < targetMoveY) {
-			updateCameraPosition(0, -speed);
-		}
-		else {
-			//setCameraPosition(targetMoveX * (imgScale / 960) - 1.0f, -((targetMoveY) * (imgScale / 540)) + 1.0f);
-			moving = false;
-		}
 	}
 }
 

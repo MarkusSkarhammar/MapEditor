@@ -237,6 +237,10 @@ extern float yCameraPos;
 extern bool dKey;
 
 extern bool moving;
+extern bool movingLeft;
+extern bool movingRight;
+extern bool movingUp;
+extern bool movingDown;
 extern bool moveLeft;
 extern bool moveRight;
 extern bool moveUp;
