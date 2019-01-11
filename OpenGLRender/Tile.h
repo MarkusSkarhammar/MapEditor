@@ -8,33 +8,43 @@ using std::string;
 
 class tile {
 public:
-	tile(size_t x, size_t y, size_t z, size_t id);
-	void setID(size_t value);
-	size_t getX();
-	size_t getY();
-	size_t getZ();
-	size_t getID();
-	size_t getZone();
-	void setZone(size_t zone);
-	size_t getSpeed();
-	void setSpeed(size_t speed);
-	string getArticle();
+	tile(int x, int y, int z, int id);
+	tile(tile*& t);
+	~tile() { clearItems(); };
+	void setID(int value);
+	void setUID(int value);
+	void setX(int value) { x = value; };
+	void setY(int value) { y = value; };
+	void setZ(int value) { z = value; };
+	int& getUID();
+	int& getX();
+	int& getY();
+	int& getZ();
+	int& getID();
+	int& getZone();
+	void setZone(int zone);
+	int& getSpeed();
+	void setSpeed(int speed);
+	string& getArticle();
 	void setArticle(string value);
-	string getJustDescription();
+	string& getDescription();
 	void setDescription(string value);
-	const string& getDescription();
+	void setName(string value);
+	const string& getName();
 	bool getBlockPathfind();
 	void setBlockPathfind(bool value);
-	void insertItem(Item insert);
+	void insertItem(Item* insert);
 	Item& getTopItem();
-	std::vector<Item>& getAllItems();
-	void setItems(std::vector<Item>& otherItems);
+	std::vector<Item*>& getAllItems();
+	void setItems(std::vector<Item*>& otherItems);
 	void clearItems();
+	void destroyItemAt(int pos);
 private:
-	size_t x, y, z, id, zone{ 0 }, speed{ 100 };
-	string description, article;
+	int x, y, z, zone{ 0 }, speed{ 100 };
+	int id, uid{ 0 };
+	string name, article, description;
 	bool blockPathfind{ false };
-	std::vector<Item> items;
+	std::vector<Item*> items;
 };
 
 #endif

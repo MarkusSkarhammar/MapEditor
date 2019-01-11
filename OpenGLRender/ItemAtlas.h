@@ -10,23 +10,39 @@
 #include <algorithm>
 #include "ItemInfo.h"
 #include "Item.h"
+#include "Object.h"
 using namespace pugi;
+
+class AnimationInfo {
+public:
+	AnimationInfo(int id, int animationDelay) : id(id), animationDelay(animationDelay) { animationIDs.push_back(id); };
+	void setEndAnimation(bool value) { endAnimation = value; };
+	int& getEndAnimation() { return endAnimation; };
+	int& getID() { return id; };
+	void addAnimationID(int a) { animationIDs.push_back(a); };
+	int& getAnimationDelay() { return animationDelay; };
+	std::vector<int>& getAnimationIDs() { return animationIDs; };
+private:
+	int id, animationDelay, endAnimation{ 0 };
+	std::vector<int> animationIDs;
+};
 
 class ItemAtals {
 public:
 	ItemAtals();
-	std::string getTextureLocation(size_t id);
-	std::string getGUITextureLocation(size_t id);
-	size_t getGUITextureLocationAsNbr(size_t id);
-	size_t getItemTexturePosition(size_t id);
+	~ItemAtals();
 	std::vector<size_t> getItemTexturePositionForSelectionArea(std::string category);
-	size_t getSelectedItemID(size_t textPos, size_t pos);
-	Item getItem(size_t id);
+	Item* getItem(size_t id);
+	std::string& getWeaponType(int& id);
+	std::string& getArmorType(int& id);
 	std::vector<std::pair<std::string, std::string>> getItem(size_t id, std::string category);
-	std::vector<ItemInfo> getTiles();
+	void addNewAnimation(int itemID, int animationDelay);
+	void addAnimation(int itemID, int animationID);
+	AnimationObject* getAnimationObject(float x, float y, int id, int VAO, int texturePos, Item* item);
+	bool checkIfAnimation(int id);
 private:
 	pugi::xml_document doc;
-	std::vector<ItemInfo> items;
-	std::vector<ItemInfo> GUI;
+	std::vector<Item*> items;
+	std::vector<AnimationInfo> animations;
 };
 #endif

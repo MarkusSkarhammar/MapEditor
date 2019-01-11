@@ -3,147 +3,56 @@
 	<Doodads>
 
 		<!-- Doors -->
-		<Item id="2054" article="an" name="open door">
-			<attribute key="blockProjectile" value="false" />
-			<attribute key="blockPathfind" value="false" />
-			<attribute key="blockObject" value="false" />
-			<attribute key="useable" value="true" />
-			<attribute key="alwaysOnTop" value="false" />
-		</Item>
-		<Item id="2055" article="a" name="closed door" >
-			<attribute key="blockProjectile" value="false" />
-			<attribute key="blockPathfind" value="false" />
-			<attribute key="useable" value="true" />
-			<attribute key="alwaysOnTop" value="false" />
-		</Item>
-		<Item id="2056" article="an" name="open door" >
-			<attribute key="blockProjectile" value="false" />
-			<attribute key="blockPathfind" value="false" />
-			<attribute key="blockObject" value="false" />
-			<attribute key="useable" value="true" />
-			<attribute key="alwaysOnTop" value="false" />
-		</Item>
-		<Item id="2057" article="a" name="close door" >
-			<attribute key="blockProjectile" value="false" />
-			<attribute key="blockPathfind" value="false" />
-			<attribute key="useable" value="true" />
-			<attribute key="alwaysOnTop" value="false" />
-		</Item>
-		
+
 		<!-- DoorFrames -->
-		<Item id="2052" article="a" name="door frame" >
-			<attribute key="blockProjectile" value="false" />
-			<attribute key="blockPathfind" value="false" />
-			<attribute key="blockObject" value="false" />
-			<attribute key="alwaysOnTop" value="false" />
-		</Item>
-		<Item id="2053" article="a" name="door frame" >
-			<attribute key="blockProjectile" value="false" />
-			<attribute key="blockPathfind" value="false" />
-			<attribute key="blockObject" value="false" />
-			<attribute key="alwaysOnTop" value="false" />
-		</Item>
+
 		
 		<!-- Stairs -->
-		<Item id="2066" article="some" name="stairs" >
-		<attribute key="blockProjectile" value="false" />
-		<attribute key="blockObject" value="false" />
-		<attribute key="floorChange" value="upNorth" />
-		</Item>
-		<Item id="2067" article="some" name="stairs" >
-		<attribute key="blockProjectile" value="false" />
-		<attribute key="blockObject" value="false" />
-		<attribute key="floorChange" value="upEast" />
-		</Item>
-		<Item id="2069" article="some" name="stairs" >
-		<attribute key="blockProjectile" value="false" />
-		<attribute key="blockObject" value="false" />
-		<attribute key="floorChange" value="upEast" />
-		</Item>
-		<Item id="2070" article="some" name="stairs" >
-		</Item>
+
 		
 		<!-- Basin -->
-		<Item id="2068" article="an" name="empty basin" >
-			<attribute key="blockProjectile" value="false" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="false" />
-			<attribute key="pickupable" value="false" />
-			<attribute key="alwaysOnTop" value="true" />
-		</Item>
+
 		
 		<!-- Walls -->
 		<Item id="2048" article="a" name="Wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="2049" article="a" name="Wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="2050" article="a" name="Wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
-		<Item id="2060" article="a" name="Wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
-		</Item>
-		<Item id="2061" article="a" name="Wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
-		</Item>
-		<Item id="2062" article="a" name="Wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
-		</Item>
-		<Item id="2063" article="a" name="Wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
-		</Item>
-		<Item id="2064" article="a" name="Wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
-		</Item>
-		<Item id="2065" article="a" name="Wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
-		</Item>
-		
-		<Item id="2071" article="a" name="stone brick wall" />
-		<Item id="2072" article="a" name="stone brick wall" />
-		<Item id="2073" article="a" name="stone brick wall" />
-		<Item id="2074" article="a" name="stone brick wall" />
+    <Item id="2051" article="a" name="Wall" >
+      <attribute key="blockProjectile" value="1" />
+      <attribute key="blockPathfind" value="1" />
+      <attribute key="blockObject" value="1" />
+      <attribute key="alwaysOnTop" value="1" />
+    </Item>
+    <Item id="2052" article="a" name="Wall" >
+      <attribute key="blockProjectile" value="1" />
+      <attribute key="blockPathfind" value="1" />
+      <attribute key="blockObject" value="1" />
+      <attribute key="alwaysOnTop" value="1" />
+    </Item>
 		
 		<!-- Support -->
-		<Item id="2051" article="a" name="wooden support" />
+		
 		
 		<!-- Windows -->
-		<Item id="2058" article="a" name="window" >
-			<attribute key="blockProjectile" value="false" />
-			<attribute key="blockObject" value="false" />
-		</Item>
-		<Item id="2059" article="a" name="window" >
-			<attribute key="blockProjectile" value="false" />
-			<attribute key="blockObject" value="false" />
+		<Item id="2053" article="a" name="window" >
+      <attribute key="blockPathfind" value="1" />
+      <attribute key="blockObject" value="1" />
+      <attribute key="alwaysOnTop" value="1" />
 		</Item>
 		
 	</Doodads>
@@ -151,178 +60,178 @@
 	<Borders>
 	<!-- Borders -->
 		<Item id="3072" article="a" name="wooden roof" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3073" article="a" name="wooden roof" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>	
 		<Item id="3074" article="a" name="wooden roof" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>	
 		<Item id="3075" article="a" name="wooden roof" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>	
 		<Item id="3076" article="a" name="wooden roof" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>	
 		<Item id="3077" article="a" name="wooden roof" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>	
 		<Item id="3078" article="a" name="wooden roof" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>	
 		<Item id="3079" article="a" name="wooden roof" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		
 		<Item id="3080" article="a" name="grass border" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3081" article="a" name="grass border" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3082" article="a" name="grass border" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3083" article="a" name="grass border" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3084" article="a" name="grass border" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3085" article="a" name="grass border" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3086" article="a" name="grass border" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3087" article="a" name="grass border" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3088" article="a" name="grass border" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3089" article="a" name="grass border" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3090" article="a" name="grass border" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3091" article="a" name="grass border" >
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		
 		<Item id="3092" article="a" name="dirt wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3093" article="a" name="dirt wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3094" article="a" name="dirt wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3095" article="a" name="dirt wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3096" article="a" name="dirt wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3097" article="a" name="dirt wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3098" article="a" name="dirt wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3099" article="a" name="dirt wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3100" article="a" name="dirt wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3101" article="a" name="dirt wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3102" article="a" name="dirt wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 		<Item id="3103" article="a" name="dirt wall" >
-			<attribute key="blockProjectile" value="true" />
-			<attribute key="blockPathfind" value="true" />
-			<attribute key="blockObject" value="true" />
-			<attribute key="alwaysOnTop" value="true" />
+			<attribute key="blockProjectile" value="1" />
+			<attribute key="blockPathfind" value="1" />
+			<attribute key="blockObject" value="1" />
+			<attribute key="alwaysOnTop" value="1" />
 		</Item>
 	</Borders>
 	
@@ -338,60 +247,67 @@
 	<Tool>
 		<!-- Torches -->
 		<Item id="2100" article="a" name="torch">
-			<attribute key="useable" value="true"/>
+			<attribute key="useable" value="1"/>
 			<attribute key="decayTo" value="2103"/>
 			<attribute key="duration" value="600"/>
 		</Item>
 	</Tool>
 	
 	<Tiles>
-		<Item id="1" article="some" name="grass"/>
-		<Item id="2" article="some" name="ocean water" >
-			<attribute key="blockPathfind" value="true" />
+		<Item id="0" article="some" name="grass"/>
+		<Item id="1" article="some" name="ocean water" >
+			<attribute key="blockPathfind" value="1" />
 		</Item>
-		<Item id="3" article="some" name="dirt"/>
+		<Item id="2" article="some" name="dirt"/>
+		<Item id="3" article="some" name="wood floor"/>
 		<Item id="4" article="some" name="wood floor"/>
-		<Item id="5" article="some" name="wood floor"/>
-		<Item id="6" article="some" name="cracked paved road"/>
-		<Item id="7" article="some" name="paved road">
+		<Item id="5" article="some" name="cracked paved road"/>
+		<Item id="6" article="some" name="paved road">
 			<attribute key="speed" value="1.1"/>
 		</Item>
+		<Item id="7" article="a" name="roof"/>
 		<Item id="8" article="a" name="roof"/>
 		<Item id="9" article="a" name="roof"/>
-		<Item id="10" article="a" name="roof"/>
+		<Item id="17" article="a" name="tile of black marble"/>
 		<Item id="18" article="a" name="tile of black marble"/>
-		<Item id="19" article="a" name="tile of black marble"/>
 		
 		<!-- floorChange tile -->
-		<Item id="11" article="a" name="hole">
+		<Item id="10" article="a" name="hole">
 		<attribute key="floorChange" value="down" />
 		</Item>
 		
-		<Item id="12" article="some" name="stairs down">
+		<Item id="11" article="some" name="stairs down">
 		<attribute key="floorChange" value="downSouth" />
 		</Item>
 		
+		<Item id="12" article="some" name="dirt"/>
 		<Item id="13" article="some" name="dirt"/>
 		<Item id="14" article="some" name="dirt"/>
-		<Item id="15" article="some" name="dirt"/>
-		<Item id="16" article="a" name="hole above"/>
-		<Item id="17" article="some" name="dirt"/>
+		<Item id="15" article="a" name="hole above"/>
+		<Item id="16" article="some" name="dirt"/>
 	</Tiles>
 	
 	<Weapon>
 	
-	<!-- Swords -->
-    <Item id="2000" article="a" name="Sword of Valor" >
-		<attribute key="description" value="It is the sword of legends!" />
-		<attribute key="weight" value="8000" />
-		<attribute key="attack" value="9001" />
-		<attribute key="defense" value="20" />
+	<!-- Daggers -->
+    <Item id="1024" article="a" name="dagger" type="Weapon" >
+		<attribute key="description" value="It's a common dagger." />
+		<attribute key="weight" value="0.5" />
+		<attribute key="attack" value="3" />
+		<attribute key="defense" value="0" />
 		<attribute key="weaponType" value="sword" />
 	</Item>
 	</Weapon>
 	
 	<Armor>
-	
+
+    <!-- Helmer -->
+    <Item id="1025" article="a" name="leather studded helmet" type="Armor" >
+      <attribute key="description" value="It's a common leather studded helmet." />
+      <attribute key="weight" value="0.4" />
+      <attribute key="armor" value="2" />
+      <attribute key="armorType" value="helmet" />
+    </Item>
 	
 	</Armor>
 	
@@ -407,109 +323,58 @@
 		<Item id="5122" article="a" name="Pine tree" />
 		<Item id="5123" article="a" name="Pine tree" />
 	</Nature>
-	
-	<GUIs>
-		<GUI id="1" texture="LeftPanel"/> <!-- Left panel -->
-		<GUI id="2" texture="Letters"/> <!-- Letters -->
-		<GUI id="3" texture="Tiles_1024"/> <!-- Tiles -->
-		<GUI id="4" texture="Doodads_1024"/> <!-- Doodads -->
-		<GUI id="5" texture="Borders_1024"/> <!-- Borders -->
-		<GUI id="6" texture="Monsters_1024"/> <!-- Monsters -->
-		<GUI id="7" texture="Nature_1024"/> <!-- Nature -->
-	</GUIs>
-	
-	<!-- Tiles -->
-	<Item id="1" texture="Tiles_1024" pos="1" textPos="3" type="Tiles"/>
-	<Item id="2" texture="Tiles_1024" pos="2" textPos="3" type="Tiles"/>
-	<Item id="3" texture="Tiles_1024" pos="3" textPos="3" type="Tiles"/>
-	<Item id="4" texture="Tiles_1024" pos="4" textPos="3" type="Tiles"/>
-	<Item id="5" texture="Tiles_1024" pos="5" textPos="3" type="Tiles"/>
-	<Item id="6" texture="Tiles_1024" pos="6" textPos="3" type="Tiles"/>
-	<Item id="7" texture="Tiles_1024" pos="7" textPos="3" type="Tiles"/>
-	<Item id="8" texture="Tiles_1024" pos="8" textPos="3" type="Tiles"/>
-	<Item id="9" texture="Tiles_1024" pos="9" textPos="3" type="Tiles"/>
-	<Item id="10" texture="Tiles_1024" pos="10" textPos="3" type="Tiles"/>
-	<Item id="11" texture="Tiles_1024" pos="11" textPos="3" type="Tiles"/>
-	<Item id="12" texture="Tiles_1024" pos="12" textPos="3" type="Tiles"/>
-	<Item id="13" texture="Tiles_1024" pos="13" textPos="3" type="Tiles"/>
-	<Item id="14" texture="Tiles_1024" pos="14" textPos="3" type="Tiles"/>
-	<Item id="15" texture="Tiles_1024" pos="15" textPos="3" type="Tiles"/>
-	<Item id="16" texture="Tiles_1024" pos="16" textPos="3" type="Tiles"/>
-	<Item id="17" texture="Tiles_1024" pos="17" textPos="3" type="Tiles"/>
-	<Item id="18" texture="Tiles_1024" pos="18" textPos="3" type="Tiles"/>
-	<Item id="19" texture="Tiles_1024" pos="19" textPos="3" type="Tiles"/>
-	
-	<!-- Doodads -->
-	<Item id="2048" texture="Doodads_1024" pos="1" textPos="4" type="Doodads"/>
-	<Item id="2049" texture="Doodads_1024" pos="2" textPos="4" type="Doodads"/>
-	<Item id="2050" texture="Doodads_1024" pos="3" textPos="4" type="Doodads"/>
-	<Item id="2051" texture="Doodads_1024" pos="4" textPos="4" type="Doodads"/>
-	<Item id="2052" texture="Doodads_1024" pos="5" textPos="4" type="Doodads"/>
-	<Item id="2053" texture="Doodads_1024" pos="6" textPos="4" type="Doodads"/>
-	<Item id="2054" texture="Doodads_1024" pos="7" textPos="4" type="Doodads"/>
-	<Item id="2055" texture="Doodads_1024" pos="8" textPos="4" type="Doodads"/>
-	<Item id="2056" texture="Doodads_1024" pos="9" textPos="4" type="Doodads"/>
-	<Item id="2057" texture="Doodads_1024" pos="10" textPos="4" type="Doodads"/>
-	<Item id="2058" texture="Doodads_1024" pos="11" textPos="4" type="Doodads"/>
-	<Item id="2059" texture="Doodads_1024" pos="12" textPos="4" type="Doodads"/>
-	<Item id="2060" texture="Doodads_1024" pos="13" textPos="4" type="Doodads"/>
-	<Item id="2061" texture="Doodads_1024" pos="14" textPos="4" type="Doodads"/>
-	<Item id="2062" texture="Doodads_1024" pos="15" textPos="4" type="Doodads"/>
-	<Item id="2063" texture="Doodads_1024" pos="16" textPos="4" type="Doodads"/>
-	<Item id="2064" texture="Doodads_1024" pos="17" textPos="4" type="Doodads"/>
-	<Item id="2065" texture="Doodads_1024" pos="18" textPos="4" type="Doodads"/>
-	<Item id="2066" texture="Doodads_1024" pos="19" textPos="4" type="Doodads"/>
-	<Item id="2067" texture="Doodads_1024" pos="20" textPos="4" type="Doodads"/>
-	<Item id="2068" texture="Doodads_1024" pos="21" textPos="4" type="Doodads"/>
-	<Item id="2069" texture="Doodads_1024" pos="22" textPos="4" type="Doodads"/>
-	<Item id="2070" texture="Doodads_1024" pos="23" textPos="4" type="Doodads"/>
-	<Item id="2071" texture="Doodads_1024" pos="24" textPos="4" type="Doodads"/>
-	<Item id="2072" texture="Doodads_1024" pos="25" textPos="4" type="Doodads"/>
-	<Item id="2073" texture="Doodads_1024" pos="26" textPos="4" type="Doodads"/>
-	<Item id="2074" texture="Doodads_1024" pos="27" textPos="4" type="Doodads"/>
-	
-	<!-- Borders -->
-	
-	<Item id="3072" texture="Borders_1024" pos="1" textPos="5" type="Borders"/>
-	<Item id="3073" texture="Borders_1024" pos="2" textPos="5" type="Borders"/>
-	<Item id="3074" texture="Borders_1024" pos="3" textPos="5" type="Borders"/>
-	<Item id="3075" texture="Borders_1024" pos="4" textPos="5" type="Borders"/>
-	<Item id="3076" texture="Borders_1024" pos="5" textPos="5" type="Borders"/>
-	<Item id="3077" texture="Borders_1024" pos="6" textPos="5" type="Borders"/>
-	<Item id="3078" texture="Borders_1024" pos="7" textPos="5" type="Borders"/>
-	<Item id="3079" texture="Borders_1024" pos="8" textPos="5" type="Borders"/>
-	<Item id="3080" texture="Borders_1024" pos="9" textPos="5" type="Borders"/>
-	<Item id="3081" texture="Borders_1024" pos="10" textPos="5" type="Borders"/>
-	<Item id="3082" texture="Borders_1024" pos="11" textPos="5" type="Borders"/>
-	<Item id="3083" texture="Borders_1024" pos="12" textPos="5" type="Borders"/>
-	<Item id="3084" texture="Borders_1024" pos="13" textPos="5" type="Borders"/>
-	<Item id="3085" texture="Borders_1024" pos="14" textPos="5" type="Borders"/>
-	<Item id="3086" texture="Borders_1024" pos="15" textPos="5" type="Borders"/>
-	<Item id="3087" texture="Borders_1024" pos="16" textPos="5" type="Borders"/>
-	<Item id="3088" texture="Borders_1024" pos="17" textPos="5" type="Borders"/>
-	<Item id="3089" texture="Borders_1024" pos="18" textPos="5" type="Borders"/>
-	<Item id="3090" texture="Borders_1024" pos="19" textPos="5" type="Borders"/>
-	<Item id="3091" texture="Borders_1024" pos="20" textPos="5" type="Borders"/>
-	<Item id="3092" texture="Borders_1024" pos="21" textPos="5" type="Borders"/>
-	<Item id="3093" texture="Borders_1024" pos="22" textPos="5" type="Borders"/>
-	<Item id="3094" texture="Borders_1024" pos="23" textPos="5" type="Borders"/>
-	<Item id="3095" texture="Borders_1024" pos="24" textPos="5" type="Borders"/>
-	<Item id="3096" texture="Borders_1024" pos="25" textPos="5" type="Borders"/>
-	<Item id="3097" texture="Borders_1024" pos="26" textPos="5" type="Borders"/>
-	<Item id="3098" texture="Borders_1024" pos="27" textPos="5" type="Borders"/>
-	<Item id="3099" texture="Borders_1024" pos="28" textPos="5" type="Borders"/>
-	<Item id="3100" texture="Borders_1024" pos="29" textPos="5" type="Borders"/>
-	<Item id="3101" texture="Borders_1024" pos="30" textPos="5" type="Borders"/>
-	<Item id="3102" texture="Borders_1024" pos="31" textPos="5" type="Borders"/>
-	<Item id="3103" texture="Borders_1024" pos="32" textPos="5" type="Borders"/>
-	
-	<!-- Monsters -->
-	<Item id="4096" texture="Monsters_1024" pos="1" textPos="6" type="Monsters"/>
-	
-	<!-- Nature -->
-	<Item id="5120" texture="Nature_1024" pos="1" textPos="7" type="Doodads"/>
-	<Item id="5121" texture="Nature_1024" pos="2" textPos="7" type="Doodads"/>
-	<Item id="5122" texture="Nature_1024" pos="3" textPos="7" type="Doodads"/>
-	<Item id="5123" texture="Nature_1024" pos="4" textPos="7" type="Doodads"/>
+
+  <!-- Elements (like fire) -->
+  <Elements>
+    <Item id="1029" article="a" name="fire" type="">
+      <attribute key="description" value="A raging fire." />
+      <attribute key="animationOn" value="1" />
+      <attribute key="animationDelay" value="750" />
+      <attribute key="animationID" value="1030" />
+      <attribute key="animationID" value="1031" />
+      <attribute key="animationID" value="1032" />
+      <attribute key="animationID" value="1033" />
+    </Item>
+  <Item id="1030" article="a" name="fire" type="">
+    <attribute key="description" value="A raging fire." />
+  </Item>
+  <Item id="1031" article="a" name="fire" type="">
+    <attribute key="description" value="A raging fire." />
+  </Item>
+  <Item id="1032" article="a" name="fire" type="">
+    <attribute key="description" value="A raging fire." />
+  </Item>
+  <Item id="1033" article="a" name="fire" type="">
+    <attribute key="description" value="A raging fire." />
+  </Item>
+  </Elements>
+    
+  <Consumable>
+
+    <!-- Potions -->
+    <Item id="1026" article="an" name="empty bottle" type="non">
+      <attribute key="weight" value="0.1" />
+      <attribute key="stackMax" value="100" />
+    </Item>
+    <Item id="1027" article="a" name="small health potion" type="non">
+      <attribute key="description" value="A potion for healing wounds." />
+      <attribute key="weight" value="0.4" />
+      <attribute key="stackMax" value="100" />
+    </Item>
+    
+  </Consumable>
+
+
+  <Types>
+    <Type id="Tiles"></Type>
+    <Type id="Doodads"></Type>
+    <Type id="Borders" ></Type>
+    <Type id="Monsters"></Type>
+    <Type id="Nature"></Type>
+    <Type id="Weapon"></Type>
+    <Type id="Armor"></Type>
+    <Type id="Consumable"></Type>
+    <Type id="Elements"></Type>
+  </Types>
 	
 </Items>

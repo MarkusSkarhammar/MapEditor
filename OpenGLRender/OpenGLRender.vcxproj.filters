@@ -28,6 +28,24 @@
     <Filter Include="Resource Files\Serializer">
       <UniqueIdentifier>{6c325fa4-582a-435d-a5ab-220938ee4936}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\VerticesHandler">
+      <UniqueIdentifier>{4796e5f2-cc10-45a5-852c-ca8a207de60c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Objects">
+      <UniqueIdentifier>{2de63a59-5696-4a0d-af0a-3eb77f8bafb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Inputs">
+      <UniqueIdentifier>{0d988319-1657-4eac-a257-1976dd9bd2ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Palette">
+      <UniqueIdentifier>{82e50a23-097b-45ff-84ed-f23302fab80c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Camera">
+      <UniqueIdentifier>{0a1e867e-624b-4e60-9e7c-70d460c6b26b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\GUI">
+      <UniqueIdentifier>{4837914f-daf5-46c3-8aea-67a6abd195d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -57,12 +75,33 @@
     <ClCompile Include="Global.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VertecesHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Inputs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ColorFragmentShader.fragmentshader">
       <Filter>renders</Filter>
     </None>
     <None Include="TransformVertexShader.vertexshader">
+      <Filter>renders</Filter>
+    </None>
+    <None Include="GUIVertexShader.vertexshader">
       <Filter>renders</Filter>
     </None>
   </ItemGroup>
@@ -93,6 +132,24 @@
     </ClInclude>
     <ClInclude Include="Global.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VertecesHandler.h">
+      <Filter>Resource Files\VerticesHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Resource Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Inputs.h">
+      <Filter>Resource Files\Inputs</Filter>
+    </ClInclude>
+    <ClInclude Include="Palette.h">
+      <Filter>Resource Files\Palette</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Resource Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>Resource Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

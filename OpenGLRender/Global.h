@@ -3,20 +3,70 @@
 
 #include "ItemAtlas.h"
 #include "Tile.h"
-#include "World.h"
 #include "Serializer.h"
+#include "VertecesHandler.h"
+#include "Object.h"
+#include "Palette.h"
+#include <set>
+#include "Camera.h"
+#include "World.h"
+#include <atomic> 
+#include "GUI.h"
 
-struct SVertex2D
+// Include GLM
+#include <glm/ext.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+using namespace glm;
+
+//#include <utility>
+
+// MVP
+extern glm::mat4 Projection;
+extern glm::mat4 Model;
+extern glm::mat4 View;
+
+extern GLuint projection;
+extern GLuint model;
+extern GLuint view;
+
+
+struct game_state {
+	// this contains the state of your game, such as positions and velocities
+	double xCameraPos = 0.0f;
+	double yCameraPos = 0.0f;
+	double velocity = 0.0f;
+	double xGoal = 1.0f;
+	double yGoal = -1.0f;
+};
+
+extern game_state current_state;
+extern game_state previous_state;
+
+struct SPosition
 {
 	float x, y;  //Position
 	float u, v;  //Uv
 };
 
-extern const std::string paths[];
+// Store all the verteces
+extern std::vector<VertecesHandler> verteces;
+
+// Store all the objects
+extern std::vector<Objects> objects;
+
+// Store temp objects
+extern std::vector<Objects> tiles;
+extern std::vector<Objects> items;
+
+extern std::vector<std::pair<std::string, int>> paths;
 extern size_t sizeOfPaths;
 extern size_t letterPath;
 
+// Item atlas
 extern ItemAtals itemAtlas;
+
+// List of palettes
+extern std::vector<Palette> palettes;
 
 extern const float OFFSET_PER_CHARACTER[256];
 
@@ -32,6 +82,16 @@ extern float textWidth;
 extern float textHeight;
 extern float textHeightStart;
 extern float textWidthStart;
+
+// Window size
+extern float screenWidth;
+extern float screenHeight;
+extern int screenWidthPixels;
+extern int screenHeightPixels;
+
+//Update map
+extern std::atomic<bool> updateMap;
+extern std::atomic<bool> updateWorld;
 
 // Draw items/tiles
 extern bool drawWalls;
@@ -53,38 +113,8 @@ extern double xPos, yPos;
 // The coordinates for a tile depending on where the mouse currently is or where it last were. 
 extern size_t x, y, z;
 
-// Check to see if the mouse is within the area where the tiles are rendered.
-extern bool isWithinTileArea;
-
-// Which scroll bar button to be rendered when the mouse hovers it.
-extern size_t scrollBarHover;
-
-// Where to draw a yellow border around an item that the cursor is currently hovering over.
-extern size_t contentSelectionHover[];
-
-// Where to draw a red border if an item was selected.
-extern size_t contentSelectionSelected[];
-
-// The selected item's position
-extern size_t selectedID;
-
-// The amount of items to be rendered on the selection area.
-extern size_t max_selected;
-
-// Make sure to only find the items from xml when the selection area is to be changed
-extern bool getItemsToRenderOnSelectionArea;
-
-// Where each of the items to be render on the selection area find their respective texture
-extern std::vector<size_t> pos;
-
-// Current selected item
-extern std::vector<Item> item;
-
-// Tile to be rendered as a preview before actual placement.
-extern tile preview;
-
-// Make sure to only add an item once
-extern std::vector<std::pair<size_t, std::pair<size_t, size_t>>> addItem;
+extern bool changeFloor;
+extern int newZ;
 
 // Left mouse button held down
 extern bool lbutton_down;
@@ -95,33 +125,10 @@ extern bool rbutton_down;
 // FPS counter
 extern size_t FPS;
 
-// Make sure to only update the tiles when necessary.
-extern bool updateTiles;
-extern std::vector<float> tilesVerteces;
-extern std::vector<float> tilesVertecesRight;
-extern std::vector<float> tilesVertecesColor;
-extern std::vector<std::vector<float>> tilesVerteces2;
-extern std::vector<size_t> amountOfTilesToDraw;
-extern std::vector<std::vector<size_t>> amountOfTilesToDrawLevelsBuffer;
-extern std::vector<std::vector<size_t>> amountOfTilesToDrawLevelsDraw;
 
-// Make sure to update the items on a tile only when necessary.
-extern bool updateItems;
-extern std::vector<float> itemsVertecesBuffer;
-extern std::vector<float> itemsVertecesDraw;
-extern std::vector<size_t> amountOfItemsToDraw;
-extern std::vector<std::vector<size_t>> amountOfItemsToDrawLevelsBuffer;
-extern std::vector<std::vector<size_t>> amountOfItemsToDrawLevelsDraw;
-
-// Total drawn tiles/items/entities
-extern size_t amountTilesBeforeGUI;
-extern size_t amountItemsBeforeGUI;
-extern size_t amountBeforeGUI;
-extern bool updateAll;
-
-// Make sure to only update the GUI when necessary.
-extern bool updateGUI;
-extern std::vector<float> GUIVerteces;
+//-----------------------------------
+//			Bottom bar toggles
+//-----------------------------------
 
 // Erase Toggle button
 extern bool eraseToggle;
@@ -129,35 +136,111 @@ extern bool eraseToggle;
 // Destroy Toggle button
 extern bool destroyToggle;
 
-// Hovering over Vertical scroll bar
-extern bool verticalScrollbar;
-extern bool verticalScrollBarHover;
-extern double verticalScrollBarY;
 
-// Hovering over Horizontal scroll bar
-extern bool horizontalScrollbar;
-extern bool horizontalScrollBarHover;
-extern double horizontalScrollBarX;
+// Destroy tileDestroy toggle button
+extern bool destroyTileToggle;
+extern int destroyTileToggleID;
+
+
+// Cut toggle button
+extern bool cutToggle;
+extern int cutToggleID;
+
+
+// Copy toggle button
+extern bool copyToggle;
+extern int copyToggleID;
+
+//-----------------------------------
+//			DONE Bottom bar toggles
+//-----------------------------------
+
+// left panel state
+extern int leftPanelState;
+
+// Hovering tile selection palette dropdown
+extern bool hoveringPaletteDropDown;
+extern bool clickPaletteDropDown;
+extern size_t startDropDown;
+
+// Selected palette
+extern int paletteID;
+extern int palettePage;
+extern int paletteMaxPage;
+extern int paletteMaxY;
+extern bool paletteLeftHover;
+extern bool paletteRightHover;
+extern bool paletteLeftPressed;
+extern bool paletteRightPressed;
+
+// Selected item from palette
+extern std::pair<std::pair<int, bool>, std::pair<int, int>> selectedItemId;
+extern bool isWithinTileArea;
+
+
+	//----------------------------------------------------------
+	//						start: Store items to be drawn
+	//----------------------------------------------------------
+
+	class ToDraw {
+	public:
+		ToDraw(int id, int x, int y, int z, int section): id(id), x(x), y(y), z(z), section(section) {};
+		int getId() const { return id; };
+		int getX() const { return x; };
+		int getY() const { return y; };
+		int getZ() const { return z; };
+		int setX(int value) { x = value; };
+		int setY(int value) { y = value; };
+		int getSection() const { return section; };
+		int getHash() const { return (x+(y*40)+z); };
+
+	private:
+		int id, x, y, z, section;
+	};
+
+	struct CustomCompare
+	{
+		bool operator()(const ToDraw& lhs, const ToDraw& rhs)
+		{
+			return lhs.getHash() < rhs.getHash();
+		}
+	};
+
+	// Hash set for items to be draw
+	extern std::set<ToDraw, CustomCompare > thingsToDraw;
+
+
+	//----------------------------------------------------------
+	//						end: Store items to be drawn
+	//----------------------------------------------------------
 
 // x, y coordinate for drawing
 extern double xCoord, yCoord;
 
 // Current Map section
-extern size_t currentSection;
+extern int currentSection;
 
 // Map section side length
 extern const size_t SECTION_LENGTH;
 
-// First element determines if the drop down should be rendered
-// Second element determines how many slots to render for the drop down list (must match size of LEFFT_PANEL_DROP_DOWN_TEXT).
-// Third element determines which slot to be rendered with blue background on the drop down list.
-// Fourth element determines which text to be rendered as the chosen category for the drop down list (> 0 && < size of LEFFT_PANEL_DROP_DOWN_TEXT)
-extern size_t GUILeftPanelElement[];
+// Map sections width
+extern const size_t SECTIONS_WIDTH;
 
+// Map floors
+extern const size_t MAX_FLOORS;
+
+//  Atomic lock for updating a specific floor after drawing new tiles
+extern std::atomic<bool> holdFloor;
+extern std::atomic<bool> updateMapFloor;
+extern int updatingFloor;
+
+// Atomic lock for copyBuffer access
+extern std::atomic<bool> copyBufferLock;
 
 // Tiles to be rendered
 extern World world;
-extern std::vector<tile> tiles;
+//extern std::vector<tile> tiles;
+
 // Render section below
 extern bool sectionBelow;
 // Render section right
@@ -180,45 +263,81 @@ extern size_t brush;
 extern Serialize serializer;
 
 //-----------------------------------
-//			Tile info window
+//			bottom bar
 //-----------------------------------
 
-// Show tile info window
-extern bool tileInfoWindow;
+// GUIPanel
+extern GUIPanel bottomBar;
 
-// Selected to to show info about
-extern tile* tileInfo;
+// bottom bar IDs
+extern int bottomBarBasic;
+extern int bottomBarLabel;
+extern int bottomBarEraser;
+extern int bottomBarEraserHover;
+extern int bottomBarEraserPressed;
+extern int bottomBarDestroyer;
+extern int bottomBarDestroyerHover;
+extern int bottomBarDestroyerPressed;
+extern int bottomBarTileDestroyer;
+extern int bottomBarTileDestroyerHover;
+extern int bottomBarTileDestroyerPressed;
+extern int bottomBarCut;
+extern int bottomBarCutHover;
+extern int bottomBarCutPressed;
+extern int bottomBarCopy;
+extern int bottomBarCopyHover;
+extern int bottomBarCopyPressed;
 
-// Change article button logic
-extern bool changeArticle;
-extern std::string article;
+// Show bottom bar
+extern bool bottomBarShow;
 
-// Verteces
-extern std::vector<float> tileWindowVerteces;
-
-// Texture positions
-extern std::vector<size_t> tileWindowElements;
-
-// Update only when necessary
-extern bool tileWindowUpdate;
-
-// Text verteces
-extern std::vector<float> tileWindowTextVerteces;
-
-// Text elements
-extern size_t tileWindowText;
-
-// Current selected item
-extern int selectedItem;
-
-// Change item down
-extern bool changeItemLeft;
-
-// Change item up
-extern bool changeItemRight;
+// Copy buffer
+extern std::vector<std::pair<ToDraw, tile*>> copyBuffer;
 
 //-----------------------------------
-//			DONE Tile info window
+//			DONE: bottom bar
+//-----------------------------------
+
+//-----------------------------------
+//			item info window
+//-----------------------------------
+
+// GUIPanel
+extern GUIPanel itemInfo;
+
+extern bool updateItemInfo;
+
+// item info panel tile
+extern tile* itemInfoTile;
+
+// item info page
+extern int itemInfoCurrentPage;
+extern int itemInfoMaxPage;
+extern int itemInfoSubPage;
+
+// item info first page: Tile
+extern bool descriptionButtonHover;
+extern bool descriptionButtonPressed;
+
+// item info panel
+extern int itemInfoPanelID;
+extern int itemInfoTextSectionID;
+extern int itemInfoRightArrowID;
+extern int itemInfoRightArrowHoverID;
+extern int itemInfoRightArrowPressedID;
+extern int itemInfoLeftArrowID;
+extern int itemInfoLeftArrowHoverID;
+extern int itemInfoLeftArrowPressedID;
+extern int itemInfoTextAreaID;
+extern int itemInfoButtonID;
+extern int itemInfoButtonHoverID;
+extern int itemInfoButtonPressedID;
+
+// Show item info window
+extern bool itemInfoWindow;
+
+//-----------------------------------
+//			DONE item info window
 //-----------------------------------
 
 extern size_t size;
@@ -227,12 +346,12 @@ extern size_t size;
 extern float zoom;
 extern bool haveZoomed;
 
-bool isDoubleSize(size_t id);
+extern float FOV;
 
 extern float imgScale;
 
-extern float xCameraPos;
-extern float yCameraPos;
+extern double xCameraPos;
+extern double yCameraPos;
 
 extern bool dKey;
 
@@ -246,6 +365,8 @@ extern bool moveRight;
 extern bool moveUp;
 extern bool moveDown;
 extern float nextRight;
+
+extern double horizontalSpeed;
 
 //-----------------------------------
 //			Character stuff

@@ -79,14 +79,15 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\markus\source\repos\OpenGLRender\external\FreeImage\x32;C:\Users\markus\source\repos\OpenGLRender\external\common;C:\Users\markus\source\repos\OpenGLRender\External\glm-0.9.9-a2;C:\Users\markus\source\repos\OpenGLRender\external\glfw-3.2.1\include\GLFW;C:\Users\markus\source\repos\OpenGLRender\external\glew-2.1.0\bin\Release\Win32;C:\Users\markus\source\repos\OpenGLRender\external\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\FreeImage\x32;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\common;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\glm-0.9.9-a2;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\glfw-3.2.1\include\GLFW;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\glew-2.1.0\bin\Release\Win32;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Users\markus\source\repos\OpenGLRender\external\pugixml;C:\Users\markus\source\repos\OpenGLRender\external\glfw-3.2.1.bin.WIN32\lib-vc2015;C:\Users\markus\source\repos\OpenGLRender\external\FreeImage\x32;C:\Users\markus\source\repos\OpenGLRender\external\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\pugixml;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\glfw-3.2.1.bin.WIN32\lib-vc2015;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\FreeImage\x32;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;FreeImagePlus.lib;Pugixml-1.8.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>/NODEFAULTLIB:MSVCRT;/NODEFAULTLIB:LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <IgnoreAllDefaultLibraries>
-      </IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>/msvcrtd.lib;/NODEFAULTLIB:lib;/NODEFAULTLIB:LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <AdditionalOptions>/verbose:lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -95,7 +96,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\markus\source\repos\OpenGLRender\external\FreeImage\x32;C:\Users\markus\source\repos\OpenGLRender\external\common;C:\Users\markus\source\repos\OpenGLRender\External\glm-0.9.9-a2;C:\Users\markus\source\repos\OpenGLRender\external\glfw-3.2.1\include\GLFW;C:\Users\markus\source\repos\OpenGLRender\external\glew-2.1.0\bin\Release\Win32;C:\Users\markus\source\repos\OpenGLRender\external\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;FreeImagePlus.lib;Pugixml-1.8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\markus\source\repos\OpenGLRender\external\pugixml;C:\Users\markus\source\repos\OpenGLRender\external\glfw-3.2.1.bin.WIN32\lib-vc2015;C:\Users\markus\source\repos\OpenGLRender\external\FreeImage\x32;C:\Users\markus\source\repos\OpenGLRender\external\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -105,10 +111,17 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>.\external\FreeImage\x32;.\external\common;.\external\glm-0.9.9-a2;.\external\glfw-3.2.1\include\GLFW;.\external\glew-2.1.0\bin\Release\Win32;.\external\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>.\external\glfw-3.2.1.bin.WIN32\lib-vc2015;.\external\glew-2.1.0\lib\Release\Win32;.\external\FreeImage\x32;.\external\pugixml;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;FreeImagePlus.lib;Pugixml-1.8.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>/msvcrtd.lib;/NODEFAULTLIB:lib;/NODEFAULTLIB:LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -126,29 +139,42 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ElementCreator.cpp" />
     <ClCompile Include="ElementCreator.h" />
+    <ClCompile Include="GUI.cpp" />
+    <ClCompile Include="Inputs.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="ItemAtlas.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Object.cpp" />
     <ClCompile Include="Serialize.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="Global.cpp" />
     <ClCompile Include="Tile.cpp" />
+    <ClCompile Include="VertecesHandler.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ColorFragmentShader.fragmentshader" />
+    <None Include="GUIVertexShader.vertexshader" />
     <None Include="TransformVertexShader.vertexshader" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="floor.h" />
     <ClInclude Include="Global.h" />
+    <ClInclude Include="GUI.h" />
+    <ClInclude Include="Inputs.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemAtlas.h" />
     <ClInclude Include="ItemInfo.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="Palette.h" />
     <ClInclude Include="Serializer.h" />
     <ClInclude Include="shader.hpp" />
     <ClInclude Include="Tile.h" />
+    <ClInclude Include="VertecesHandler.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

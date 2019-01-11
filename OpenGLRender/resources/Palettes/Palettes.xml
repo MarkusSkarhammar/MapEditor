@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Palettes>
+  <Palette id="Tiles">
+    <attribute id="0" doubleSize="false" x="0" y="0" />
+    <attribute id="1" doubleSize="false" x="1" y="0" />
+    <attribute id="2" doubleSize="false" x="2" y="0" />
+    <attribute id="3" doubleSize="false" x="3" y="0" />
+    <attribute id="4" doubleSize="false" x="0" y="1" />
+    <attribute id="5" doubleSize="false" x="1" y="1" />
+    <attribute id="6" doubleSize="false" x="2" y="1" />
+    <attribute id="7" doubleSize="false" x="3" y="1" />
+    <attribute id="8" doubleSize="false" x="0" y="2" />
+    <attribute id="9" doubleSize="false" x="1" y="2" />
+    <attribute id="10" doubleSize="false" x="2" y="2" />
+    <attribute id="11" doubleSize="false" x="3" y="2" />
+    <attribute id="12" doubleSize="false" x="0" y="3" />
+    <attribute id="13" doubleSize="false" x="1" y="3" />
+    <attribute id="14" doubleSize="false" x="2" y="3" />
+    <attribute id="15" doubleSize="false" x="3" y="3" />
+    <attribute id="16" doubleSize="false" x="0" y="4" />
+    <attribute id="17" doubleSize="false" x="1" y="4" />
+    <attribute id="0" doubleSize="false" x="0" y="15" />
+  </Palette>
+  <Palette id="Doodads">
+    <attribute id="2048" doubleSize="true" x="0" y="0" />
+    <attribute id="2049" doubleSize="true" x="2" y="0" />
+    <attribute id="2050" doubleSize="true" x="0" y="2" />
+    <attribute id="2051" doubleSize="true" x="2" y="2" />
+    <attribute id="2052" doubleSize="true" x="0" y="4" />
+    <attribute id="2053" doubleSize="true" x="2" y="4" />
+  </Palette>
+  <Palette id="Borders">
+    <attribute id="3072" doubleSize="false" x="0" y="0" />
+    <attribute id="3073" doubleSize="false" x="1" y="0" />
+    <attribute id="3074" doubleSize="false" x="2" y="0" />
+    <attribute id="3075" doubleSize="false" x="3" y="0" />
+    <attribute id="3076" doubleSize="false" x="0" y="1" />
+    <attribute id="3077" doubleSize="false" x="1" y="1" />
+    <attribute id="3078" doubleSize="false" x="2" y="1" />
+    <attribute id="3079" doubleSize="false" x="3" y="1" />
+    <attribute id="3080" doubleSize="false" x="0" y="2" />
+    <attribute id="3081" doubleSize="false" x="1" y="2" />
+    <attribute id="3082" doubleSize="false" x="2" y="2" />
+    <attribute id="3083" doubleSize="false" x="3" y="2" />
+    <attribute id="3084" doubleSize="false" x="0" y="3" />
+    <attribute id="3085" doubleSize="false" x="1" y="3" />
+    <attribute id="3086" doubleSize="false" x="2" y="3" />
+    <attribute id="3087" doubleSize="false" x="3" y="3" />
+    <attribute id="3088" doubleSize="false" x="0" y="4" />
+    <attribute id="3089" doubleSize="false" x="1" y="4" />
+    <attribute id="3090" doubleSize="false" x="2" y="4" />
+    <attribute id="3091" doubleSize="false" x="3" y="4" />
+    <attribute id="3092" doubleSize="false" x="0" y="5" />
+    <attribute id="3093" doubleSize="false" x="1" y="5" />
+    <attribute id="3094" doubleSize="false" x="2" y="5" />
+    <attribute id="3095" doubleSize="false" x="3" y="5" />
+    <attribute id="3096" doubleSize="false" x="0" y="6" />
+    <attribute id="3097" doubleSize="false" x="1" y="6" />
+    <attribute id="3098" doubleSize="false" x="2" y="6" />
+    <attribute id="3099" doubleSize="false" x="3" y="6" />
+    <attribute id="3100" doubleSize="false" x="0" y="7" />
+    <attribute id="3101" doubleSize="false" x="1" y="7" />
+    <attribute id="3102" doubleSize="false" x="2" y="7" />
+    <attribute id="3103" doubleSize="false" x="3" y="7" />
+  </Palette>
+  <Palette id="Nature">
+  </Palette>
+  <Palette id="Monster">
+  </Palette>
+  <Palette id="Humans">
+  </Palette>
+  <Palette id="Random">
+    <attribute id="1024" doubleSize="false" x="0" y="0" />
+    <attribute id="1025" doubleSize="false" x="1" y="0" />
+    <attribute id="1026" doubleSize="false" x="2" y="0" />
+    <attribute id="1027" doubleSize="false" x="3" y="0" />
+    <attribute id="1029" doubleSize="false" x="0" y="1" />
+  </Palette>
+</Palettes>
