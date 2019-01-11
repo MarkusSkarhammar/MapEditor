@@ -1,1148 +1,657 @@
 #include "ElementCreator.h"
 
 
-void ElementCreator::createGUIs(std::vector<float>& v)
+void generate_GUI_Bottom_Bar(Objects & ob, VertecesHandler vh)
 {
-	if (updateGUI) {
-		GUIElements.clear();
-		GUIElements.shrink_to_fit();
 
-		GUIVerteces.clear();
-		GUIVerteces.shrink_to_fit();
+	bottomBar.setDimensions(0, screenHeightPixels - 30, screenWidth, 30);
+	bottomBar.setCheckIfOutside(true);
+	bottomBar.clear();
 
-		if (drawLeftPanelGUI) {
-			leftHandGUISection(GUIVerteces);
-		}
-
-		bottomBar(GUIVerteces);
-
-		//tileDrawWindowScrollBars(GUIVerteces);
-
-		tileInfoWindowCreate(GUIVerteces);
-
-		GUILetters(GUIVerteces);
-
-		previewTiles(GUIVerteces);
-
-		updateGUI = false;
+	bottomBar.addElement(new GUIElement("leftCorner", vh.getVAO(), vh.getTextureID(), bottomBarBasic, 0, screenHeightPixels - 30, 64, 30, ""));
+	//X
+	bottomBar.addElement(new GUIElement("x", vh.getVAO(), vh.getTextureID(), bottomBarLabel, 64, screenHeightPixels - 30, 64, 30, ""));
+	//Y
+	bottomBar.addElement(new GUIElement("y", vh.getVAO(), vh.getTextureID(), bottomBarLabel, 64 * 2, screenHeightPixels - 30, 64, 30, ""));
+	//Z
+	bottomBar.addElement(new GUIElement("z", vh.getVAO(), vh.getTextureID(), bottomBarLabel, 64 * 3, screenHeightPixels - 30, 64, 30, ""));
+	// Create the middle blank parts
+	size_t sections = screenWidthPixels / 64 - 4;
+	for (size_t i = 0; i < sections; i++) {
+		bottomBar.addElement(new GUIElement("leftCorner", vh.getVAO(), vh.getTextureID(), bottomBarBasic, 64 * (i + 4), screenHeightPixels - 30, 64, 30, ""));
 	}
-	
+	ToggleButtonGroup* group = new ToggleButtonGroup("toggles");
+	group->addElement(new ToggleButton("eraser", vh.getVAO(), vh.getTextureID(), bottomBarEraser, bottomBarEraserHover, bottomBarEraserPressed, 64 * 5, screenHeightPixels - 30, 30, 30, "", [&]() { eraseToggle = !eraseToggle; if(!eraseToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); }));
+	group->addElement(new ToggleButton("destroyer", vh.getVAO(), vh.getTextureID(), bottomBarDestroyer, bottomBarDestroyerHover, bottomBarDestroyerPressed, 64 * 5 + 40, screenHeightPixels - 30, 30, 30, "", [&]() { destroyToggle = !destroyToggle; if (!destroyToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); }));
+	group->addElement(new ToggleButton("tileDestroyer", vh.getVAO(), vh.getTextureID(), bottomBarTileDestroyer, bottomBarTileDestroyerHover, bottomBarTileDestroyerPressed, 64 * 5 + 80, screenHeightPixels - 30, 30, 30, "", [&]() {destroyTileToggle = !destroyTileToggle; if (!destroyTileToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); }));
+	group->addElement(new ToggleButton("cut", vh.getVAO(), vh.getTextureID(), bottomBarCut, bottomBarCutHover, bottomBarCutPressed, 64 * 5 + 120, screenHeightPixels - 30, 30, 30, "", [&]() {cutToggle = !cutToggle; if (!cutToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); }));
+	group->addElement(new ToggleButton("copy", vh.getVAO(), vh.getTextureID(), bottomBarCopy, bottomBarCopyHover, bottomBarCopyPressed, 64 * 5 + 160, screenHeightPixels - 30, 30, 30, "", [&]() {copyToggle = !copyToggle; if (!copyToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); }));
+	bottomBar.addElement(group);
+
+	bottomBar.createObjects(ob);
 }
 
-
-size_t ElementCreator::createDropDownMenuSlots(float widthStart, float heightStart, float width, float height, float textWidthStart, float textHeightStart, float textWidth, float textHeight, float hoverSlotTextHeightStart, float borderSlotTextHeightStart, float borderHeight, float borderTextHeight, std::vector<float>& v, size_t size, size_t hoverSlot)
+void generate_GUI_Bottom_Bar_text(Objects & ob, VertecesHandler vh, std::string xText, std::string yText, std::string zText)
 {
-	size_t elements = 0;
-	for (size_t i = 0; i < size; ++i) {
-
-		if (hoverSlot != i) {
-			//Create drop down menu slot
-			elements += createSquare(widthStart, heightStart - (height * i), width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-		}
-		else {
-			//Create drop down menu slot with a blue background
-			elements += createSquare(widthStart, heightStart - (height * i), width, height, textWidthStart, hoverSlotTextHeightStart, textWidth, textHeight, v);
-		}
-
-		//For drawing the last border
-		if (i == size - 1) {
-			++i;
-			//Create drop down menu last slot border
-			elements += createSquare(widthStart, heightStart - (height * i), width, borderHeight, textWidthStart, borderSlotTextHeightStart, textWidth, borderTextHeight, v);
-		}
-	}
-	return elements;
+	ob.clearObjects();
+	// X
+	double x = ((64 * 2 + 16) / (double(screenWidthPixels) / 2)), y = 2.0 + ((30 + 11) / (double(screenHeightPixels) / 2));
+	generate_GUI_Text(ob, vh, x, y, xText);
+	// Y
+	x = ((64 * 3 + 16) / (double(screenWidthPixels) / 2)), y = 2.0 + ((30 + 11) / (double(screenHeightPixels) / 2));
+	generate_GUI_Text(ob, vh, x, y, yText);
+	// Z
+	x = ((64 * 4 + 16) / (double(screenWidthPixels) / 2)), y = 2.0 + ((30 + 11) / (double(screenHeightPixels) / 2));
+	generate_GUI_Text(ob, vh, x, y, zText);
 }
 
-size_t ElementCreator::createSquare(float widthStart, float heightStart, float width, float height, float textWidthStart, float textHeightStart, float textWidth, float textHeight, vector<float>& v)
+void generate_GUI_Text(Objects& ob, VertecesHandler& vh, double x, double y, std::string text)
 {
-	//First triangle
-	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
-	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthStart + textWidth); v.push_back(textHeightStart); // Top-right
-	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightStart - textHeight); // Bottom-left
-
-																																		//Second triangle
-	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthStart + textWidth); v.push_back(textHeightStart); // Top-right
-	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthStart + textWidth); v.push_back(textHeightStart - textHeight); // Bottom-right
-	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightStart - textHeight); // Bottom-left
-
-	return 1;
-}
-
-size_t ElementCreator::createCharacters(float widthStart, float heightStart, float width, float height, std::string input, vector<float>& v, bool offsetBool)
-{
-	size_t elements = input.size();
-	float offsetStart = 0.0f;
-	if (offsetBool) {
-		for (const auto& c : input) {
-			offsetStart += OFFSET_PER_CHARACTER[c];
-		}
-	}
-	widthStart -= ((offsetStart / 2) / 960.0f);
+	int character = 0;
 	float offset = 0.0f;
-	std::vector<float> characterTextures = getCharacterTextures(input);
-	for (size_t i = 0; i < (characterTextures.size() / 12); ++i) {
-		if (i > 0)  offset += (OFFSET_PER_CHARACTER[input.at(i - 1)]) / 960;
-
-		//First triangle
-		v.push_back(widthStart + (width * i) - (offset)); v.push_back(heightStart); v.push_back(characterTextures.at(0 + (i * 12))); v.push_back(characterTextures.at(1 + (i * 12))); // Top-left
-		v.push_back(widthStart + width + (width * i) - (offset)); v.push_back(heightStart); v.push_back(characterTextures.at(2 + (i * 12))); v.push_back(characterTextures.at(3 + (i * 12))); // Top-right
-		v.push_back(widthStart + (width * i) - (offset)); v.push_back(heightStart - height); v.push_back(characterTextures.at(4 + (i * 12))); v.push_back(characterTextures.at(5 + (i * 12))); // Bottom-left
-
-																																															   //Second triangle
-		v.push_back(widthStart + width + (width * i) - (offset)); v.push_back(heightStart); v.push_back(characterTextures.at(6 + (i * 12))); v.push_back(characterTextures.at(7 + (i * 12))); // Top-right
-		v.push_back(widthStart + width + (width * i) - (offset)); v.push_back(heightStart - height); v.push_back(characterTextures.at(8 + (i * 12))); v.push_back(characterTextures.at(9 + (i * 12))); // Bottom-right
-		v.push_back(widthStart + (width * i) - (offset)); v.push_back(heightStart - height); v.push_back(characterTextures.at(10 + (i * 12))); v.push_back(characterTextures.at(11 + (i * 12))); // Bottom-left
+	for (auto& letter : text) {
+		character = letter;
+		ob.addObject(new Object(x + offset, y, character, vh.getVAO(), vh.getTextureID()));
+		offset += ((OFFSET_PER_CHARACTER[character]) / (double(screenWidthPixels) / 2));
 	}
-	return elements;
 }
 
-vector<float> ElementCreator::getCharacterTextures(std::string input)
+void generate_GUI_Text(Objects& ob, VertecesHandler& vh, double x, double y, std::string text, int rowLength)
 {
-	float textWidthStart = 0.0f;
-	float textHeightStart = 1.0f;
-	float textWidth = 16.0f / 2048;
-	float textHeight = 16.0f / 2048;
-	size_t character = 0;
-	size_t texi = 0;
-	size_t texj = 0;
-	std::vector<float> v;
-	for (const auto& c : input) {
-		character = c;
-		texi = 0;
-		texj = 0;
-		while (character >= 16) {
-			++texj;
-			character -= 16;
-		}
-		texi = character;
-
-		//First triangle
-		v.push_back(textWidthStart + (textWidth * texi)); v.push_back(textHeightStart - (textHeight * texj)); // Top-left
-		v.push_back(textWidthStart + textWidth + (textWidth * texi)); v.push_back(textHeightStart - (textHeight * texj)); // Top-right
-		v.push_back(textWidthStart + (textWidth * texi)); v.push_back(textHeightStart - textHeight - (textHeight * texj)); // Bottom-left
-
-																														   //Second triangle
-		v.push_back(textWidthStart + textWidth + (textWidth * texi)); v.push_back(textHeightStart - (textHeight * texj)); // Top-right
-		v.push_back(textWidthStart + textWidth + (textWidth * texi)); v.push_back(textHeightStart - textHeight - (textHeight * texj)); // Bottom-right
-		v.push_back(textWidthStart + (textWidth * texi)); v.push_back(textHeightStart - textHeight - (textHeight * texj)); // Bottom-left
-
-	}
-	return v;
-}
-
-void ElementCreator::selectionAreaFill(std::vector<float>& v)
-{
-	//-----------------------------------------------
-	//				SELECTION AREA FILL
-	//-----------------------------------------------
-
-	if (GUILeftPanelElement[3] != 1000) {
-		if (getItemsToRenderOnSelectionArea) {
-			pos = itemAtlas.getItemTexturePositionForSelectionArea(LEFFT_PANEL_DROP_DOWN_TEXT[GUILeftPanelElement[3]]);
-			getItemsToRenderOnSelectionArea = false;
-		}
-		max_selected = pos.size();
-		// Fill selction area
-		widthStart = xCameraPos + 1.0f - (464.0f / 960) + (5.0f / 960);
-		heightStart = yCameraPos  + -1.0f + (899.0f / 540) - (5.0f / 540);
-		width = 60.0f / 960;
-		height = (60.0f / 540);
-		textWidth = 64.0f / 2048;
-		textHeight = 64.0f / 2048;
-		textHeightStart = 1.0f;
-		textWidthStart = 0.0;
-
-		size_t i = 0;
-		size_t j = 0;
-		size_t iText = 0;
-		size_t jText = 0;
-		for (const auto& p : pos) {
-
-			if ((contentSelectionSelected[0] == i && contentSelectionSelected[1] == j) || (contentSelectionHover[0] == i && contentSelectionHover[1] == j)) {
-				// Draw selection area hover unclicked
-				createSquare(widthStart + (width * i), heightStart - (height * j), width, height, 0.0f + (540.0f / 2048), textHeightStart, 60.0f / 2048, 60.0f / 2048, v);
-				GUIElements.push_back(1);
-			}
-
-			// Draw selection area content
-			createSquare(widthStart + (width * i), heightStart - (height * j), width, height, textWidthStart + (textWidth * iText), textHeightStart - (textHeight * jText), textWidth, textHeight, v);
-			GUIElements.push_back(p);
-
-			if (contentSelectionSelected[0] == i && contentSelectionSelected[1] == j) {
-				// Draw selection area hover clicked
-				createSquare(widthStart + (width * i), heightStart - (height * j), width, height, 0.0f + (480.0f / 2048), textHeightStart - (60.0f / 2048.0f), 60.0f / 2048, 60.0f / 2048, v);
-				GUIElements.push_back(1);
-			}
-			else if (contentSelectionHover[0] == i && contentSelectionHover[1] == j) {
-				// Draw selection area hover unclicked
-				createSquare(widthStart + (width * i), heightStart - (height * j), width, height, 0.0f + (480.0f / 2048), textHeightStart, 60.0f / 2048, 60.0f / 2048, v);
-				GUIElements.push_back(1);
-			}
-
-			if (++i >= 7) {
-				i -= 7;
-				++j;
-			}
-			if (++iText >= 32) {
-				iText -= 32;
-				++jText;
-			}
+	int character = 0;
+	float offset = 0.0f, maxOffset = (rowLength / (double(screenWidthPixels) / 2));
+	for (auto& letter : text) {
+		character = letter;
+		ob.addObject(new Object(x + offset, y, character, vh.getVAO(), vh.getTextureID()));
+		offset += ((OFFSET_PER_CHARACTER[character]) / (double(screenWidthPixels) / 2));
+		if (offset > maxOffset) {
+			if(character != 32) ob.addObject(new Object(x + offset, y, 45, vh.getVAO(), vh.getTextureID()));
+			offset = 0.0f;
+			y += (26 / (double(screenWidthPixels) / 2));
 		}
 	}
-	//-----------------------------------------------
-	//				DONE SELECTION AREA FILL
-	//-----------------------------------------------
 }
 
-void ElementCreator::leftHandGUISection(std::vector<float>& v)
+void generate_GUI_Left_Panel(Objects & ob, VertecesHandler vh, size_t displayState)
 {
-	size_t size = 0;
-	//-----------------------------------------------
-	//				Left hand GUI bar
-	//-----------------------------------------------
-	widthStart = xCameraPos + 1.0f - 0.5f;
-	heightStart = yCameraPos + 1.0f;
-	width = 0.5f;
-	height = 2.0f;
-	textWidth = (480.0f / 2048.0f);
-	textHeight = 1080.0f / 2048;
-	textHeightStart = 1.0f;
-	textWidthStart = 0.0f;
+	ob.clearObjects();
+	size_t sections = (screenHeightPixels / 90) - 2;
+	size_t left = 90-40-30;
+	if (screenHeightPixels % 90 != 0)
+		left += screenHeightPixels % 90 - 90;
+	for (size_t i = 0; i < left; i++) {
+		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((1*i) / (double(screenHeightPixels) / 2)), 2, vh.getVAO(), vh.getTextureID()));
+	}
 
-	// Draw the Left Panel
-	createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-	GUIElements.push_back(size_t(1));
+	// Create the display bar for tile palette selection area
+	if (displayState == 0)
+		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + (left / (double(screenHeightPixels) / 2)), 3, vh.getVAO(), vh.getTextureID()));
+	else if (displayState == 1)
+		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + (left / (double(screenHeightPixels) / 2)), 4, vh.getVAO(), vh.getTextureID()));
+	else
+		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + (left / (double(screenHeightPixels) / 2)), 5, vh.getVAO(), vh.getTextureID()));
 
-	// Create selection area
-	widthStart = xCameraPos + 1.0f - 0.5f + (16.0f / 960.0f);
-	heightStart = yCameraPos + 1.0f - (175.0f / 540.0f);
-	width = 0.5f - (32.0f / 960.0f);
-	height = (850.0f / 540.0f);
-	textWidth = (448.0f / 2048.0f);
-	textHeight = 850.0f / 2048.0f;
-	textHeightStart = 1.0f - (230.0f / 2048.0f);
-	textWidthStart = 0.0f + (480.0f / 2048.0f);
+	// Create top tile palette selection area
+	ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40) / (double(screenHeightPixels) / 2)), 6, vh.getVAO(), vh.getTextureID()));
 
-	// Draw the selection area
-	createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-	GUIElements.push_back(size_t(1));
+	// Create middle tile palette selection area
+	for (size_t i = 0; i < sections; i++) {
+		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40 + 90*i) / (double(screenHeightPixels) / 2)), 7, vh.getVAO(), vh.getTextureID()));
+	}
 
-	//-----------------------------------------------
-	//				SELECTION AREA FILL
-	//-----------------------------------------------
+	// Create bottom tile palette selection area
+	if (paletteLeftPressed)
+		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40 + 90 * (sections)) / (double(screenHeightPixels) / 2)), 26, vh.getVAO(), vh.getTextureID()));
+	else if (paletteRightPressed)
+		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40 + 90 * (sections)) / (double(screenHeightPixels) / 2)), 27, vh.getVAO(), vh.getTextureID()));
+	else if (paletteLeftHover)
+		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40 + 90 * (sections)) / (double(screenHeightPixels) / 2)), 24, vh.getVAO(), vh.getTextureID()));
+	else if (paletteRightHover)
+		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40 + 90 * (sections)) / (double(screenHeightPixels) / 2)), 25, vh.getVAO(), vh.getTextureID()));
+	else
+		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40 + 90 * (sections)) / (double(screenHeightPixels) / 2)), 8, vh.getVAO(), vh.getTextureID()));
+
+	vh = VertecesHandler::findByName(verteces, "Letters_");
+
+	double x = ((screenWidth - 100) / (double(screenWidthPixels) / 2)), y = 2.0 + ((14) / (double(screenHeightPixels) / 2));
+	generate_GUI_Text(ob, vh, x, y, "" + std::to_string(palettePage));
+
+	x = ((screenWidth - 60) / (double(screenWidthPixels) / 2)), y = 2.0 + ((14) / (double(screenHeightPixels) / 2));
+	generate_GUI_Text(ob, vh, x, y, "" + std::to_string(paletteMaxPage));
 	
-	selectionAreaFill(v);
-
-	//-----------------------------------------------
-	//				DONE SELECTION AREA FILL
-	//-----------------------------------------------
-
-	// Left panel drop down button
-	if (GUILeftPanelElement[0] == 0) {
-		widthStart = xCameraPos + 1.0f - (69.0f / 960.0f);
-		heightStart = yCameraPos + 1.0f - (110.0f / 540.0f);
-		width = (40.0f / 960.0f);
-		height = (28.0f / 540.0f);
-		textWidth = (40.0f / 2048.0f);
-		textHeight = 28.0f / 2048.0f;
-		textHeightStart = 1.0f;
-		textWidthStart = 0.0f + (1880.0f / 2048.0f);
-
-		// Draw the left panel drop down button
-		createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-		GUIElements.push_back(size_t(1));
-
-	}
-	else if (GUILeftPanelElement[0] == 1) {
-		widthStart = xCameraPos + 1.0f - (69.0f / 960.0f);
-		heightStart = yCameraPos + 1.0f - (110.0f / 540.0f);
-		width = (40.0f / 960.0f);
-		height = (28.0f / 540.0f);
-		textWidth = (40.0f / 2048.0f);
-		textHeight = 28.0f / 2048.0f;
-		textHeightStart = 1.0f;
-		textWidthStart = 0.0f + (1840.0f / 2048.0f);
-
-		// Draw the left panel drop down button
-		createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-		GUIElements.push_back(size_t(1));
-	}
-
-	// Left panel drop down menu
-	if (GUILeftPanelElement[0] == 1 && GUILeftPanelElement[1] > 0) {
-
-		widthStart = xCameraPos + (511.0f / 960);
-		heightStart = yCameraPos + 1.0f - (145.0f / 540);
-		width = 0.5f - (31.0f + 21.0f) / 960;
-		height = (41.0f / 540);
-		float textWidth = 427.0f / 2048;
-		float textHeight = 41.0f / 2048;
-		float textHeightStart = 1.0f - (28.0f / 2048);
-		float textWidthStart = 0.0f + (1493.0f / 2048.0f);
-		// Draw the elements of the drop down list
-		size = 0;
-		size += createDropDownMenuSlots(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, 1.0f - (70.0f / 2048), 1.0f - (112.0f / 2048), (5.0f / 1080) * 2,
-			(5.0f / 1080), v, GUILeftPanelElement[1], GUILeftPanelElement[2]);
-		for (size_t k = 0; k < size; ++k) {
-			GUIElements.push_back(size_t(1));
-		}
-
-	}
-	{ // Erase toggle button
-		widthStart = xCameraPos + 0.5f + (31.0f / 960.0f);
-		heightStart = yCameraPos + 1.0f - (40.0f / 540.0f);
-		width = 79.0f / 960.0f;
-		height = 28.0f / 540.0f;
-		textWidth = (79.0f / 2048.0f);
-		textHeight = 28.0f / 2048;
-		textWidthStart = 1761.0f / 2048;
-		textHeightStart = 1.0f;
-
-		if (!eraseToggle) {
-			// Draw the untoggeled button
-			createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-		}
-		else // Draw the toggled button
-			createSquare(widthStart, heightStart, width, height, textWidthStart - (79.0f / 2048), textHeightStart, textWidth, textHeight, v);
-		GUIElements.push_back(size_t(1));
-
-		widthStart += (82.0f / 960);
-		if (!destroyToggle) {
-			// Draw the untoggeled button
-			createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-		}
-		else // Draw the toggled button
-			createSquare(widthStart, heightStart, width, height, textWidthStart - (79.0f / 2048), textHeightStart, textWidth, textHeight, v);
-		GUIElements.push_back(size_t(1));
-	}
-
-
-	//-----------------------------------------------
-	//				DONE LEFT PANEL
-	//-----------------------------------------------
 }
 
-void ElementCreator::leftHandGUILetters(std::vector<float>& v)
-{
-	if (GUILeftPanelElement[0] == 1 && GUILeftPanelElement[1] > 0) {
-		widthStart = xCameraPos + (511.0f / 960) + (0.5f - (110.0f) / 960) / 2 - (15.0f / 960);
-		heightStart = yCameraPos + 1.0f - (145.0f / 540) - 0.02f;
-		width = (16.0f) / 960;
-		height = (16.0f / 540);
-		// Keep track of when letters start so that we may swap texture
-		size = 0;
-		for (size_t i = 0; i < GUILeftPanelElement[1]; ++i) {
-			// Draw the content of the drop down list
-			size += createCharacters(widthStart, heightStart - ((41.0f / 540) * i), width, height, LEFFT_PANEL_DROP_DOWN_TEXT[i], v, false);
-		}
-		GUIElements.insert(GUIElements.end(), size, 2);
-		/*for (size_t k = 0; k < size; ++k) {
-			GUIElements.push_back(size_t(2));
-		}*/
-	}
-	
-	if (GUILeftPanelElement[3] < SIZE_DROP_DOWN_TEXT) {
-		size = 0;
-		// Draw the word of the choosen category from the drop down list.
-		widthStart = xCameraPos + (511.0f / 960) + (0.5f - (110.0f) / 960) / 2;
-		heightStart = yCameraPos + 1.0f - (109.0f / 540) - 0.02f;
-		width = (16.0f) / 960;
-		height = (16.0f / 540);
-
-		size += createCharacters(widthStart, heightStart, width, height, LEFFT_PANEL_DROP_DOWN_TEXT[GUILeftPanelElement[3]], v, true);
-		GUIElements.insert(GUIElements.end(), size, 2);
-		/*for (size_t k = 0; k < size; ++k) {
-			GUIElements.push_back(size_t(2));
-		}*/
-	}
-	
-	{	// Draw letters for the left panel toggle buttons
-		widthStart = xCameraPos + 0.5f + (67.0f / 960.0f);
-		heightStart = yCameraPos + 1.0f - (46.0f / 540.0f);
-		width = 16.0f / 960.0f;
-		height = 16.0f / 540.0f;
-
-		size = 0;
-		// Draw "Eraser" on toggle button
-		size += createCharacters(widthStart, heightStart, width, height, "Eraser", v, true);
-		// Draw "Destroyer" on toggle button
-		size += createCharacters(widthStart + (85.0f / 960.0f), heightStart, width - (1.0f / 960.0f), height - (1.0f / 540.0f), "Destroyer", v, true);
-
-		GUIElements.insert(GUIElements.end(), size, 2);
-		/*for (size_t k = 0; k < size; ++k) {
-			GUIElements.push_back(size_t(2));
-		}*/
+void generate_GUI_Left_Panel_Text_(Objects & ob, VertecesHandler vh) {
+	// Create the text for tile palette selection area
+	if (paletteID != -1) {
+		ob.clearObjects();
+		double x = ((screenWidthPixels - 125) / (double(screenWidthPixels) / 2)), y = 0.0 + ((startDropDown + 75 + 36 * -1) / (double(screenHeightPixels) / 2));
+		generate_GUI_Text(ob, vh, x, y, palettes.at(paletteID).getName());
 	}
 }
 
-void ElementCreator::bottomBar(std::vector<float>& v)
+void generate_GUI_Left_Panel_DropDown(Objects & ob, VertecesHandler vh, int hover)
 {
-	//-----------------------------------------------
-	//				BOTTOM BAR
-	//-----------------------------------------------
-
-	{	// First half of the bar
-		widthStart = xCameraPos + -1.0f;
-		heightStart = yCameraPos + -1.0f + (29.0f / 540);
-		width = 1.0f;
-		height = (29.0f / 540);
-		textWidth = (960.0f / 2048);
-		textHeight = 29.0f / 2048;
-		textHeightStart = 1.0f - (1051.0f / 2048);
-		textWidthStart = 0.0f + (960.0f / 2048);
-
-		// Draw the first half of the bottom bar
-		createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-		GUIElements.push_back(size_t(1));
+	ob.clearObjects();
+	size_t left = 90 - 40 - 30;
+	if (screenHeightPixels % 90 != 0)
+		left += screenHeightPixels % 90 - 90;
+	startDropDown = left + 38;
+	// Create the bars for each item
+	for (size_t i = 0; i < palettes.size() -1; i++) {
+		ob.addObject(new Object(2 - (267 / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 36 * i) / (double(screenHeightPixels) / 2)), 9, vh.getVAO(), vh.getTextureID()));
 	}
+	// Create the end of the drop down
+	ob.addObject(new Object(2 - (267 / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 36 * (palettes.size() -1)) / (double(screenHeightPixels) / 2)), 10, vh.getVAO(), vh.getTextureID()));
 
-	{	// Second half of the bar
-		widthStart = xCameraPos;
-		heightStart = yCameraPos -1.0f + (29.0f / 540);
-		width = 1.0f;
-		height = (29.0f / 540);
-		textWidth = (960.0f / 2048);
-		textHeight = 29.0f / 2048;
-		textHeightStart = 1.0f - (1022.0f / 2048);
-		textWidthStart = 0.0f + (960.0f / 2048);
-
-		// Draw the second half of the bottom bar
-		createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-		GUIElements.push_back(size_t(1));
-	}
-	
-
-	//-----------------------------------------------
-	//				DONE BOTTOM BAR
-	//-----------------------------------------------
+	// Create hover
+	if(hover != -1)
+		ob.addObject(new Object(2 - (265 / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 36 * hover) / (double(screenHeightPixels) / 2)), 11, vh.getVAO(), vh.getTextureID()));
 }
 
-void ElementCreator::bottomBarLetters(std::vector<float>& v)
+void generate_GUI_Left_Panel_DropDown_Text(Objects & ob, VertecesHandler vh)
 {
-	{	// Draw the x, y, z cords on the first half of the bottom bar
-		size = 0;
-
-		widthStart = xCameraPos + -1.0f + (34.0f / 960) + (4.0f / 960);
-		heightStart = yCameraPos + -1.0f + (16.0f / 540) + 0.011f;
-		width = (16.0f) / 960;
-		height = (16.0f / 540);
-
-		// Draw X
-		size += createCharacters(widthStart, heightStart, width, height, "X:", v, true);
-		// Draw X coord
-		size += createCharacters(widthStart + (width * 2), heightStart, width, height, std::to_string(x), v, true);
-		// Draw Y
-		size += createCharacters(widthStart + (width * 4) - (6.0f / 960), heightStart, width, height, "Y:", v, true);
-		// Draw Y coord
-		size += createCharacters(widthStart + (width * 6) - (6.0f / 960), heightStart, width, height, std::to_string(y), v, true);
-		// Draw Z
-		size += createCharacters(widthStart + (width * 8) - (12.0f / 960), heightStart, width, height, "Z:", v, true);
-		// Draw Z coord
-		size += createCharacters(widthStart + (width * 10) - (12.0f / 960), heightStart, width, height, std::to_string(currentSection), v, true);
-
-		GUIElements.insert(GUIElements.end(), size, 2);
+	// text for drop down menu
+	for (size_t i = 0; i < palettes.size(); i++) {
+		double x = ((screenWidthPixels-125) / (double(screenWidthPixels) / 2)), y = 0.0 + ((startDropDown + 75 + 36 * i) / (double(screenHeightPixels) / 2));
+		generate_GUI_Text(ob, vh, x, y, palettes.at(i).getName());
 	}
+
 }
 
-void ElementCreator::tileDrawWindowScrollBars(std::vector<float>& v)
+void generate_GUI_Left_Panel_Tiles(Objects & ob)
 {
-	//-----------------------------------------------
-	//				SCROLL BARS
-	//-----------------------------------------------
-	{	//	Square between the two bars.
-		widthStart = 1.0f - (499.0f / 960);
-		heightStart = -1.0f + (48.0f / 540);
-		width = (19.0f / 960);
-		height = (19.0f / 540);
-		textWidth = (19.0f / 2048.0f);
-		textHeight = (19.0f / 2048.0f);
-		textHeightStart = 1.0f - (1003.0f / 2048.0f);
-		textWidthStart = 960.0f / 2048;
-
-		// Draw square
-		createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-		GUIElements.push_back(size_t(1));
-	}
-	{	//	Vertical scroll bar
-		widthStart = 1.0f - (499.0f / 960);
-		heightStart = 1.0f;
-		width = (19.0f / 960);
-		height = (1032.0f / 540);
-		textWidth = (19.0f / 2048.0f);
-		textHeight = (1032.0f / 2048.0f);
-		textHeightStart = 1.0f - (48.0f / 2048);
-		textWidthStart = 941.0f / 2048.0f;
-
-		// Draw vertical scroll bar
-		createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-		GUIElements.push_back(size_t(1));
-
-		// Hover over up/down button
-		if (scrollBarHover == 1) {
-			widthStart = 1.0f - (499.0f / 960);
-			heightStart = 1.0f;
-			width = (19.0f / 960);
-			height = (14.0f / 540);
-			textWidth = (19.0f / 2048);
-			textHeight = (14.0f / 2048.0f);
-			textHeightStart = 1.0f - (989.0f / 2048.0f);
-			textWidthStart = 960.0f / 2048.0f;
-
-			// Draw hover up button
-			createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-			GUIElements.push_back(size_t(1));
-		}
-		if (scrollBarHover == 2) {
-			widthStart = 1.0f - (499.0f / 960);
-			heightStart = -1.0f + (62.0f / 540);
-			width = (19.0f / 960);
-			height = (14.0f / 540);
-			textWidth = (19.0f / 2048);
-			textHeight = (14.0f / 2048.0f);
-			textHeightStart = 1.0f - (975.0f / 2048.0f);
-			textWidthStart = 960.0f / 2048.0f;
-
-			// Draw hover up button
-			createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-			GUIElements.push_back(size_t(1));
-		}
-	}
-	{	// Draw vertical scrollbar drag
-		widthStart = 0.5f - (19.0f / 960);
-		heightStart = 1.0f - (verticalScrollBarY / 540.0f) + (20.0f / 540);
-		width = (19.0f / 960);
-		height = (40.0f / 540);
-		textWidth = (19.0f / 2048);
-		textHeight = (40.0f / 2048.0f);
-		textHeightStart = 1.0f - (855.0f / 2048.0f);
-		textWidthStart = 960.0f / 2048.0f;
-
-		if (verticalScrollbar) {
-			// Draw square
-			createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart - (40.0f / 2048.0f), textWidth, textHeight, v);
-		}
-		else if (verticalScrollBarHover) {
-			createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart - (80.0f / 2048.0f), textWidth, textHeight, v);
-		}
-		else {
-			createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-		}
-		GUIElements.push_back(size_t(1));
-	}
-	{	//	Horizontal scroll bar
-		widthStart = -1.0f;
-		heightStart = -1.0f + (48.0f / 540);
-		width = (1421.0f / 960);
-		height = (19.0f / 540);
-		textWidth = (941.0f / 2048.0f);
-		textHeight = (19.0f / 2048.0f);
-		textHeightStart = 1.0f - (1003.0f / 2048);
-		textWidthStart = 979.0f / 2048.0f;
-
-		// Draw vertical scroll bar
-		createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-		GUIElements.push_back(size_t(1));
-
-
-		// Hover over up/down button
-		if (true) {
-			widthStart = -1.0f;
-			heightStart = -1.0f + (48.0f / 540);
-			width = (15.0f / 960);
-			height = (19.0f / 540);
-			textWidth = (15.0f / 2048.0f);
-			textHeight = (19.0f / 2048.0f);
-			textHeightStart = 1.0f - (984.0f / 2048);
-			textWidthStart = 992.0f / 2048.0f;
-
-			// Draw hover up button
-			createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-			GUIElements.push_back(size_t(1));
-		}
-		if (true) {
-			widthStart = -1.0f + (1405.0f / 960);
-			heightStart = -1.0f + (48.0f / 540);
-			width = (16.0f / 960);
-			height = (19.0f / 540);
-			textWidth = (16.0f / 2048.0f);
-			textHeight = (19.0f / 2048.0f);
-			textHeightStart = 1.0f - (984.0f / 2048);
-			textWidthStart = 979.0f / 2048.0f;
-
-			// Draw hover up button
-			createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-			GUIElements.push_back(size_t(1));
-		}
-		{	// Draw vertical scrollbar drag
-			widthStart = -1.0f + (horizontalScrollBarX / 960.0f) - (20.0f / 960);
-			heightStart = -1.0f + (48.0f / 540);
-			width = (40.0f / 960);
-			height = (19.0f / 540);
-			textWidth = (40.0f / 2048.0f);
-			textHeight = (19.0f / 2048.0f);
-			textHeightStart = 1.0f - (984.0f / 2048);
-			textWidthStart = 1088.0f / 2048.0f;
-
-			if (horizontalScrollbar) {
-				// Draw square
-				createSquare(widthStart, heightStart, width, height, textWidthStart - (40.0f / 2048.0f), textHeightStart, textWidth, textHeight, v);
-			}
-			else if (horizontalScrollBarHover) {
-				createSquare(widthStart, heightStart, width, height, textWidthStart - (80.0f / 2048.0f), textHeightStart, textWidth, textHeight, v);
-			}
-			else {
-				createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, v);
-			}
-			GUIElements.push_back(size_t(1));
-		}
-
-	}
-	//-----------------------------------------------
-	//				DONE SCROLL BARS
-	//-----------------------------------------------
-}
-
-void ElementCreator::tileInfoWindowCreate(std::vector<float>& v)
-{
-	//-----------------------------------------------
-	//				TILE INFO WINDOW
-	//-----------------------------------------------
-	if (tileInfoWindow) { // Create window
-		if (tileWindowUpdate) {
-
-			tileWindowVerteces.clear();
-			tileWindowElements.clear();
-
-			tileWindowTextVerteces.clear();
-
-			widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f);
-			heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f);
-			width = (750.0f / 960);
-			height = (600.0f / 540);
-			textWidth = (750.0f / 2048.0f);
-			textHeight = (600.0f / 2048.0f);
-			textHeightStart = 1.0f - (118.0f / 2048);
-			textWidthStart = 1170.0f / 2048.0f;
-
-			// Draw tile info window
-			createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, tileWindowVerteces);
-			tileWindowElements.push_back(size_t(1));
-
-			if (!changeItemLeft) {
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (558.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (130.0f / 540.0f);
-				width = (31.0f / 960.0f);
-				height = (31.0f / 540.0f);
-				textWidth = (31.0f / 2048.0f);
-				textHeight = 31.0f / 2048.0f;
-				textHeightStart = 1.0f;
-				textWidthStart = 0.0f + (1462.0f / 2048.0f);
-
-				// Draw the left panel drop down button
-				createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, tileWindowVerteces);
-				tileWindowElements.push_back(size_t(1));
-
-			}
-			else if (changeItemLeft) {
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (558.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (130.0f / 540.0f);
-				width = (31.0f / 960.0f);
-				height = (31.0f / 540.0f);
-				textWidth = (31.0f / 2048.0f);
-				textHeight = 31.0f / 2048.0f;
-				textHeightStart = 1.0f;
-				textWidthStart = 0.0f + (1400.0f / 2048.0f);
-
-				// Draw the left panel drop down button
-				createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, tileWindowVerteces);
-				tileWindowElements.push_back(size_t(1));
-			}
-
-			if (!changeItemRight) {
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (671.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (130.0f / 540.0f);
-				width = (31.0f / 960.0f);
-				height = (31.0f / 540.0f);
-				textWidth = (31.0f / 2048.0f);
-				textHeight = 31.0f / 2048.0f;
-				textHeightStart = 1.0f;
-				textWidthStart = 0.0f + (1431.0f / 2048.0f);
-
-				// Draw the left panel drop down button
-				createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, tileWindowVerteces);
-				tileWindowElements.push_back(size_t(1));
-
-			}
-			else if (changeItemRight) {
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (671.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (130.0f / 540.0f);
-				width = (31.0f / 960.0f);
-				height = (31.0f / 540.0f);
-				textWidth = (31.0f / 2048.0f);
-				textHeight = 31.0f / 2048.0f;
-				textHeightStart = 1.0f;
-				textWidthStart = 0.0f + (1369.0f / 2048.0f);
-
-				// Draw the left panel drop down button
-				createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, tileWindowVerteces);
-				tileWindowElements.push_back(size_t(1));
-			}
-
-			if (!changeArticle) {
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (471.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (379.0f / 540.0f);
-				width = (41.0f / 960.0f);
-				height = (28.0f / 540.0f);
-				textWidth = (41.0f / 2048.0f);
-				textHeight = 28.0f / 2048.0f;
-				textHeightStart = 1.0f;
-				textWidthStart = 0.0f + (1881.0f / 2048.0f);
-
-				// Draw the left panel drop down button
-				createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, tileWindowVerteces);
-				tileWindowElements.push_back(size_t(1));
-
-			}
-			else if (changeArticle) {
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (471.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (379.0f / 540.0f);
-				width = (41.0f / 960.0f);
-				height = (28.0f / 540.0f);
-				textWidth = (40.0f / 2048.0f);
-				textHeight = 28.0f / 2048.0f;
-				textHeightStart = 1.0f;
-				textWidthStart = 0.0f + (1840.0f / 2048.0f);
-
-				// Draw the left panel drop down button
-				createSquare(widthStart, heightStart, width, height, textWidthStart, textHeightStart, textWidth, textHeight, tileWindowVerteces);
-				tileWindowElements.push_back(size_t(1));
-			}
-
-			{
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (464.0f / 960.0f);;
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (62.0f / 540.0f);;
-				width = (64.0f / 960);
-				height = (64.0f / 540);
-				textWidth = (64.0f / 2048.0f);
-				textHeight = (64.0f / 2048.0f);
-				textHeightStart = 1.0f;;
-				textWidthStart = 0.0f;
-
-
-				size_t itemID;
-				if (selectedItem == -1) {
-					itemID = tileInfo->getID();
+	ob.clearObjects();
+	VertecesHandler vh("Nothing");
+	size_t increment = 64;
+	if (paletteID != -1) {
+		for (auto& item : palettes.at(paletteID).getPalette()) {
+			if (item.second.second / paletteMaxY == palettePage) {
+				if (item.first.first / 1024 == 0 && vh.getName().compare("Tiles_1024") != 0) {
+					vh = VertecesHandler::findByName(verteces, "Tiles_1024");
+				}
+				else if (item.first.first / 1024 == 1 && vh.getName().compare("Items_1024") != 0) {
+					vh = VertecesHandler::findByName(verteces, "Items_1024");
+				}
+				else if (item.first.first / 1024 == 2 && vh.getName().compare("Doodads_1024") != 0) {
+					vh = VertecesHandler::findByName(verteces, "Doodads_1024");
+				}
+				else if (item.first.first / 1024 == 3 && vh.getName().compare("Borders_1024") != 0) {
+					vh = VertecesHandler::findByName(verteces, "Borders_1024");
+				}
+				else if (item.first.first / 1024 == 5 && vh.getName().compare("Nature_1024") != 0) {
+					vh = VertecesHandler::findByName(verteces, "Nature_1024");
+				}
+				if (itemAtlas.checkIfAnimation(item.first.first)) {
+					AnimationObject* a = itemAtlas.getAnimationObject( ( (screenWidthPixels - 266 + increment * (item.second.first + item.first.second)) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * (item.second.second % paletteMaxY + item.first.second)) / (double(screenHeightPixels) / 2)), item.first.first, vh.getVAO(), vh.getTextureID(), itemAtlas.getItem(item.first.first));
+					a->setID(a->getID() % 1024);
+					ob.addObject(a);
 				}
 				else
-					itemID = tileInfo->getAllItems().at(selectedItem).getID();
-				size_t id = itemAtlas.getItemTexturePosition(itemID);
-				size_t i = 0, j = 0;
-				while (id > 32) {
-					id -= 32;
-					++j;
-				}
-				i = id - 1;
-
-				// Draw tile info window
-				createSquare(widthStart, heightStart, width, height, textWidthStart + (textWidth * i), textHeightStart + (textHeight * j), textWidth, textHeight, tileWindowVerteces);
-				tileWindowElements.push_back(itemAtlas.getGUITextureLocationAsNbr(itemID));
+				ob.addObject(new Object(((screenWidthPixels - 266 + increment * (item.second.first + item.first.second)) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * (item.second.second % paletteMaxY + item.first.second)) / (double(screenHeightPixels) / 2)), item.first.first % 1024, vh.getVAO(), vh.getTextureID()));
 			}
 		}
-		v.insert(v.end(), tileWindowVerteces.begin(), tileWindowVerteces.end());
-		GUIElements.insert(GUIElements.end(), tileWindowElements.begin(), tileWindowElements.end());
-		/*for (auto& verteces : tileWindowVerteces) {
-		v.push_back(verteces);
-		}*/
-		/*for (auto& e : tileWindowElements) {
-		GUIElements.push_back(e);
-		}*/
-	}
-	//-----------------------------------------------
-	//				DONE TILE INFO WINDOW
-	//-----------------------------------------------
-}
-
-void ElementCreator::tileInfoWindowLetters(std::vector<float>& v)
-{
-
-	if (tileInfoWindow) {
-		if (tileWindowUpdate) {
-			tileWindowText = 0;
-			{//	Draw id
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (316.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (50.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "ID:", tileWindowTextVerteces, true);
-
-
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (85.0f / 540.0f);
-
-
-				if (selectedItem == -1) {
-					tileWindowText += createCharacters(widthStart, heightStart, width, height, std::to_string(tileInfo->getID()), tileWindowTextVerteces, true);
-				}
-				else
-					tileWindowText += createCharacters(widthStart, heightStart, width, height, std::to_string(tileInfo->getAllItems().at(selectedItem).getID()), tileWindowTextVerteces, true);
-			}
-
-			{//	Draw Number of items text
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (626.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (20.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "Number of items on tile:", tileWindowTextVerteces, true);
-			}
-
-			{//	Draw Number of items number
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (626.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (57.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, std::to_string(tileInfo->getAllItems().size()), tileWindowTextVerteces, true);
-			}
-
-			{//	Draw current item text
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (626.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (100.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "Current item:", tileWindowTextVerteces, true);
-			}
-
-			{//	Draw Number of items number
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (626.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (137.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, std::to_string(selectedItem + 1), tileWindowTextVerteces, true);
-			}
-
-			{//	Draw block projectile
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (99.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (160.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "Block projectile: ", tileWindowTextVerteces, true);
-
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (195.0f / 540.0f);
-
-				if (selectedItem > -1) {
-					tileWindowText += createCharacters(widthStart, heightStart, width, height, std::to_string(tileInfo->getAllItems().at(selectedItem).getBlockProjectile()), tileWindowTextVerteces, true);
-				}
-			}
-
-			{//	Draw block pathfind
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (283.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (160.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "Block pathfind:", tileWindowTextVerteces, true);
-
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (195.0f / 540.0f);
-
-				if (selectedItem > -1) {
-					tileWindowText += createCharacters(widthStart, heightStart, width, height, std::to_string(tileInfo->getAllItems().at(selectedItem).getBlockPathfind()), tileWindowTextVerteces, true);
-				}
-				else
-					tileWindowText += createCharacters(widthStart, heightStart, width, height, std::to_string(tileInfo->getBlockPathfind()), tileWindowTextVerteces, true);
-			}
-
-			{//	Draw block object
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (467.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (160.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "Block object: ", tileWindowTextVerteces, true);
-
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (195.0f / 540.0f);
-
-				if (selectedItem > -1) {
-					tileWindowText += createCharacters(widthStart, heightStart, width, height, std::to_string(tileInfo->getAllItems().at(selectedItem).getBlockObject()), tileWindowTextVerteces, true);
-				}
-			}
-
-			{//	Draw moveable
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (651.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (195.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "Moveable: ", tileWindowTextVerteces, true);
-			}
-
-			{//	Draw Pickupable
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (99.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (232.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "Pickupable: ", tileWindowTextVerteces, true);
-
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (267.0f / 540.0f);
-
-				if (selectedItem > -1) {
-					tileWindowText += createCharacters(widthStart, heightStart, width, height, std::to_string(tileInfo->getAllItems().at(selectedItem).getPickupable()), tileWindowTextVerteces, true);
-				}
-			}
-
-			{//	Draw Useable
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (283.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (232.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "Useable: ", tileWindowTextVerteces, true);
-
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (267.0f / 540.0f);
-
-				if (selectedItem > -1) {
-					tileWindowText += createCharacters(widthStart, heightStart, width, height, std::to_string(tileInfo->getAllItems().at(selectedItem).getUseable()), tileWindowTextVerteces, true);
-				}
-			}
-
-			{//	Draw Hangeable
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (467.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (232.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "Hangeable: ", tileWindowTextVerteces, true);
-
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (267.0f / 540.0f);
-
-				if (selectedItem > -1) {
-					tileWindowText += createCharacters(widthStart, heightStart, width, height, std::to_string(tileInfo->getAllItems().at(selectedItem).getHangeable()), tileWindowTextVerteces, true);
-				}
-			}
-
-			{//	Draw AlwaysOnTop
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (651.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (232.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "AlwaysOnTop: ", tileWindowTextVerteces, true);
-
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (267.0f / 540.0f);
-
-				if (selectedItem > -1) {
-					tileWindowText += createCharacters(widthStart, heightStart, width, height, std::to_string(tileInfo->getAllItems().at(selectedItem).getAlwaysOnTop()), tileWindowTextVerteces, true);
-				}
-			}
-
-			{//	Draw UID
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (146.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (305.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "uID: ", tileWindowTextVerteces, true);
-
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (340.0f / 540.0f);
-
-				if (selectedItem > -1) {
-					tileWindowText += createCharacters(widthStart, heightStart, width, height, std::to_string(tileInfo->getAllItems().at(selectedItem).getUID()), tileWindowTextVerteces, true);
-				}
-			}
-
-			{//	Draw article
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (376.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (305.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "Article: " + tileInfo->getArticle(), tileWindowTextVerteces, true);
-
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (340.0f / 540.0f);
-
-
-				if (selectedItem > -1) {
-					tileWindowText += createCharacters(widthStart, heightStart, width, height, tileInfo->getAllItems().at(selectedItem).getArticle(), tileWindowTextVerteces, true);
-				}
-			}
-
-			{//	Draw description
-				widthStart = xCameraPos + -1.0f + (710.5f / 960.0f) - (375 / 960.0f) + (606.0f / 960.0f);
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (305.0f / 540.0f);
-				width = 16.0f / 960.0f;
-				height = 16.0f / 540.0f;
-
-				tileWindowText += createCharacters(widthStart, heightStart, width, height, "Description: " + tileInfo->getDescription(), tileWindowTextVerteces, true);
-
-				heightStart = yCameraPos + 1.0f - (516.0f / 540.0f) + (300.0f / 540.0f) - (340.0f / 540.0f);
-
-				if (selectedItem > -1) {
-					tileWindowText += createCharacters(widthStart, heightStart, width, height, tileInfo->getAllItems().at(selectedItem).getArticle(), tileWindowTextVerteces, true);
-				}
-			}
-			tileWindowUpdate = false;
-		}
-
-		v.insert(v.end(), tileWindowTextVerteces.begin(), tileWindowTextVerteces.end());
-		GUIElements.insert(GUIElements.end(), tileWindowText, 2);
 	}
 }
 
-void ElementCreator::GUILetters(std::vector<float>& v)
+void generate_GUI_Left_Panel_Selector(Objects & ob, int x, int y, bool clicked)
 {
-	//-----------------------------------------------
-	//				GUI LETTERS
-	//-----------------------------------------------
-
-	if(drawLeftPanelGUI) leftHandGUILetters(v);
-
-	bottomBarLetters(v);
-
-	tileInfoWindowLetters(v);
-	//-----------------------------------------------
-	//				DONE LETTERS
-	//-----------------------------------------------
-}
-
-void ElementCreator::previewTiles(std::vector<float>& v)
-{
-	//-----------------------------------------------
-	//				PREVIEW TILES
-	//-----------------------------------------------
-	widthStart = xCameraPos + -1.0f;
-	heightStart = yCameraPos + 1.0f;
-	width = (imgScale / 960.0f);
-	height = (imgScale / 540.0f);
-	textWidth = (60 / 2048.0f);
-	textHeight = (60 / 2048.0f);
-	textHeightStart = 1.0f;
-	textWidthStart = 600.0f / 2048.0f;
-
-	createSquare(widthStart + (width * ((1920/64)/2)), heightStart - (height * ((1080 / 64) / 2)), width, height, textWidthStart + (textWidth * 0), textHeightStart + (textHeight * 0), textWidth, textHeight, v);
-
-
-
-	if (addItem.size() != 0) {
-		widthStart = xCameraPos + -1.0f;
-		heightStart = yCameraPos + 1.0f;
-		width = (imgScale / 960.0f);
-		height = (imgScale / 540.0f);
-
-		size_t i = 0;
-		size_t j = 0;
-
-		if (!eraseToggle && !destroyToggle) {
-			textWidth = (64 / 2048.0f);
-			textHeight = (64 / 2048.0f);
-			textHeightStart = 1.0f;
-			textWidthStart = 0.0f;
-
-			size_t id = itemAtlas.getItemTexturePosition(preview.getID());
-			while (id > 32) {
-				id -= 32;
-				++j;
-			}
-			i = id - 1;
-		}
-		else if (destroyToggle) {
-			textWidth = (60 / 2048.0f);
-			textHeight = (60 / 2048.0f);
-			textHeightStart = 1.0f;
-			textWidthStart = 600.0f / 2048.0f;
-		}
-		else {
-			textWidth = (60 / 2048.0f);
-			textHeight = (60 / 2048.0f);
-			textHeightStart = 1.0f;
-			textWidthStart = 540.0f / 2048.0f;
-		}
-
-		for (const auto& t : addItem) {
-
-			if (!eraseToggle && !destroyToggle && isDoubleSize(preview.getID())) {
-
-				// Draw a 2x scaled tile
-				createSquare(widthStart + (width * (t.second.first - (xCameraPos / (imgScale / (1920 / 2))))) - width, heightStart - (height * (t.second.second + (yCameraPos / (imgScale / (1080 / 2))))) + height, width * 2, height * 2, textWidthStart + (textWidth * i), textHeightStart + (textHeight * j), textWidth, textHeight, v);
+	if (paletteID != -1) {
+		VertecesHandler vh = VertecesHandler::findByName(verteces, "GUI_1");
+		size_t increment = 64;
+		ob.clearObjects();
+		if (x != -1 && y != -1) {
+			auto& p = palettes.at(paletteID).getPalette();
+			auto it = std::find_if(p.begin(), p.end(), [x, y](std::pair<std::pair<int, bool>, std::pair<size_t, size_t>>& p) { return (p.second.first == x && p.second.second == y); });
+			if (it != p.end()) {
+				if (it->first.second)
+					ob.addObject(new Object(((screenWidthPixels - 266 + increment * x) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * y) / (double(screenHeightPixels) / 2)), 14, vh.getVAO(), vh.getTextureID()));
+				else
+					ob.addObject(new Object(((screenWidthPixels - 266 + increment * x) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * y) / (double(screenHeightPixels) / 2)), 12, vh.getVAO(), vh.getTextureID()));
+				if (clicked) {
+					selectedItemId = *it;
+				}
 			}
 			else {
-				// Draw a normal tile
-				createSquare(widthStart + (width * (t.second.first - (xCameraPos / (imgScale / (1920 / 2))))), heightStart - (height * (t.second.second + (yCameraPos / (imgScale / (1080 / 2))))), width, height, textWidthStart + (textWidth * i), textHeightStart + (textHeight * j), textWidth, textHeight, v);
-			}
-		}
-	}
-
-
-	if (isWithinTileArea && (item.size() != 0 || eraseToggle || destroyToggle)) {
-		if (item.size() > 0) preview = tile(x, y, z, item.at(0).getID());
-		widthStart = xCameraPos + -1.0f;
-		heightStart = yCameraPos + 1.0f;
-		width = (imgScale / 960.0f);
-		height = (imgScale / 540.0f);
-
-		size_t i = 0;
-		size_t j = 0;
-
-		if (!eraseToggle && !destroyToggle) {
-			textWidth = (64 / 2048.0f);
-			textHeight = (64 / 2048.0f);
-			textHeightStart = 1.0f;
-			textWidthStart = 0.0f;
-
-			size_t id = itemAtlas.getItemTexturePosition(preview.getID());
-			while (id > 32) {
-				id -= 32;
-				++j;
-			}
-			i = id - 1;
-		}
-		else if (destroyToggle) {
-			textWidth = (60 / 2048.0f);
-			textHeight = (60 / 2048.0f);
-			textHeightStart = 1.0f;
-			textWidthStart = 600.0f / 2048.0f;
-		}
-		else {
-			textWidth = (60 / 2048.0f);
-			textHeight = (60 / 2048.0f);
-			textHeightStart = 1.0f;
-			textWidthStart = 540.0f / 2048.0f;
-		}
-
-
-		if (brush == 0) {
-			if (!eraseToggle && !destroyToggle && isDoubleSize(preview.getID())) {
-
-				// Draw a 2x scaled tile
-				createSquare(widthStart + (width * (x - (xCameraPos / (imgScale / (1920 / 2))))) - width, heightStart - (height *  (y + (yCameraPos / (imgScale / (1080 / 2))))) + height, width * 2, height * 2, textWidthStart + (textWidth * i), textHeightStart + (textHeight * j), textWidth, textHeight, v);
-			}
-			else {
-				// Draw a normal tile
-				createSquare(widthStart + (width * (x - (xCameraPos / (imgScale / (1920 / 2))))), heightStart - (height *  (y + (yCameraPos / (imgScale / (1080 / 2))))), width, height, textWidthStart + (textWidth * i), textHeightStart + (textHeight * j), textWidth, textHeight, v);
-			}
-		}
-		else
-			for (int bV = -int(brush); bV <= int(brush); ++bV) {
-				for (int bH = -int(brush); bH <= int(brush); ++bH) {
-					if (!eraseToggle && !destroyToggle && isDoubleSize(preview.getID())) {
-
-						// Draw a 2x scaled tile
-						createSquare(widthStart + (width * (x - (xCoord / 64.0f) + bH)) - width, heightStart - (height * (y - (yCoord / 64.0f) + bV)) + height, width * 2, height * 2, textWidthStart + (textWidth * i), textHeightStart + (textHeight * j), textWidth, textHeight, v);
+				size_t tempX = x, tempY = y - 1;
+				it = std::find_if(p.begin(), p.end(), [tempX, tempY](std::pair<std::pair<int, bool>, std::pair<size_t, size_t>>& p) { return (p.second.first == tempX && p.second.second == tempY); });
+				if (it != p.end()) {
+					if (it->first.second) {
+						ob.addObject(new Object(((screenWidthPixels - 266 + increment * tempX) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * tempY) / (double(screenHeightPixels) / 2)), 14, vh.getVAO(), vh.getTextureID()));
+						if (clicked) {
+							selectedItemId = *it;
+							selectedItemId.second.first = it->second.first;
+							selectedItemId.second.second = it->second.second;
+						}
+					}
+				}
+				else {
+					tempX = x - 1, tempY = y;
+					it = std::find_if(p.begin(), p.end(), [tempX, tempY](std::pair<std::pair<int, bool>, std::pair<size_t, size_t>>& p) { return (p.second.first == tempX && p.second.second == tempY); });
+					if (it != p.end()) {
+						if (it->first.second) {
+							ob.addObject(new Object(((screenWidthPixels - 266 + increment * tempX) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * tempY) / (double(screenHeightPixels) / 2)), 14, vh.getVAO(), vh.getTextureID()));
+							if (clicked) {
+								selectedItemId = *it;
+								selectedItemId.second.first = it->second.first;
+								selectedItemId.second.second = it->second.second;
+							}
+						}
 					}
 					else {
-						// Draw a normal tile
-						createSquare(widthStart - (64 / 960.0f) + (width), heightStart - (height * (y - (yCoord / 64.0f))), width, height, textWidthStart + (textWidth * i), textHeightStart + (textHeight * j), textWidth, textHeight, v);
+						tempX = x - 1, tempY = y - 1;
+						it = std::find_if(p.begin(), p.end(), [tempX, tempY](std::pair<std::pair<int, bool>, std::pair<size_t, size_t>>& p) { return (p.second.first == tempX && p.second.second == tempY); });
+						if (it != p.end()) {
+							if (it->first.second) {
+								ob.addObject(new Object(((screenWidthPixels - 266 + increment * tempX) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * tempY) / (double(screenHeightPixels) / 2)), 14, vh.getVAO(), vh.getTextureID()));
+								if (clicked) {
+									selectedItemId = *it;
+									selectedItemId.second.first = it->second.first;
+									selectedItemId.second.second = it->second.second;
+								}
+							}
+						}
 					}
 				}
 			}
-	}
+		}
 
-	//-----------------------------------------------
-	//				DONE PREVIEW TILES
-	//-----------------------------------------------
+		if (selectedItemId.first.first != -1) {
+			if (selectedItemId.first.second)
+				ob.addObject(new Object(((screenWidthPixels - 266 + increment * selectedItemId.second.first) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * selectedItemId.second.second) / (double(screenHeightPixels) / 2)), 15, vh.getVAO(), vh.getTextureID()));
+			else
+				ob.addObject(new Object(((screenWidthPixels - 266 + increment * selectedItemId.second.first) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * selectedItemId.second.second) / (double(screenHeightPixels) / 2)), 13, vh.getVAO(), vh.getTextureID()));
+		}
+	}
 }
 
+void generate_GUI_Preview_Tiles(Objects & ob)
+{
+	ob.clearObjects();
+	VertecesHandler vh("Nothing");
+	size_t increment = 64;
+	int id(0);
+
+	for (auto& item : thingsToDraw) {
+		if (item.getId() < 0) {
+			if(vh.getName().compare("GUI_1") != 0) vh = VertecesHandler::findByName(verteces, "GUI_1");
+			id = 23;
+			if (eraseToggle) id = 22;
+			else if (destroyTileToggle) id = destroyTileToggleID;
+			else if (copyToggle) id = copyToggleID;
+			else if (cutToggle) id = cutToggleID;
+			ob.addObject(new Object(((increment * item.getX()) / (double(screenWidthPixels) / 2)) - (xCameraPos - 1.0f), 0.0 + ((increment * item.getY()) / (double(screenHeightPixels) / 2)) + (yCameraPos + 1.0f), id, vh.getVAO(), vh.getTextureID()));
+		}
+		else {
+			if (item.getId() / 1024 == 0 && vh.getName().compare("Tiles_1024") != 0) {
+				vh = VertecesHandler::findByName(verteces, "Tiles_1024");
+			}
+			else if (item.getId() / 1024 == 1 && vh.getName().compare("Items_1024") != 0) {
+				vh = VertecesHandler::findByName(verteces, "Items_1024");
+			}
+			else if (item.getId() / 1024 == 2 && vh.getName().compare("Doodads_1024") != 0) {
+				vh = VertecesHandler::findByName(verteces, "Doodads_1024");
+			}
+			else if (item.getId() / 1024 == 3 && vh.getName().compare("Borders_1024") != 0) {
+				vh = VertecesHandler::findByName(verteces, "Borders_1024");
+			}
+			else if (item.getId() / 1024 == 5 && vh.getName().compare("Nature_1024") != 0) {
+				vh = VertecesHandler::findByName(verteces, "Nature_1024");
+			}
+			ob.addObject(new Object(((increment * item.getX()) / (double(screenWidthPixels) / 2)) - (xCameraPos - 1.0f), 0.0 + ((increment * item.getY()) / (double(screenHeightPixels) / 2)) + (yCameraPos + 1.0f), item.getId() % 1024, vh.getVAO(), vh.getTextureID()));
+		}
+	}
+	if (eraseToggle || destroyToggle || destroyTileToggle || copyToggle || cutToggle) {
+		vh = VertecesHandler::findByName(verteces, "GUI_1");
+		id = 23;
+		if (eraseToggle) id = 22;
+		else if (destroyTileToggle) id = destroyTileToggleID;
+		else if (copyToggle) id = copyToggleID;
+		else if (cutToggle) id = cutToggleID;
+	}
+	else {
+		id = selectedItemId.first.first % 1024;
+
+		if (selectedItemId.first.first / 1024 == 0 && vh.getName().compare("Tiles_1024") != 0) {
+			vh = VertecesHandler::findByName(verteces, "Tiles_1024");
+		}
+		else if (selectedItemId.first.first / 1024 == 1 && vh.getName().compare("Items_1024") != 0) {
+			vh = VertecesHandler::findByName(verteces, "Items_1024");
+		}
+		else if (selectedItemId.first.first / 1024 == 2 && vh.getName().compare("Doodads_1024") != 0) {
+			vh = VertecesHandler::findByName(verteces, "Doodads_1024");
+		}
+		else if (selectedItemId.first.first / 1024 == 3 && vh.getName().compare("Borders_1024") != 0) {
+			vh = VertecesHandler::findByName(verteces, "Borders_1024");
+		}
+		else if (selectedItemId.first.first / 1024 == 5 && vh.getName().compare("Nature_1024") != 0) {
+			vh = VertecesHandler::findByName(verteces, "Nature_1024");
+		}
+	}
+	if (copyBuffer.size() == 0) {
+		for (int yPos = y - brush; yPos <= y + brush; yPos++) {
+			for (int xPos = x - brush; xPos <= x + brush; xPos++) {
+				ob.addObject(new Object(((increment * xPos) / (double(screenWidthPixels) / 2)) - (xCameraPos - 1.0f), 0.0 + ((increment * yPos) / (double(screenHeightPixels) / 2)) + (yCameraPos + 1.0f), id, vh.getVAO(), vh.getTextureID()));
+			}
+		}
+	}
+	else if(!copyBufferLock){
+		int smallestX = -1, differenceX = -1;
+		int smallestY = -1, differenceY = -1;
+		if (copyBuffer.size() > 0) {
+			smallestX = std::min_element(copyBuffer.begin(), copyBuffer.end(), [](std::pair<ToDraw, tile*>& lhs, std::pair<ToDraw, tile*>& rhs) { return (lhs.first.getX() < rhs.first.getX()); })->first.getX();
+			differenceX = std::max_element(copyBuffer.begin(), copyBuffer.end(), [](std::pair<ToDraw, tile*>& lhs, std::pair<ToDraw, tile*>& rhs) { return (lhs.first.getX() < rhs.first.getX()); })->first.getX() - smallestX;
+			smallestY = std::min_element(copyBuffer.begin(), copyBuffer.end(), [](std::pair<ToDraw, tile*>& lhs, std::pair<ToDraw, tile*>& rhs) { return (lhs.first.getY() < rhs.first.getY()); })->first.getY();
+			differenceY = std::max_element(copyBuffer.begin(), copyBuffer.end(), [](std::pair<ToDraw, tile*>& lhs, std::pair<ToDraw, tile*>& rhs) { return (lhs.first.getY() < rhs.first.getY()); })->first.getY() - smallestY;
+		}
+		for (auto& i : copyBuffer) {
+			if (i.second != nullptr) {
+				id = i.second->getID();
+				getVertecesHandlerFromID(vh, id);
+				ob.addObject(new Object(((increment * ((i.first.getX() - smallestX - size_t(differenceX / 2)) + x)) / (double(screenWidthPixels) / 2)) - (xCameraPos - 1.0f), 0.0 + ((increment * ((i.first.getY() - smallestY - size_t(differenceY / 2)) + y)) / (double(screenHeightPixels) / 2)) + (yCameraPos + 1.0f), id, vh.getVAO(), vh.getTextureID()));
+				for (auto& item : i.second->getAllItems()) {
+					id = item->getID();
+					getVertecesHandlerFromID(vh, id);
+					ob.addObject(new Object(((increment * ((i.first.getX() - smallestX - size_t(differenceX / 2)) + x)) / (double(screenWidthPixels) / 2)) - (xCameraPos - 1.0f), 0.0 + ((increment * ((i.first.getY() - smallestY - size_t(differenceY / 2)) + y)) / (double(screenHeightPixels) / 2)) + (yCameraPos + 1.0f), id % 1024, vh.getVAO(), vh.getTextureID()));
+				}
+			}
+		}
+	}
+
+}
+
+void generate_GUI_Item_Info_Panel(Objects & ob, VertecesHandler vh) {
+	ob.clearObjects();
+	if (itemInfoWindow) {
+		int startX = ((screenWidth - 1000 - 267) / 2), startY = ((screenHeight - 30 - 700) / 2);
+		itemInfo.setDimensions(startX, startY, 1000, 700);
+		itemInfo.clear();
+		bool doubleSize = false;
+
+		//Main Panel
+		itemInfo.addElement(new GUIElement("MainPanel", vh.getVAO(), vh.getTextureID(), itemInfoPanelID, startX, startY, 1000, 700, ""));
+
+		if (itemInfoCurrentPage == 0) {
+			VertecesHandler vhT;
+			getVertecesHandlerFromID(vhT, itemInfoTile->getID());
+			// Icon
+			itemInfo.addElement(new GUIElement("icon", vhT.getVAO(), vhT.getTextureID(), (itemInfoTile->getID() % 1024), (startX + 468), (startY + 9), 64, 64, ""));
+		}
+		else {
+			VertecesHandler vhT;
+			getVertecesHandlerFromID(vhT, itemInfoTile->getAllItems().at(itemInfoCurrentPage - 1)->getID(), doubleSize);
+			// Icon
+			itemInfo.addElement(new GUIElement("icon", vhT.getVAO(), vhT.getTextureID(), (itemInfoTile->getAllItems().at(itemInfoCurrentPage-1)->getID() % 1024), (startX + 468), (startY + 9), 64, 64, ""));
+		}
+
+		// Right arrow
+		if (itemInfoCurrentPage != itemInfoMaxPage) {
+			auto lambda = ([&]() { 
+				if (itemInfoCurrentPage < itemInfoMaxPage) {
+					itemInfoSubPage = 0;
+					itemInfoCurrentPage++;
+					updateItemInfo = true;
+				}
+			});
+			itemInfo.addElement(new Button("RightArrow", vh.getVAO(), vh.getTextureID(), itemInfoRightArrowID, itemInfoRightArrowHoverID, itemInfoRightArrowPressedID, (startX + 547 + (40 * doubleSize)), (startY + 19), 30, 43, "", lambda));
+		}
+
+		// Left arrow
+		if (itemInfoCurrentPage != 0) {
+			auto lambda = ([&]() {
+				if (itemInfoCurrentPage > 0) {
+					itemInfoSubPage = 0;
+					itemInfoCurrentPage--;
+					updateItemInfo = true;
+				}
+			});
+			itemInfo.addElement(new Button("LeftArrow", vh.getVAO(), vh.getTextureID(), itemInfoLeftArrowID, itemInfoLeftArrowHoverID, itemInfoLeftArrowPressedID, (startX + 423 - (40 * doubleSize)), (startY + 19), 30, 43, "", lambda));
+		}
+
+		if (itemInfoCurrentPage == 0) {
+			VertecesHandler vhText = VertecesHandler::findByName(verteces, "Letters_");
+
+			std::string text = "id: " + std::to_string(itemInfoTile->getID());
+			// First row text fields
+			for (int i = 0; i < 4; i++) {
+				if (i == 1) text = "uid: " + std::to_string(itemInfoTile->getUID());
+				else if (i == 2) text = "zone: " + std::to_string(itemInfoTile->getZone());
+				else if (i == 3) text = "speed: " + std::to_string(itemInfoTile->getSpeed());
+
+				itemInfo.addElement(new GUIElement("FirstRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + 200), 150, 40, text));
+				itemInfo.addElement(new GUIElement("FirstRowTextInput_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + 240), 150, 40, ""));
+
+				if (i == 1) {
+					itemInfo.addElement(new Button("FirstRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + 280), 150, 26, "", []() {}));
+				}
+				else if (i == 2) {
+					itemInfo.addElement(new Button("FirstRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + 280), 150, 26, "", []() {}));
+				}
+				else if (i == 3) {
+					itemInfo.addElement(new Button("FirstRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + 280), 150, 26, "", []() {}));
+				}
+
+			}
+
+			int id = itemInfoTextAreaID;
+			text = "name: " + itemInfoTile->getName();
+			// Second row text fields
+			for (int i = 0; i < 4; i++) {
+				if (i == 1) {
+					text = "article: " + itemInfoTile->getArticle();
+					id = itemInfoTextSectionID;
+				}
+				else if (i == 2) { 
+					text = "description: " + itemInfoTile->getDescription(); 
+					id = itemInfoTextAreaID;
+				}
+				else if (i == 3) {
+					text = "blockPathfinding: " + std::to_string(itemInfoTile->getBlockPathfind());
+				}
+
+				itemInfo.addElement(new GUIElement("SecondRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), id, (startX + 50 + 250 * i), (startY + 400), 150, 40, text));
+
+				if (i == 0) {
+					itemInfo.addElement(new GUIElement("SecondRowTextInput_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + 510), 150, 40, ""));
+					itemInfo.addElement(new Button("SecondRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + 550), 150, 26, "", []() {}));
+				}
+				else if (i == 1) {
+					itemInfo.addElement(new GUIElement("SecondRowTextInput_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + 440), 150, 40, ""));
+					itemInfo.addElement(new Button("SecondRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + 480), 150, 26, "", []() {}));
+				}
+				else if (i == 2) {
+					itemInfo.addElement(new GUIElement("SecondRowTextInput_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + 510), 150, 40, ""));
+					itemInfo.addElement(new Button("SecondRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + 550), 150, 26, "", []() {}));
+				}
+				else if (i == 3) {
+					itemInfo.addElement(new Button("SecondRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + 510), 150, 26, "", [&]() { itemInfoTile->setBlockPathfind(!itemInfoTile->getBlockPathfind()); itemInfo.getElementByName("SecondRowText_3")->setText("blockPathfinding: " + std::to_string(itemInfoTile->getBlockPathfind())); }));
+				}
+				// Text
+				generate_GUI_Text(ob, vhText, ((startX + 125 + 250 * i) / (double(screenWidthPixels) / 2)), 0.0 + ((startY + 475) / (double(screenHeightPixels) / 2)), text, 114);
+			}
+		}
+		else {
+			auto& item = itemInfoTile->getAllItems().at(itemInfoCurrentPage - 1);
+			VertecesHandler vhText = VertecesHandler::findByName(verteces, "Letters_");
+
+			if (itemInfoSubPage == 0) {
+				int yFirst = 125, offset = 40;
+
+				std::string text = "id: " + std::to_string(item->getBlockProjectile());
+				// First row: booleans
+				for (int i = 0; i < 2; i++) {
+					if (i == 1) text = "uid: " + std::to_string(item->getBlockPathfind());
+
+					itemInfo.addElement(new GUIElement("FirstRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst), 150, 40, text));
+
+					if (i == 1) {
+						itemInfo.addElement(new GUIElement("FirstRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
+						itemInfo.addElement(new Button("FirstRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", []() {}));
+					}
+
+				}
+
+				yFirst += offset * 3;
+				text = "name: " + item->getName();
+				// Second row: text areas
+				for (int i = 0; i < 4; i++) {
+					if (i == 1) text = "article: " + item->getArticle();
+					else if (i == 2) text = "description: " + item->getDescription();
+					else if (i == 3) text = "type: " + item->getType();
+
+					itemInfo.addElement(new GUIElement("SecondRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextAreaID, (startX + 50 + 250 * i), (startY + yFirst), 150, 40, text));
+
+					if (i == 0) {
+						itemInfo.addElement(new GUIElement("FirstRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst + offset * 2.75), 150, 40, ">"));
+						itemInfo.addElement(new Button("SecondRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset * 3.75), 150, 26, "", [&]() {item->setBlockProjectile(!item->getBlockProjectile()); itemInfo.getElementByName("ThirdRowText_0")->setText("blockProjectile: " + std::to_string(item->getBlockProjectile())); }));
+					}
+					else if (i == 1) {
+						itemInfo.addElement(new GUIElement("FirstRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst + offset * 2.75), 150, 40, ">"));
+						itemInfo.addElement(new Button("SecondRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset * 3.75), 150, 26, "", [&]() {item->setBlockPathfind(!item->getBlockPathfind()); itemInfo.getElementByName("ThirdRowText_1")->setText("blockPathfind: " + std::to_string(item->getBlockPathfind())); }));
+					}
+					else if (i == 2) {
+						itemInfo.addElement(new GUIElement("FirstRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst + offset * 2.75), 150, 40, ">"));
+						itemInfo.addElement(new Button("SecondRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset * 3.75), 150, 26, "", [&]() {item->setBlockObject(!item->getBlockObject()); itemInfo.getElementByName("ThirdRowText_2")->setText("blockObject: " + std::to_string(item->getBlockObject())); }));
+					}
+
+				}
+				yFirst += offset * 4.75;
+				text = "blockProjectile: " + std::to_string(item->getBlockProjectile());
+				// Third row: booleans
+				for (int i = 0; i < 4; i++) {
+					if (i == 1) text = "blockPathfind: " + std::to_string(item->getBlockPathfind());
+					else if (i == 2) text = "blockObject: " + std::to_string(item->getBlockObject());
+					else if (i == 3) text = "moveable: " + std::to_string(item->getMoveable());
+
+					itemInfo.addElement(new GUIElement("ThirdRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst), 150, 40, text));
+
+					if (i == 0) {
+						itemInfo.addElement(new Button("ThirdRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&]() {item->setBlockProjectile(!item->getBlockProjectile()); itemInfo.getElementByName("ThirdRowText_0")->setText("blockProjectile: " + std::to_string(item->getBlockProjectile())); }));
+					}
+					else if (i == 1) {
+						itemInfo.addElement(new Button("ThirdRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&]() {item->setBlockPathfind(!item->getBlockPathfind()); itemInfo.getElementByName("ThirdRowText_1")->setText("blockPathfind: " + std::to_string(item->getBlockPathfind())); }));
+					}
+					else if (i == 2) {
+						itemInfo.addElement(new Button("ThirdRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&]() {item->setBlockObject(!item->getBlockObject()); itemInfo.getElementByName("ThirdRowText_2")->setText("blockObject: " + std::to_string(item->getBlockObject())); }));
+					}
+					else if (i == 3) {
+						itemInfo.addElement(new Button("ThirdRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&]() {item->setMoveable(!item->getMoveable()); itemInfo.getElementByName("ThirdRowText_3")->setText("moveable: " + std::to_string(item->getMoveable())); }));
+					}
+
+				}
+				yFirst += offset * 2;
+				text = "pickupable: " + std::to_string(item->getPickupable());
+				// Fourth row: booleans
+				for (int i = 0; i < 4; i++) {
+					if (i == 1) text = "useable: " + std::to_string(item->getUseable());
+					else if (i == 2) text = "hangeable: " + std::to_string(item->getHangeable());
+					else if (i == 3) text = "alwaysOnTop: " + std::to_string(item->getAlwaysOnTop());
+
+					itemInfo.addElement(new GUIElement("FourthRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst), 150, 40, text));
+
+					if (i == 0) {
+						itemInfo.addElement(new Button("FourthRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&]() {item->setPickupable(!item->getPickupable()); itemInfo.getElementByName("FourthRowText_0")->setText("pickupable: " + std::to_string(item->getPickupable())); }));
+					}
+					else if (i == 1) {
+						itemInfo.addElement(new Button("FourthRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&]() {item->setUseable(!item->getUseable()); itemInfo.getElementByName("FourthRowText_1")->setText("useable: " + std::to_string(item->getUseable())); }));
+					}
+					else if (i == 2) {
+						itemInfo.addElement(new Button("FourthRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&]() {item->setHangeable(!item->getHangeable()); itemInfo.getElementByName("FourthRowText_2")->setText("hangeable: " + std::to_string(item->getHangeable())); }));
+					}
+					else if (i == 3) {
+						itemInfo.addElement(new Button("FourthRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&]() {item->setAlwaysOnTop(!item->getAlwaysOnTop()); itemInfo.getElementByName("FourthRowText_3")->setText("alwaysOnTop: " + std::to_string(item->getAlwaysOnTop())); }));
+					}
+				}
+				if (NonStaticItem* check = dynamic_cast<NonStaticItem*>(item)) {
+					yFirst += offset * 2;
+					auto lambda = ([&]() {
+					itemInfoSubPage++;
+					updateItemInfo = true;
+					});
+					itemInfo.addElement(new Button("RightArrow", vh.getVAO(), vh.getTextureID(), itemInfoRightArrowID, itemInfoRightArrowHoverID, itemInfoRightArrowPressedID, (startX + 547), (startY + 650), 30, 43, "", lambda));
+				}
+			}
+			else {
+				auto lambda = ([&]() {
+					itemInfoSubPage--;
+					updateItemInfo = true;
+				});
+				itemInfo.addElement(new Button("LeftArrow", vh.getVAO(), vh.getTextureID(), itemInfoLeftArrowID, itemInfoLeftArrowHoverID, itemInfoLeftArrowPressedID, (startX + 423 - (40 * doubleSize)), (startY + 650), 30, 43, "", lambda));
+
+				if (NonStaticItem* check = dynamic_cast<NonStaticItem*>(item)) {
+					int yFirst = 125, offset = 40;
+
+					std::string text = "weight: " + std::to_string(check->getWeight());
+					// First row
+					for (int i = 0; i < 3; i++) {
+						if (i == 1) text = "stack: " + std::to_string(check->getStack());
+						if (i == 2) text = "stackMax: " + std::to_string(check->getStackMax());
+
+						itemInfo.addElement(new GUIElement("FirstRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst), 150, 40, text));
+
+						if (i == 0) {
+							itemInfo.addElement(new GUIElement("FirstRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
+							itemInfo.addElement(new Button("FirstRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", []() {}));
+						}
+						else if (i == 1) {
+							itemInfo.addElement(new GUIElement("FirstRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
+							itemInfo.addElement(new Button("FirstRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", []() {}));
+						}
+						else if (i == 2) {
+							itemInfo.addElement(new GUIElement("FirstRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
+							itemInfo.addElement(new Button("FirstRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", []() {}));
+						}
+
+					}
+
+
+					if (Armor* check = dynamic_cast<Armor*>(item)) {
+						int id = itemInfoTextSectionID;
+						yFirst += offset * 3;
+						text = "armor: " + std::to_string(check->getArmor());
+						// Second row: text areas
+						for (int i = 0; i < 2; i++) {
+							if (i == 1) { text = "armorType: " + check->getArmorType(); id = itemInfoTextAreaID; }
+
+							itemInfo.addElement(new GUIElement("SecondRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), id, (startX + 50 + 250 * i), (startY + yFirst), 150, 40, text));
+
+							if (i == 0) {
+								itemInfo.addElement(new GUIElement("SecondRowTextSection_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
+								itemInfo.addElement(new Button("SecondRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", []() {}));
+							}
+
+						}
+					}
+					else if (Weapon* check = dynamic_cast<Weapon*>(item)) {
+						int id = itemInfoTextSectionID;
+						yFirst += offset * 3;
+						text = "attack: " + std::to_string(check->getAttack());
+						// Second row: text areas
+						for (int i = 0; i < 3; i++) {
+							if (i == 1) text = "defense: " + std::to_string(check->getDefense());
+							else if (i == 2) { 
+								text = "WeaponType: " + check->getWeaponType();
+								id = itemInfoTextAreaID;
+							}
+
+							itemInfo.addElement(new GUIElement("SecondRowText_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), id, (startX + 50 + 250 * i), (startY + yFirst), 150, 40, text));
+
+							if (i == 0) {
+								itemInfo.addElement(new GUIElement("SecondRowTextSection_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
+								itemInfo.addElement(new Button("SecondRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", []() {}));
+							}
+							else if (i == 1) {
+								itemInfo.addElement(new GUIElement("SecondRowTextSection_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoTextSectionID, (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
+								itemInfo.addElement(new Button("SecondRowButton_" + std::to_string(i), vh.getVAO(), vh.getTextureID(), itemInfoButtonID, itemInfoButtonHoverID, itemInfoButtonPressedID, (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", []() {}));
+							}
+
+						}
+
+					}
+				}
+			}
+			
+		}
+		itemInfo.createObjects(ob);
+	}
+}

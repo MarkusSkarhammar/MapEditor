@@ -1,16 +1,17 @@
 #include "Item.h"
+#include "Global.h"
 
-size_t Item::getID()
+int& Item::getID()
 {
 	return id;
 }
 
-size_t Item::getUID()
+int& Item::getUID()
 {
 	return uID;
 }
 
-void Item::setUID(size_t id)
+void Item::setUID(int id)
 {
 	uID = id;
 }
@@ -95,17 +96,17 @@ void Item::setAlwaysOnTop(bool value)
 	alwaysOnTop = value;
 }
 
-string Item::getDescription()
+string& Item::getDescription()
 {
 	return description;
 }
 
-string Item::getArticle()
+string& Item::getArticle()
 {
 	return article;
 }
 
-string Item::getType()
+string& Item::getType()
 {
 	return type;
 }
@@ -114,3 +115,26 @@ void Item::setType(string value)
 {
 	type = value;
 }
+
+void Item::setDescription(string value) {
+	description = value;
+}
+
+string& Item::getName() {
+	return name;
+}
+
+void getItemType(Item*& output, int id) {
+	auto item = itemAtlas.getItem(id);
+	if (Weapon* check = dynamic_cast<Weapon*>(item)) {
+		output = new Weapon(check);
+	}
+	else if (Armor* check = dynamic_cast<Armor*>(item)) {
+		output = new Armor(check);
+	}
+	else if (NonStaticItem* check = dynamic_cast<NonStaticItem*>(item)) {
+		output = new NonStaticItem(check);
+	}
+	else
+		output = new Item(item);
+};

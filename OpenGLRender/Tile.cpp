@@ -1,55 +1,84 @@
 #include "Tile.h"
 
-tile::tile(size_t x, size_t y, size_t z, size_t id) : x(x), y(y), z(z), id(id)
+tile::tile( int x,  int y,  int z, int id) : x(x), y(y), z(z), id(id)
 {
 }
 
-void tile::setID(size_t value)
+tile::tile(tile *& t)
+{
+	*this = *t;
+	items.clear();
+	for (auto& i : t->getAllItems()) {
+		if (Weapon* check = dynamic_cast<Weapon*>(i)) {
+			items.push_back(new Weapon(check));
+		}
+		else if (Armor* check = dynamic_cast<Armor*>(i)) {
+			items.push_back(new Armor(check));
+		}
+		else if (NonStaticItem* check = dynamic_cast<NonStaticItem*>(i)) {
+			items.push_back(new NonStaticItem(check));
+		}
+		else
+			items.push_back(new Item(i));
+	}
+}
+
+void tile::setID(int value)
 {
 	id = value;
 }
 
-size_t tile::getX()
+void tile::setUID(int value)
+{
+	uid = value;
+}
+
+int& tile::getUID()
+{
+	return uid;
+}
+
+int& tile::getX()
 {
 	return x;
 }
 
-size_t tile::getY()
+int& tile::getY()
 {
 	return y;
 }
 
-size_t tile::getZ()
+int& tile::getZ()
 {
 	return z;
 }
 
-size_t tile::getID()
+int& tile::getID()
 {
 	return id;
 }
 
-size_t tile::getZone()
+int& tile::getZone()
 {
 	return zone;
 }
 
-void tile::setZone(size_t value)
+void tile::setZone(int value)
 {
 	zone = value;
 }
 
-size_t tile::getSpeed()
+int& tile::getSpeed()
 {
 	return speed;
 }
 
-void tile::setSpeed(size_t value)
+void tile::setSpeed(int value)
 {
 	speed = value;
 }
 
-string tile::getArticle()
+string& tile::getArticle()
 {
 	return article;
 }
@@ -59,19 +88,24 @@ void tile::setArticle(string value)
 	article = value;
 }
 
-string tile::getJustDescription()
-{
-	return description;
-}
-
 void tile::setDescription(string value)
 {
 	description = value;
 }
 
-const string & tile::getDescription()
+string& tile::getDescription()
 {
 	return description;
+}
+
+void tile::setName(string value)
+{
+	name = value;
+}
+
+const string & tile::getName()
+{
+	return name;
 }
 
 bool tile::getBlockPathfind()
@@ -84,28 +118,36 @@ void tile::setBlockPathfind(bool value)
 	blockPathfind = value;
 }
 
-void tile::insertItem(Item insert)
+void tile::insertItem(Item* insert)
 {
 	items.push_back(insert);
 }
 
-Item & tile::getTopItem()
+Item& tile::getTopItem()
 {
-	return items.back();
+	return *items.back();
 }
 
-std::vector<Item>& tile::getAllItems()
+std::vector<Item*>& tile::getAllItems()
 {
 	return items;
 }
 
-void tile::setItems(std::vector<Item>& otherItems)
+void tile::setItems(std::vector<Item*>& otherItems)
 {
 	items = otherItems;
 }
 
 void tile::clearItems()
 {
+	for (auto& item : items) {
+		delete item;
+	}
 	items.clear();
 	items.shrink_to_fit();
+}
+
+void tile::destroyItemAt(int pos) {
+	delete items.at(pos);
+	items.erase(items.begin()+pos);
 }

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Tile.h"
+#include <algorithm>
 
 using std::vector;
 
@@ -13,9 +14,39 @@ public:
 			//sections[i] = vector<tile>();
 		//}
 	};
-	vector<tile>& getSection(size_t section) { return sections[section]; };
-	void setSection(vector<tile>& other, size_t section) { sections[section] = other; };
+	~Floor() {
+		int i = 0;
+		for (auto& section : sections) {
+			clearSection(i);
+			i++;
+		}
+	}
+	vector<tile*>& getSection(size_t section) { return sections[section]; };
+	int& getItemsInSection(int& section) {
+		int amount = 0; 
+		for (auto& tile : sections[section]) {
+			amount += tile->getAllItems().size();
+		}
+		return amount;
+	};
+	void setSection(vector<tile*>& other, size_t section) { 
+		clearSection(section);
+		sections[section].insert(other.begin(), other.begin(), other.end());
+	};
+	void clearSection(int section) {
+		for (auto& t : sections[section]) {
+			delete t;
+		}
+		sections[section].clear();
+		sections[section].shrink_to_fit();
+	}
+	tile* getTile(int section, int x, int y) {
+		auto it = std::find_if(sections[section].begin(), sections[section].end(), [x, y](tile*& t) { return (t->getX() == x && t->getY() == y); });
+		if (it != sections[section].end())
+			return *it;
+		return nullptr;
+	};
 private:
-	vector<tile> sections[250];
+	vector<tile*> sections[1600];
 };
 #endif

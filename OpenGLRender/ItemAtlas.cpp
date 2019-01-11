@@ -1,66 +1,129 @@
 #include "ItemAtlas.h"
+#include <chrono>
 
 ItemAtals::ItemAtals()
 {
 	pugi::xml_parse_result result = doc.load_file("./resources/Items/Items.xml");
-	size_t id, posInText, GUITextPos;
-	std::string textPath, type;
-	for (pugi::xml_node item = doc.child("Items").child("Item"); item; item = item.next_sibling("Item"))
+	std::vector<string> types;
+	std::string typeS;
+	for (pugi::xml_node type = doc.child("Items").child("Types").child("Type"); type; type = type.next_sibling("Type"))
 	{
-		id = item.attribute("id").as_int();
-		textPath = item.attribute("texture").as_string();
-		posInText = item.attribute("pos").as_int();
-		GUITextPos = item.attribute("textPos").as_int();
-		type = item.attribute("type").as_string();
-		items.push_back(ItemInfo(id, posInText, GUITextPos, textPath, type));
+		typeS = type.attribute("id").as_string();
+		types.push_back(typeS);
 	}
-	for (pugi::xml_node item = doc.child("Items").child("GUIs").child("GUI"); item; item = item.next_sibling("GUI"))
-	{
-		id = item.attribute("id").as_int();
-		textPath = item.attribute("texture").as_string();
-		posInText = 0;
-		GUITextPos = 0;
-		type = "";
-		GUI.push_back(ItemInfo(id, posInText, GUITextPos, textPath, type));
+	std::string article, name;
+	size_t id;
+	for (size_t i = 0; i < types.size(); i++) {
+		const pugi::string_t s(types.at(i));
+		for (pugi::xml_node item = doc.child("Items").child(&s[0]).child("Item"); item; item = item.next_sibling("Item"))
+		{
+			typeS = "";
+			id = item.attribute("id").as_int();
+			article = item.attribute("article").as_string();
+			name = item.attribute("name").as_string();
+			typeS = item.attribute("type").as_string();
+			Item* temp = nullptr;
+			if (typeS.compare("Weapon") == 0) {
+				temp = new Weapon(id, article, name);	
+			}
+			else if (typeS.compare("Armor") == 0) {
+				temp = new Armor(id, article, name);
+			}
+			else if (typeS.compare("non") == 0) {
+				temp = new NonStaticItem(id, article, name);
+			}
+			else {
+				temp = new Item(id, article, name);
+			}
+
+
+			if (typeS.size() != 0) temp->setType(typeS);
+			for (pugi::xml_node attribute = item.child("attribute"); attribute; attribute = attribute.next_sibling("attribute"))
+			{
+				bool animation = false;
+				std::pair<std::string, std::string> info(attribute.attribute("key").value(), attribute.attribute("value").value());
+				if (info.first.compare("blockProjectile") == 0) {
+					temp->setBlockProjectile(std::stoi(info.second));
+				}
+				else if (info.first.compare("blockPathfind") == 0) {
+					temp->setBlockPathfind(std::stoi(info.second));
+				}
+				else if (info.first.compare("blockObject") == 0) {
+					temp->setBlockObject(std::stoi(info.second));
+				}
+				else if (info.first.compare("moveable") == 0) {
+					temp->setMoveable(std::stoi(info.second));
+				}
+				else if (info.first.compare("pickupable") == 0) {
+					temp->setPickupable(std::stoi(info.second));
+				}
+				else if (info.first.compare("useable") == 0) {
+					temp->setUseable(std::stoi(info.second));
+				}
+				else if (info.first.compare("hangeable") == 0) {
+					temp->setHangeable(std::stoi(info.second));
+				}
+				else if (info.first.compare("alwaysOnTop") == 0) {
+					temp->setAlwaysOnTop(std::stoi(info.second));
+				}
+				else if (info.first.compare("description") == 0) {
+					temp->setDescription(info.second);
+				}
+				else if (info.first.compare("animationOn") == 0) {
+					temp->setAnimationState(std::stoi(info.second));
+				}
+				else if (info.first.compare("animationDelay") == 0) {
+					addNewAnimation(id, std::stoi(info.second));
+					temp->setAnimationState(std::stoi(info.second));
+				}
+				else if (info.first.compare("animationID") == 0) {
+					addAnimation(id, std::stoi(info.second));
+				}
+				else if (info.first.compare("weight") == 0) {
+					if (NonStaticItem* check = dynamic_cast<NonStaticItem*>(temp)) {
+						check->setWeight(std::stof(info.second));
+					}
+				}
+				else if (info.first.compare("stack") == 0) {
+					if (NonStaticItem* check = dynamic_cast<NonStaticItem*>(temp)) {
+						check->setStack(std::stoi(info.second));
+					}
+				}
+				else if (info.first.compare("stackMax") == 0) {
+					if (NonStaticItem* check = dynamic_cast<NonStaticItem*>(temp)) {
+						check->setMaxStack(std::stoi(info.second));
+					}
+				}
+				else if (info.first.compare("attack") == 0) {
+					if (Weapon* check = dynamic_cast<Weapon*>(temp)) {
+						check->setAttack(std::stoi(info.second));
+					}
+				}
+				else if (info.first.compare("defense") == 0) {
+					if (Weapon* check = dynamic_cast<Weapon*>(temp)) {
+						check->setDefense(std::stoi(info.second));
+					}
+				}
+				else if (info.first.compare("armor") == 0) {
+					if (Armor* check = dynamic_cast<Armor*>(temp)) {
+						check->setArmor(std::stoi(info.second));
+					}
+				}
+				else if (info.first.compare("armorType") == 0) {
+					if (Armor* check = dynamic_cast<Armor*>(temp)) {
+						check->setArmorType(info.second);
+					}
+				}
+			}
+			items.push_back(temp);
+		}
 	}
 }
 
-std::string ItemAtals::getTextureLocation(const size_t id)
-{
-	auto it = std::find_if(items.begin(), items.end(), [id](ItemInfo& iF) { return iF.getID() == id; });
-	if (it != items.end()) {
-		return (*it).getTextPath();
+ItemAtals::~ItemAtals() {
+	for (auto& item : items) {
+		delete item;
 	}
-	return "";
-
-}
-
-std::string ItemAtals::getGUITextureLocation(size_t id)
-{
-
-	auto it = std::find_if(GUI.begin(), GUI.end(), [id](ItemInfo& iF) { return iF.getID() == id; });
-	if (it != GUI.end()) {
-		return (*it).getTextPath();
-	}
-	return "";
-}
-
-size_t ItemAtals::getGUITextureLocationAsNbr(size_t id)
-{
-	auto it = std::find_if(items.begin(), items.end(), [id](ItemInfo& iF) { return iF.getID() == id; });
-	if (it != items.end()) {
-		return (*it).getGUITextPos();
-	}
-	return 10000;
-}
-
-size_t ItemAtals::getItemTexturePosition(size_t id)
-{
-	auto it = std::find_if(items.begin(), items.end(), [id](ItemInfo& iF) { return iF.getID() == id; });
-	if (it != items.end()) {
-		return (*it).getPosInText();
-	}
-	return 0;
 }
 
 std::vector<size_t> ItemAtals::getItemTexturePositionForSelectionArea(const std::string category)
@@ -86,7 +149,7 @@ std::vector<size_t> ItemAtals::getItemTexturePositionForSelectionArea(const std:
 	return position;
 }
 
-size_t ItemAtals::getSelectedItemID(size_t textPos, size_t pos)
+/*size_t ItemAtals::getSelectedItemID(size_t textPos, size_t pos)
 {
 	auto it = std::find_if(items.begin(), items.end(), [textPos, pos](ItemInfo& iF) { return iF.getPosInText() == pos && iF.getGUITextPos() == textPos; });
 	if (it != items.end()) {
@@ -94,69 +157,33 @@ size_t ItemAtals::getSelectedItemID(size_t textPos, size_t pos)
 	}
 
 	return 100000;
+}*/
+
+Item* ItemAtals::getItem(size_t id)
+{
+	auto it = std::find_if(items.begin(), items.end(), [id](Item*& item) { return (item->getID() == id); });
+	// To do: Throw error if item doesn't exist.
+	return (*it);
 }
 
-Item ItemAtals::getItem(size_t id)
+std::string& ItemAtals::getWeaponType(int& id)
 {
-	const pugi::string_t s2(std::to_string(id));
-	pugi::xml_node node = doc.child("Items").find_child_by_attribute("id", &s2[0]);
-	string category = node.attribute("type").as_string();
-	std::vector<std::pair<std::string, std::string>> itemInfo;
-	const pugi::string_t s(category);
-	node = doc.child("Items").child(&s[0]).find_child_by_attribute("id", &s2[0]);
-	Item item(id, node.attribute("article").as_string(), node.attribute("name").as_string());
-	item.setType(category);
-	for (pugi::xml_node attribute = node.child("attribute"); attribute; attribute = attribute.next_sibling("attribute"))
-	{
-		itemInfo.push_back(std::pair<std::string, std::string>(attribute.attribute("key").value(), attribute.attribute("value").value()));
+	auto it = std::find_if(items.begin(), items.end(), [id](Item*& item) { return (item->getID() == id); });
+	if (Weapon* check = dynamic_cast<Weapon*>((*it))) {
+		return check->getWeaponType();
+	}
+	std::string s = "";
+	return s;
+}
 
+std::string& ItemAtals::getArmorType(int& id)
+{
+	auto it = std::find_if(items.begin(), items.end(), [id](Item*& item) { return (item->getID() == id); });
+	if (Armor* check = dynamic_cast<Armor*>((*it))) {
+		return check->getArmorType();
 	}
-	for (auto& iF : itemInfo) {
-		if (iF.first.compare("blockProjectile") == 0) {
-			if (iF.second.compare("true")) item.setBlockProjectile(true);
-			else
-				item.setBlockProjectile(false);
-		}
-		if (iF.first.compare("blockPathfind") == 0) {
-			if (iF.second.compare("true") == 0) {
-				item.setBlockPathfind(true);
-				item.setMoveable(false);
-			}
-			else
-				item.setBlockPathfind(false);
-		}
-		if (iF.first.compare("blockObject") == 0) {
-			if (iF.second.compare("true") == 0) item.setBlockObject(true);
-			else
-				item.setBlockObject(false);
-		}
-		if (iF.first.compare("moveable") == 0) {
-			if (iF.second.compare("true") == 0) item.setMoveable(true);
-			else
-				item.setMoveable(false);
-		}
-		if (iF.first.compare("pickupable") == 0) {
-			if (iF.second.compare("true") == 0) item.setPickupable(true);
-			else
-				item.setPickupable(false);
-		}
-		if (iF.first.compare("useable") == 0) {
-			if (iF.second.compare("true") == 0) item.setUseable(true);
-			else
-				item.setUseable(false);
-		}
-		if (iF.first.compare("hangeable") == 0) {
-			if (iF.second.compare("true") == 0) item.setHangeable(true);
-			else
-				item.setHangeable(false);
-		}
-		if (iF.first.compare("alwaysOnTop") == 0) {
-			if (iF.second.compare("true") == 0) item.setAlwaysOnTop(true);
-			else
-				item.setAlwaysOnTop(false);
-		}
-	}
-	return item;
+	std::string s = "";
+	return s;
 }
 
 std::vector<std::pair<std::string, std::string>> ItemAtals::getItem(size_t id, std::string category)
@@ -176,8 +203,45 @@ std::vector<std::pair<std::string, std::string>> ItemAtals::getItem(size_t id, s
 
 	return item;
 }
+void ItemAtals::addNewAnimation(int itemID, int animationDelay) {
+	auto it = std::find_if(animations.begin(), animations.end(), [itemID](AnimationInfo& a) { return (a.getID() == itemID); });
+	if (it == animations.end()) {
+		animations.push_back(AnimationInfo(itemID, animationDelay));
+	}
+};
 
-std::vector<ItemInfo> ItemAtals::getTiles()
+void ItemAtals::addAnimation(int itemID, int animationID) {
+	auto it = std::find_if(animations.begin(), animations.end(), [itemID](AnimationInfo& a) { return (a.getID() == itemID); });
+	if (it != animations.end()) {
+		(*it).addAnimationID(animationID);
+	}
+};
+
+AnimationObject* ItemAtals::getAnimationObject(float x, float y, int id, int VAO, int texturePos, Item* item) {
+	auto it = std::find_if(animations.begin(), animations.end(), [id](AnimationInfo& a) { return (a.getID() == id); });
+	if (it != animations.end()) {
+		AnimationObject* a = new AnimationObject(x, y, id, VAO, texturePos, (*it).getAnimationDelay(), std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+		a->setItem(item);
+		if ((*it).getEndAnimation() != 0) a->setEndAnimation((*it).getEndAnimation());
+		for (auto& aID : (*it).getAnimationIDs() ) {
+			a->insertAnimationID(aID);
+		}
+		return a;
+	}
+	else
+		return nullptr;
+};
+
+bool ItemAtals::checkIfAnimation(int id) {
+	auto it = std::find_if(animations.begin(), animations.end(), [id](AnimationInfo& a) { return (a.getID() == id); });
+	if (it != animations.end()) {
+		return true;
+	}
+	else
+		return false;
+};
+
+/*std::vector<ItemInfo> ItemAtals::getTiles()
 {
 	std::vector<ItemInfo> tiles;
 	for (auto& i : items) {
@@ -186,4 +250,4 @@ std::vector<ItemInfo> ItemAtals::getTiles()
 		}
 	}
 	return tiles;
-}
+}*/
