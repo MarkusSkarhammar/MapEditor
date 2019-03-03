@@ -1,5 +1,6 @@
 #include "VertecesHandler.h"
 #include "Global.h"
+#pragma warning(disable: 4244)
 
 void getVertecesHandlerFromID(VertecesHandler& vh, int& ID) {
 	if (ID / 1024 == 0 && vh.getName().compare("Tiles_1024") != 0) {
@@ -192,6 +193,10 @@ void generateGUI(VertecesHandler & vh, std::string textName)
 		{
 			generate_Item_Info_Panel(widthStart, heightStart, width, height, textHeightStart, textWidthStart, textWidthEnd, textHeightEnd, textOffset, amount, v);
 		}
+		//
+		{
+			generate_Palette_Modifier_UI(widthStart, heightStart, width, height, textHeightStart, textWidthStart, textWidthEnd, textHeightEnd, textOffset, amount, v);
+		}
 	}
 
 	vh.setAmount(amount);
@@ -199,6 +204,7 @@ void generateGUI(VertecesHandler & vh, std::string textName)
 }
 
 void generate_Left_Panel_GUI(float& widthStart, float& heightStart, double& width, double& height, float& textHeightStart, float& textWidthStart, float &textWidthEnd, float &textHeightEnd, float &textOffset, size_t &amount, std::vector<float> &v) {
+	
 	// Filler 1px section
 	width = (276 / (double(screenWidthPixels) / 2));
 	height = (1 / (double(screenHeightPixels) / 2));
@@ -212,11 +218,13 @@ void generate_Left_Panel_GUI(float& widthStart, float& heightStart, double& widt
 	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
 	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
 
-																														 //Second triangle
+	//Second triangle
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
 
-	// Display bar untoched
+	fillerPixel = amount - 1;
+
+	// Display bar 
 	height = (40 / (double(screenHeightPixels) / 2));
 	textHeightStart = (31 / 2048.0) + textOffset;
 	textHeightEnd = textHeightStart + (40.0 / 2048.0) - textOffset * 2;
@@ -226,14 +234,20 @@ void generate_Left_Panel_GUI(float& widthStart, float& heightStart, double& widt
 	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
 	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
 
-																														 //Second triangle
+	//Second triangle
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
 
-	// Display bar hover
-	height = (40 / (double(screenHeightPixels) / 2));
-	textHeightStart = (72 / 2048.0) + textOffset;
-	textHeightEnd = textHeightStart + (40.0 / 2048.0) - textOffset * 2;
+	displayBar = amount - 1;
+
+	// Display bar button normal 
+	width = (21 / (double(screenWidthPixels) / 2));
+	height = (21 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (277.0 / 2048.0) + textOffset;
+	textHeightStart = (31.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (21.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (21.0 / 2048.0) - textOffset * 2;
 
 	//First triangle
 	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
@@ -244,10 +258,16 @@ void generate_Left_Panel_GUI(float& widthStart, float& heightStart, double& widt
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
 
-	// Display bar pressed
-	height = (40 / (double(screenHeightPixels) / 2));
-	textHeightStart = (113 / 2048.0) + textOffset;
-	textHeightEnd = textHeightStart + (40.0 / 2048.0) - textOffset * 2;
+	displayBarButton = amount - 1;
+
+	// Display bar button hover 
+	width = (21 / (double(screenWidthPixels) / 2));
+	height = (21 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (299.0 / 2048.0) + textOffset;
+	textHeightStart = (31.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (21.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (21.0 / 2048.0) - textOffset * 2;
 
 	//First triangle
 	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
@@ -257,10 +277,36 @@ void generate_Left_Panel_GUI(float& widthStart, float& heightStart, double& widt
 	//Second triangle
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
+
+	displayBarButtonHover = amount - 1;
+
+	// Display bar button pressed 
+	width = (21 / (double(screenWidthPixels) / 2));
+	height = (21 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (321.0 / 2048.0) + textOffset;
+	textHeightStart = (31.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (21.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (21.0 / 2048.0) - textOffset * 2;
+
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+	//Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	displayBarButtonPressed = amount - 1;
 
 	// Tile display top section
+	width = (276 / (double(screenWidthPixels) / 2));
 	height = (90 / (double(screenHeightPixels) / 2));
-	textHeightStart = (157 / 2048.0) + textOffset;
+
+	textWidthStart = (0.0 / 2048.0) + textOffset;
+	textHeightStart = (157.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (276.0 / 2048.0) - textOffset * 2;
 	textHeightEnd = textHeightStart + (90.0 / 2048.0) - textOffset * 2;
 
 	//First triangle
@@ -271,10 +317,16 @@ void generate_Left_Panel_GUI(float& widthStart, float& heightStart, double& widt
 	//Second triangle
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
+
+	tileAreaTop = amount - 1;
 
 	// Tile display middle section
+	width = (276 / (double(screenWidthPixels) / 2));
 	height = (90 / (double(screenHeightPixels) / 2));
-	textHeightStart = (250 / 2048.0) + textOffset;
+
+	textWidthStart = (0.0 / 2048.0) + textOffset;
+	textHeightStart = (250.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (276.0 / 2048.0) - textOffset * 2;
 	textHeightEnd = textHeightStart + (90.0 / 2048.0) - textOffset * 2;
 
 	//First triangle
@@ -285,10 +337,16 @@ void generate_Left_Panel_GUI(float& widthStart, float& heightStart, double& widt
 	//Second triangle
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
+
+	tileAreaMiddle = amount - 1;
 
 	// Tile display bottom section
+	width = (276 / (double(screenWidthPixels) / 2));
 	height = (90 / (double(screenHeightPixels) / 2));
-	textHeightStart = (343 / 2048.0) + textOffset;
+
+	textWidthStart = (0.0 / 2048.0) + textOffset;
+	textHeightStart = (343.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (276.0 / 2048.0) - textOffset * 2;
 	textHeightEnd = textHeightStart + (90.0 / 2048.0) - textOffset * 2;
 
 	//First triangle
@@ -299,60 +357,191 @@ void generate_Left_Panel_GUI(float& widthStart, float& heightStart, double& widt
 	//Second triangle
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
+
+	tileAreaBottom = amount - 1;
+
+	// Tile display left button
+	width = (17 / (double(screenWidthPixels) / 2));
+	height = (23 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (277.0 / 2048.0) + textOffset;
+	textHeightStart = (53.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (17.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (23.0 / 2048.0) - textOffset * 2;
+
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+	//Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	tileAreaLeftButton = amount - 1;
+
+	// Tile display left button hover
+	width = (17 / (double(screenWidthPixels) / 2));
+	height = (23 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (313.0 / 2048.0) + textOffset;
+	textHeightStart = (53.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (17.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (23.0 / 2048.0) - textOffset * 2;
+
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+	//Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	tileAreaLeftButtonHover = amount - 1;
+
+	// Tile display left button Pressed
+	width = (17 / (double(screenWidthPixels) / 2));
+	height = (23 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (349.0 / 2048.0) + textOffset;
+	textHeightStart = (53.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (17.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (23.0 / 2048.0) - textOffset * 2;
+
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+	//Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	tileAreaLeftButtonPressed = amount - 1;
+
+	// Tile display right button
+	width = (17 / (double(screenWidthPixels) / 2));
+	height = (23 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (295.0 / 2048.0) + textOffset;
+	textHeightStart = (53.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (17.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (23.0 / 2048.0) - textOffset * 2;
+
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+	//Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	tileAreaRightButton = amount - 1;
+
+	// Tile display right button hover
+	width = (17 / (double(screenWidthPixels) / 2));
+	height = (23 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (331.0 / 2048.0) + textOffset;
+	textHeightStart = (53.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (17.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (23.0 / 2048.0) - textOffset * 2;
+
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+	//Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	tileAreaRightButtonHover = amount - 1;
+
+	// Tile display right button Pressed
+	width = (17 / (double(screenWidthPixels) / 2));
+	height = (23 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (367.0 / 2048.0) + textOffset;
+	textHeightStart = (53.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (17.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (23.0 / 2048.0) - textOffset * 2;
+
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+	//Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	tileAreaRightButtonPressed = amount - 1;
 }
 
 void generate_Left_Panel_Drop_Down_GUI(float & widthStart, float & heightStart, double & width, double & height, float & textHeightStart, float & textWidthStart, float & textWidthEnd, float & textHeightEnd, float & textOffset, size_t & amount, std::vector<float>& v)
 {
 	// Filler drop down middle
-	width = (241 / (double(screenWidthPixels) / 2));
+	width = (259 / (double(screenWidthPixels) / 2));
 	height = (36 / (double(screenHeightPixels) / 2));
 
-	textHeightStart = (436 / 2048.0) + textOffset;
-	textWidthStart = 0 + textOffset;
-	textWidthEnd = textWidthStart + (261.0 / 2048.0) - textOffset * 2;
+	textWidthStart = (0.0 / 2048.0) + textOffset;
+	textHeightStart = (436.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (259.0 / 2048.0) - textOffset * 2;
 	textHeightEnd = textHeightStart + (36.0 / 2048.0) - textOffset * 2;
+
 	//First triangle
 	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
 	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
 	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
 
-																														 //Second triangle
+	//Second triangle
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
+
+	leftPanelDropDownMiddleSection = amount - 1;
 
 	// Filler drop down middle
-	width = (241 / (double(screenWidthPixels) / 2));
+	width = (259 / (double(screenWidthPixels) / 2));
 	height = (38 / (double(screenHeightPixels) / 2));
 
-	textHeightStart = (474 / 2048.0) + textOffset;
-	textWidthStart = 0 + textOffset;
-	textWidthEnd = textWidthStart + (261.0 / 2048.0) - textOffset * 2;
+	textWidthStart = (0.0 / 2048.0) + textOffset;
+	textHeightStart = (474.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (259.0 / 2048.0) - textOffset * 2;
 	textHeightEnd = textHeightStart + (38.0 / 2048.0) - textOffset * 2;
+
 	//First triangle
 	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
 	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
 	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
 
-																														 //Second triangle
+	//Second triangle
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
+
+	leftPanelDropDownBottomSection = amount - 1;
 
 	// Filler drop down end
-	width = (237 / (double(screenWidthPixels) / 2));
+	width = (256 / (double(screenWidthPixels) / 2));
 	height = (36 / (double(screenHeightPixels) / 2));
 
-	textHeightStart = (513 / 2048.0) + textOffset;
-	textWidthStart = 0 + textOffset;
-	textWidthEnd = textWidthStart + (257.0 / 2048.0) - textOffset * 2;
+	textWidthStart = (0.0 / 2048.0) + textOffset;
+	textHeightStart = (513.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (256.0 / 2048.0) - textOffset * 2;
 	textHeightEnd = textHeightStart + (36.0 / 2048.0) - textOffset * 2;
+
 	//First triangle
 	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
 	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
 	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
 
-																														 //Second triangle
+	//Second triangle
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
+
+	leftPanelDropDownHover = amount - 1;
 }
 
 void generate_Left_Panel_select(float & widthStart, float & heightStart, double & width, double & height, float & textHeightStart, float & textWidthStart, float & textWidthEnd, float & textHeightEnd, float & textOffset, size_t & amount, std::vector<float>& v)
@@ -373,6 +562,9 @@ void generate_Left_Panel_select(float & widthStart, float & heightStart, double 
 																														 //Second triangle
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
+
+	leftPanelYellowSquareSmall = amount - 1;
+
 	// Select square red small
 	width = (64 / (double(screenWidthPixels) / 2));
 	height = (64 / (double(screenHeightPixels) / 2));
@@ -390,6 +582,8 @@ void generate_Left_Panel_select(float & widthStart, float & heightStart, double 
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
 
+	leftPanelRedSquareSmall = amount - 1;
+
 	// Select square yellow Big
 	width = (128 / (double(screenWidthPixels) / 2));
 	height = (128 / (double(screenHeightPixels) / 2));
@@ -406,6 +600,9 @@ void generate_Left_Panel_select(float & widthStart, float & heightStart, double 
 																														 //Second triangle
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
+
+	leftPanelYellowSquareBig = amount - 1;
+
 	// Select square red Big
 	width = (128 / (double(screenWidthPixels) / 2));
 	height = (128 / (double(screenHeightPixels) / 2));
@@ -422,6 +619,8 @@ void generate_Left_Panel_select(float & widthStart, float & heightStart, double 
 																														 //Second triangle
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
+
+	leftPanelRedSquareBig = amount - 1;
 }
 
 void generate_BottomBar_Toggles(float& widthStart, float& heightStart, double& width, double& height, float& textHeightStart, float& textWidthStart, float &textWidthEnd, float &textHeightEnd, float &textOffset, size_t &amount, std::vector<float> &v) {
@@ -556,6 +755,8 @@ void generate_BottomBar_Toggles(float& widthStart, float& heightStart, double& w
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
 
+	eraseToggleID = amount - 1;
+
 	// Destroyer
 	width = (64 / (double(screenWidthPixels) / 2));
 	height = (64 / (double(screenHeightPixels) / 2));
@@ -573,7 +774,7 @@ void generate_BottomBar_Toggles(float& widthStart, float& heightStart, double& w
 	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
 	amount++;
 
-	generate_Left_Panel_Palette_Page(widthStart, heightStart, width, height, textHeightStart, textWidthStart, textWidthEnd, textHeightEnd, textOffset, amount, v);
+	destroyToggleID = amount - 1;
 
 	// tileDestroyer
 	width = (30 / (double(screenWidthPixels) / 2));
@@ -804,76 +1005,6 @@ void generate_BottomBar_Toggles(float& widthStart, float& heightStart, double& w
 	destroyTileToggleID = amount - 1;
 }
 
-void generate_Left_Panel_Palette_Page(float& widthStart, float& heightStart, double& width, double& height, float& textHeightStart, float& textWidthStart, float &textWidthEnd, float &textHeightEnd, float &textOffset, size_t &amount, std::vector<float> &v) {
-	// Left bar hover
-	width = (276 / (double(screenWidthPixels) / 2));
-	height = (90 / (double(screenHeightPixels) / 2));
-
-	textHeightStart = (343 / 2048.0) + textOffset;
-	textWidthStart = (277 / 2048.0) + textOffset;
-	textWidthEnd = textWidthStart + (275.0 / 2048.0) - textOffset * 2;
-	textHeightEnd = textHeightStart + (90.0 / 2048.0) - textOffset * 2;
-	//First triangle
-	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
-	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
-	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
-
-																														 //Second triangle
-	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
-	amount++;
-
-	// Right bar hover
-	width = (276 / (double(screenWidthPixels) / 2));
-	height = (90 / (double(screenHeightPixels) / 2));
-
-	textHeightStart = (250 / 2048.0) + textOffset;
-	textWidthStart = (277 / 2048.0) + textOffset;
-	textWidthEnd = textWidthStart + (275.0 / 2048.0) - textOffset * 2;
-	textHeightEnd = textHeightStart + (90.0 / 2048.0) - textOffset * 2;
-	//First triangle
-	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
-	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
-	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
-
-																														 //Second triangle
-	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
-	amount++;
-
-	// Left bar pressed
-	width = (276 / (double(screenWidthPixels) / 2));
-	height = (90 / (double(screenHeightPixels) / 2));
-
-	textHeightStart = (157 / 2048.0) + textOffset;
-	textWidthStart = (277 / 2048.0) + textOffset;
-	textWidthEnd = textWidthStart + (275.0 / 2048.0) - textOffset * 2;
-	textHeightEnd = textHeightStart + (90.0 / 2048.0) - textOffset * 2;
-	//First triangle
-	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
-	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
-	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
-
-																														 //Second triangle
-	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
-	amount++;
-
-	// Right bar pressed
-	width = (276 / (double(screenWidthPixels) / 2));
-	height = (90 / (double(screenHeightPixels) / 2));
-
-	textHeightStart = (64 / 2048.0) + textOffset;
-	textWidthStart = (277 / 2048.0) + textOffset;
-	textWidthEnd = textWidthStart + (275.0 / 2048.0) - textOffset * 2;
-	textHeightEnd = textHeightStart + (90.0 / 2048.0) - textOffset * 2;
-	//First triangle
-	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
-	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
-	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
-
-																														 //Second triangle
-	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
-	amount++;
-}
-
 void generate_Item_Info_Panel(float& widthStart, float& heightStart, double& width, double& height, float& textHeightStart, float& textWidthStart, float &textWidthEnd, float &textHeightEnd, float &textOffset, size_t &amount, std::vector<float> &v) {
 	// Base panel
 	width = (1000 / (double(screenWidthPixels) / 2));
@@ -1102,4 +1233,177 @@ void generate_Item_Info_Panel(float& widthStart, float& heightStart, double& wid
 	amount++;
 
 	itemInfoButtonPressedID = amount - 1;
+}
+
+void generate_Palette_Modifier_UI(float& widthStart, float& heightStart, double& width, double& height, float& textHeightStart, float& textWidthStart, float &textWidthEnd, float &textHeightEnd, float &textOffset, size_t &amount, std::vector<float> &v) {
+	// Base panel
+	width = (679 / (double(screenWidthPixels) / 2));
+	height = (724 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (1369.0 / 2048.0) + textOffset;
+	textHeightStart = (701.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (679.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (724.0 / 2048.0) - textOffset * 2;
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+																														 //Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	paletteModifierPanel = amount - 1;
+
+	// Search Icon base
+	width = (22 / (double(screenWidthPixels) / 2));
+	height = (22 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (1174.0 / 2048.0) + textOffset;
+	textHeightStart = (701.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (64.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (64.0 / 2048.0) - textOffset * 2;
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+																														 //Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	paletteModifierSearchIcon = amount - 1;
+
+	// Search Icon hover
+	width = (22 / (double(screenWidthPixels) / 2));
+	height = (22 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (1239.0 / 2048.0) + textOffset;
+	textHeightStart = (701.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (64.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (64.0 / 2048.0) - textOffset * 2;
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+																														 //Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	paletteModifierSearchIconHover = amount - 1;
+
+	// Search Icon pressed
+	width = (22 / (double(screenWidthPixels) / 2));
+	height = (22 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (1304.0 / 2048.0) + textOffset;
+	textHeightStart = (701.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (64.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (64.0 / 2048.0) - textOffset * 2;
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+																														 //Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	paletteModifierSearchIconPressed = amount - 1;
+
+	// DropDop toggle unpressed
+	width = (102 / (double(screenWidthPixels) / 2));
+	height = (24 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (1163.0 / 2048.0) + textOffset;
+	textHeightStart = (766.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (102.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (24.0 / 2048.0) - textOffset * 2;
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+																														 //Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	paletteModifierDropDownUnPressed = amount - 1;
+
+	// DropDop toggle pressed
+	width = (102 / (double(screenWidthPixels) / 2));
+	height = (24 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (1266.0 / 2048.0) + textOffset;
+	textHeightStart = (766.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (102.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (24.0 / 2048.0) - textOffset * 2;
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+																														 //Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	paletteModifierDropDownPressed = amount - 1;
+
+	// DropDopElement
+	width = (102 / (double(screenWidthPixels) / 2));
+	height = (24 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (1163.0 / 2048.0) + textOffset;
+	textHeightStart = (791.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (102.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (24.0 / 2048.0) - textOffset * 2;
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+																														 //Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	paletteModifierDropDownElement = amount - 1;
+
+	// DropDopElement hover
+	width = (102 / (double(screenWidthPixels) / 2));
+	height = (24 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (1266.0 / 2048.0) + textOffset;
+	textHeightStart = (791.0 / 2048.0) + textOffset;
+	textWidthEnd = textWidthStart + (102.0 / 2048.0) - textOffset * 2;
+	textHeightEnd = textHeightStart + (24.0 / 2048.0) - textOffset * 2;
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+																														 //Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	paletteModifierDropDownElementHover = amount - 1;
+
+	// Empty tile marker
+	width = (64 / (double(screenWidthPixels) / 2));
+	height = (64 / (double(screenHeightPixels) / 2));
+
+	textWidthStart = (1109.0 / 2048.0);
+	textHeightStart = (701.0 / 2048.0);
+	textWidthEnd = textWidthStart + (64.0 / 2048.0);
+	textHeightEnd = textHeightStart + (64.0 / 2048.0);
+	//First triangle
+	v.push_back(widthStart); v.push_back(heightStart); v.push_back(textWidthStart); v.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + width); v.push_back(heightStart); v.push_back(textWidthEnd); v.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - height); v.push_back(textWidthStart); v.push_back(textHeightEnd); // Bottom-left
+
+																														 //Second triangle
+	v.push_back(widthStart + width); v.push_back(heightStart - height); v.push_back(textWidthEnd); v.push_back(textHeightEnd); // Bottom-right
+	amount++;
+
+	paletteModifierEmptyTileMarker = amount - 1;
 }

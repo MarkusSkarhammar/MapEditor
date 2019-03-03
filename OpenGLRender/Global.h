@@ -29,6 +29,9 @@ extern GLuint projection;
 extern GLuint model;
 extern GLuint view;
 
+// TextOffset
+extern glm::vec2 textOffsetValues;
+
 
 struct game_state {
 	// this contains the state of your game, such as positions and velocities
@@ -57,6 +60,7 @@ extern std::vector<Objects> objects;
 // Store temp objects
 extern std::vector<Objects> tiles;
 extern std::vector<Objects> items;
+extern std::vector<Object*> itemsToDraw;
 
 extern std::vector<std::pair<std::string, int>> paths;
 extern size_t sizeOfPaths;
@@ -125,16 +129,17 @@ extern bool rbutton_down;
 // FPS counter
 extern size_t FPS;
 
-
 //-----------------------------------
 //			Bottom bar toggles
 //-----------------------------------
 
 // Erase Toggle button
 extern bool eraseToggle;
+extern int eraseToggleID;
 
 // Destroy Toggle button
 extern bool destroyToggle;
+extern int destroyToggleID;
 
 
 // Destroy tileDestroy toggle button
@@ -239,6 +244,7 @@ extern std::atomic<bool> copyBufferLock;
 
 // Tiles to be rendered
 extern World world;
+extern World worldTemp;
 //extern std::vector<tile> tiles;
 
 // Render section below
@@ -261,6 +267,43 @@ extern size_t brush;
 
 // Fow saving/loading
 extern Serialize serializer;
+
+//-----------------------------------
+//			bottom bar
+//-----------------------------------
+
+// lefPanel
+extern GUIPanel leftPanel;
+
+// bottom bar IDs
+extern int fillerPixel;
+extern int displayBar;
+extern int displayBarButton;
+extern int displayBarButtonHover;
+extern int displayBarButtonPressed;
+extern int tileAreaTop;
+extern int tileAreaMiddle;
+extern int tileAreaBottom;
+extern int tileAreaLeftButton;
+extern int tileAreaLeftButtonHover;
+extern int tileAreaLeftButtonPressed;
+extern int tileAreaRightButton;
+extern int tileAreaRightButtonHover;
+extern int tileAreaRightButtonPressed;
+extern int leftPanelDropDownMiddleSection;
+extern int leftPanelDropDownBottomSection;
+extern int leftPanelDropDownHover;
+extern int leftPanelYellowSquareSmall;
+extern int leftPanelRedSquareSmall;
+extern int leftPanelYellowSquareBig;
+extern int leftPanelRedSquareBig;
+
+// Show left panel
+extern bool leftPanelShow;
+
+//-----------------------------------
+//			DONE: bottom bar
+//-----------------------------------
 
 //-----------------------------------
 //			bottom bar
@@ -338,6 +381,28 @@ extern bool itemInfoWindow;
 
 //-----------------------------------
 //			DONE item info window
+//-----------------------------------
+
+//-----------------------------------
+//			Palette modifier window
+//-----------------------------------
+
+// GUIPanel
+extern GUIPanel paletteModifier;
+
+// palette modifier IDs
+extern int paletteModifierPanel;
+extern int paletteModifierSearchIcon;
+extern int paletteModifierSearchIconHover;
+extern int paletteModifierSearchIconPressed;
+extern int paletteModifierDropDownUnPressed;
+extern int paletteModifierDropDownPressed;
+extern int paletteModifierDropDownElement;
+extern int paletteModifierDropDownElementHover;
+extern int paletteModifierEmptyTileMarker;
+
+//-----------------------------------
+//			DONE Palette modifier window
 //-----------------------------------
 
 extern size_t size;

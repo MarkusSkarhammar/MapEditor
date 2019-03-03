@@ -7,8 +7,9 @@
     out vec4 outColor;
     uniform sampler2DArray textureArray;
     uniform int layer;
+	uniform vec2 textOffset;
     void main()
     {
-        vec4 texel = texture2DArray(textureArray, vec3(uv.x,uv.y, layer));
+        vec4 texel = texture2DArray(textureArray, vec3(uv.x + textOffset.x,uv.y + textOffset.y, layer));
 		outColor = texel;
     }

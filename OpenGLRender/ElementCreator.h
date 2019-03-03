@@ -28,13 +28,18 @@ void generate_GUI_Left_Panel_Text_(Objects& ob, VertecesHandler vh);
 void generate_GUI_Left_Panel_DropDown(Objects& ob, VertecesHandler vh, int hover);
 void generate_GUI_Left_Panel_DropDown_Text(Objects& ob, VertecesHandler vh);
 void generate_GUI_Left_Panel_Tiles(Objects& ob);
-void generate_GUI_Left_Panel_Selector(Objects& ob, int x, int y, bool clicked);
+void generate_GUI_Left_Panel_Selector(Objects & ob);
 
 // Preview tiles
 void generate_GUI_Preview_Tiles(Objects& ob);
 
 // ItemInfo panel
 void generate_GUI_Item_Info_Panel(Objects & ob, VertecesHandler vh);
+
+// Palette modifier
+void generate_Palette_Modifier(Objects & ob, VertecesHandler vh);
+
+void generate_Palette_Modifier_Fill_Palette(Objects & ob, Palette& p);
 
 #endif
 

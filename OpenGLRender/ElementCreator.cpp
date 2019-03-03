@@ -1,4 +1,5 @@
 #include "ElementCreator.h"
+#pragma warning(disable: 4244)
 
 
 void generate_GUI_Bottom_Bar(Objects & ob, VertecesHandler vh)
@@ -21,11 +22,21 @@ void generate_GUI_Bottom_Bar(Objects & ob, VertecesHandler vh)
 		bottomBar.addElement(new GUIElement("leftCorner", vh.getVAO(), vh.getTextureID(), bottomBarBasic, 64 * (i + 4), screenHeightPixels - 30, 64, 30, ""));
 	}
 	ToggleButtonGroup* group = new ToggleButtonGroup("toggles");
-	group->addElement(new ToggleButton("eraser", vh.getVAO(), vh.getTextureID(), bottomBarEraser, bottomBarEraserHover, bottomBarEraserPressed, 64 * 5, screenHeightPixels - 30, 30, 30, "", [&]() { eraseToggle = !eraseToggle; if(!eraseToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); }));
-	group->addElement(new ToggleButton("destroyer", vh.getVAO(), vh.getTextureID(), bottomBarDestroyer, bottomBarDestroyerHover, bottomBarDestroyerPressed, 64 * 5 + 40, screenHeightPixels - 30, 30, 30, "", [&]() { destroyToggle = !destroyToggle; if (!destroyToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); }));
-	group->addElement(new ToggleButton("tileDestroyer", vh.getVAO(), vh.getTextureID(), bottomBarTileDestroyer, bottomBarTileDestroyerHover, bottomBarTileDestroyerPressed, 64 * 5 + 80, screenHeightPixels - 30, 30, 30, "", [&]() {destroyTileToggle = !destroyTileToggle; if (!destroyTileToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); }));
-	group->addElement(new ToggleButton("cut", vh.getVAO(), vh.getTextureID(), bottomBarCut, bottomBarCutHover, bottomBarCutPressed, 64 * 5 + 120, screenHeightPixels - 30, 30, 30, "", [&]() {cutToggle = !cutToggle; if (!cutToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); }));
-	group->addElement(new ToggleButton("copy", vh.getVAO(), vh.getTextureID(), bottomBarCopy, bottomBarCopyHover, bottomBarCopyPressed, 64 * 5 + 160, screenHeightPixels - 30, 30, 30, "", [&]() {copyToggle = !copyToggle; if (!copyToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); }));
+	ToggleButton* tb = new ToggleButton("eraser", vh.getVAO(), vh.getTextureID(), bottomBarEraser, bottomBarEraserHover, bottomBarEraserPressed, 64 * 5, screenHeightPixels - 30, 30, 30, [&]() { eraseToggle = !eraseToggle; if (!eraseToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); });
+	tb->toggleCleanreset();
+	group->addElement(tb);
+	tb = new ToggleButton("destroyer", vh.getVAO(), vh.getTextureID(), bottomBarDestroyer, bottomBarDestroyerHover, bottomBarDestroyerPressed, 64 * 5 + 40, screenHeightPixels - 30, 30, 30, [&]() { destroyToggle = !destroyToggle; if (!destroyToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); });
+	tb->toggleCleanreset();
+	group->addElement(tb);
+	tb = new ToggleButton("tileDestroyer", vh.getVAO(), vh.getTextureID(), bottomBarTileDestroyer, bottomBarTileDestroyerHover, bottomBarTileDestroyerPressed, 64 * 5 + 80, screenHeightPixels - 30, 30, 30, [&]() {destroyTileToggle = !destroyTileToggle; if (!destroyTileToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); });
+	tb->toggleCleanreset();
+	group->addElement(tb);
+	tb = new ToggleButton("cut", vh.getVAO(), vh.getTextureID(), bottomBarCut, bottomBarCutHover, bottomBarCutPressed, 64 * 5 + 120, screenHeightPixels - 30, 30, 30, [&]() {cutToggle = !cutToggle; if (!cutToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); });
+	tb->toggleCleanreset();
+	group->addElement(tb);
+	tb = new ToggleButton("copy", vh.getVAO(), vh.getTextureID(), bottomBarCopy, bottomBarCopyHover, bottomBarCopyPressed, 64 * 5 + 160, screenHeightPixels - 30, 30, 30, [&]() {copyToggle = !copyToggle; if (!copyToggle) getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects(); });
+	tb->toggleCleanreset();
+	group->addElement(tb);
 	bottomBar.addElement(group);
 
 	bottomBar.createObjects(ob);
@@ -74,51 +85,108 @@ void generate_GUI_Text(Objects& ob, VertecesHandler& vh, double x, double y, std
 
 void generate_GUI_Left_Panel(Objects & ob, VertecesHandler vh, size_t displayState)
 {
-	ob.clearObjects();
+
+	leftPanel.setDimensions(screenWidthPixels - 276, 0, 276, screenHeightPixels);
+	leftPanel.setCheckIfOutside(true);
+	leftPanel.clear();
+
 	size_t sections = (screenHeightPixels / 90) - 2;
-	size_t left = 90-40-30;
+	size_t left = 90 - 40 - 30;
 	if (screenHeightPixels % 90 != 0)
 		left += screenHeightPixels % 90 - 90;
 	for (size_t i = 0; i < left; i++) {
-		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((1*i) / (double(screenHeightPixels) / 2)), 2, vh.getVAO(), vh.getTextureID()));
+		leftPanel.addElement(new GUIElement("fillerPixel", vh.getVAO(), vh.getTextureID(), fillerPixel, screenWidthPixels- 276, i, 276, 1, ""));
 	}
 
-	// Create the display bar for tile palette selection area
-	if (displayState == 0)
-		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + (left / (double(screenHeightPixels) / 2)), 3, vh.getVAO(), vh.getTextureID()));
-	else if (displayState == 1)
-		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + (left / (double(screenHeightPixels) / 2)), 4, vh.getVAO(), vh.getTextureID()));
-	else
-		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + (left / (double(screenHeightPixels) / 2)), 5, vh.getVAO(), vh.getTextureID()));
+	// Display current selected palette
+	{
+		leftPanel.addElement(new GUIElement("displayBar", vh.getVAO(), vh.getTextureID(), displayBar, screenWidthPixels - 276, left, 276, 40, ""));
 
-	// Create top tile palette selection area
-	ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40) / (double(screenHeightPixels) / 2)), 6, vh.getVAO(), vh.getTextureID()));
+		// Palette name
+		GUIText* t = new GUIText("selectedPaletteText", screenWidthPixels - 276, left+5, 276, 40, "");
+		t->setCentered(true);
+		leftPanel.addElement(t);
 
-	// Create middle tile palette selection area
-	for (size_t i = 0; i < sections; i++) {
-		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40 + 90*i) / (double(screenHeightPixels) / 2)), 7, vh.getVAO(), vh.getTextureID()));
+		// Toggle for drop down menu
+		ToggleButton* tb = new ToggleButton("displayBarToggle", vh.getVAO(), vh.getTextureID(), displayBarButton, displayBarButtonHover, displayBarButtonPressed, screenWidthPixels - 25, left + 10, 21, 21,
+			[&]() {
+			if (DropDown* d = dynamic_cast<DropDown*>(leftPanel.getElementByName("paletteSelection"))) {
+				d->toggleShow();
+				leftPanel.reCreateObjects(getObjectByName(objects, "GUI_LeftPanel_"));
+			}
+
+		});
+		tb->toggleCleanreset();
+		leftPanel.addElement(tb);
 	}
 
-	// Create bottom tile palette selection area
-	if (paletteLeftPressed)
-		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40 + 90 * (sections)) / (double(screenHeightPixels) / 2)), 26, vh.getVAO(), vh.getTextureID()));
-	else if (paletteRightPressed)
-		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40 + 90 * (sections)) / (double(screenHeightPixels) / 2)), 27, vh.getVAO(), vh.getTextureID()));
-	else if (paletteLeftHover)
-		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40 + 90 * (sections)) / (double(screenHeightPixels) / 2)), 24, vh.getVAO(), vh.getTextureID()));
-	else if (paletteRightHover)
-		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40 + 90 * (sections)) / (double(screenHeightPixels) / 2)), 25, vh.getVAO(), vh.getTextureID()));
-	else
-		ob.addObject(new Object(2 - (276 / (double(screenWidthPixels) / 2)), 0.0 + ((left + 40 + 90 * (sections)) / (double(screenHeightPixels) / 2)), 8, vh.getVAO(), vh.getTextureID()));
+	// Tile selection area
+	{
+		// Top section
+		leftPanel.addElement(new GUIElement("tileAreaTop", vh.getVAO(), vh.getTextureID(), tileAreaTop, screenWidthPixels - 276, left + 40, 276, 90, ""));
 
-	vh = VertecesHandler::findByName(verteces, "Letters_");
+		// Middle section
+		for (size_t i = 0; i < sections; i++) {
+			leftPanel.addElement(new GUIElement("tileAreaMiddle", vh.getVAO(), vh.getTextureID(), tileAreaMiddle, screenWidthPixels - 276, left + 40 + 90 * i, 276, 90, ""));
+		}
 
-	double x = ((screenWidth - 100) / (double(screenWidthPixels) / 2)), y = 2.0 + ((14) / (double(screenHeightPixels) / 2));
-	generate_GUI_Text(ob, vh, x, y, "" + std::to_string(palettePage));
+		// Bottom section
+		leftPanel.addElement(new GUIElement("tileAreaBottom", vh.getVAO(), vh.getTextureID(), tileAreaBottom, screenWidthPixels - 276, (left + 40 + 90 * sections), 276, 90, ""));
 
-	x = ((screenWidth - 60) / (double(screenWidthPixels) / 2)), y = 2.0 + ((14) / (double(screenHeightPixels) / 2));
-	generate_GUI_Text(ob, vh, x, y, "" + std::to_string(paletteMaxPage));
-	
+		// Palette page numbers
+		leftPanel.addElement(new GUIText("selectedPalettePageTextLeft", screenWidthPixels - 173, (left + 40 + 90 * sections + 65), 276, 40, std::to_string(palettePage))); // left
+		leftPanel.addElement(new GUIText("selectedPalettePageTextRight", screenWidthPixels - 132, (left + 40 + 90 * sections + 65), 276, 40, std::to_string(paletteMaxPage))); // right
+
+		// Left button
+		leftPanel.addElement(new Button("tileAreaLeftButton", vh.getVAO(), vh.getTextureID(), tileAreaLeftButton, tileAreaLeftButtonHover, tileAreaLeftButtonPressed, screenWidthPixels - 190, (left + 40 + 90 * sections + 65), 17, 23, "",
+			[&]() {
+			if (palettePage > 0) {
+				palettePage--;
+				generate_GUI_Left_Panel_Selector(getObjectByName(objects, "GUI_LeftPanel_"));
+			}
+		}));
+
+		// Right button
+		leftPanel.addElement(new Button("tileAreaRightButton", vh.getVAO(), vh.getTextureID(), tileAreaRightButton, tileAreaRightButtonHover, tileAreaRightButtonPressed, screenWidthPixels - 90, (left + 40 + 90 * sections + 65), 17, 23, "",
+			[&]() {
+			if (palettePage < paletteMaxPage) {
+				palettePage++;
+				generate_GUI_Left_Panel_Selector(getObjectByName(objects, "GUI_LeftPanel_"));
+			}
+		}));
+	}
+
+	// Tile selection area
+	{
+		leftPanel.addElement(new ToggleButtonGroup("tileSelectionToggles"));
+	}
+
+	// Drop down menu for palette selection
+	{
+		DropDown* d = new DropDown("paletteSelection", vh.getVAO(), vh.getTextureID(), leftPanelDropDownMiddleSection, leftPanelDropDownMiddleSection, leftPanelDropDownBottomSection, leftPanelDropDownHover, screenWidthPixels - 268, left + 35, 259, 36);
+		int pID = 0;
+		for (auto& i : palettes) {
+			d->add(i.getName(), [&]() { 
+				for (int k = 0; k < palettes.size(); k++) {
+					if (palettes.at(k).getName().compare(i.getName()) == 0) {
+						paletteID = k;
+						palettePage = 0;
+						generate_GUI_Left_Panel_Selector(getObjectByName(objects, "GUI_LeftPanel_"));
+						if (ToggleButton* t = dynamic_cast<ToggleButton*>(leftPanel.getElementByName("displayBarToggle"))) {
+							t->resetToggle();
+						}
+						if (GUIText* t = dynamic_cast<GUIText*>(leftPanel.getElementByName("selectedPaletteText"))) {
+							t->setText(palettes.at(k).getName());
+						}
+					}
+				}
+			});
+			pID++;
+		}
+		leftPanel.addElement(d);
+	}
+
+	leftPanel.createObjects(ob);
 }
 
 void generate_GUI_Left_Panel_Text_(Objects & ob, VertecesHandler vh) {
@@ -183,7 +251,7 @@ void generate_GUI_Left_Panel_Tiles(Objects & ob)
 					vh = VertecesHandler::findByName(verteces, "Nature_1024");
 				}
 				if (itemAtlas.checkIfAnimation(item.first.first)) {
-					AnimationObject* a = itemAtlas.getAnimationObject( ( (screenWidthPixels - 266 + increment * (item.second.first + item.first.second)) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * (item.second.second % paletteMaxY + item.first.second)) / (double(screenHeightPixels) / 2)), item.first.first, vh.getVAO(), vh.getTextureID(), itemAtlas.getItem(item.first.first));
+					AnimationObject* a = itemAtlas.getAnimationObject( ( (screenWidthPixels - 266 + increment * (item.second.first + item.first.second)) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * (item.second.second % paletteMaxY + item.first.second)) / (double(screenHeightPixels) / 2)), item.first.first, vh.getVAO(), vh.getTextureID());
 					a->setID(a->getID() % 1024);
 					ob.addObject(a);
 				}
@@ -194,73 +262,26 @@ void generate_GUI_Left_Panel_Tiles(Objects & ob)
 	}
 }
 
-void generate_GUI_Left_Panel_Selector(Objects & ob, int x, int y, bool clicked)
+void generate_GUI_Left_Panel_Selector(Objects & ob)
 {
-	if (paletteID != -1) {
-		VertecesHandler vh = VertecesHandler::findByName(verteces, "GUI_1");
-		size_t increment = 64;
-		ob.clearObjects();
-		if (x != -1 && y != -1) {
-			auto& p = palettes.at(paletteID).getPalette();
-			auto it = std::find_if(p.begin(), p.end(), [x, y](std::pair<std::pair<int, bool>, std::pair<size_t, size_t>>& p) { return (p.second.first == x && p.second.second == y); });
-			if (it != p.end()) {
-				if (it->first.second)
-					ob.addObject(new Object(((screenWidthPixels - 266 + increment * x) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * y) / (double(screenHeightPixels) / 2)), 14, vh.getVAO(), vh.getTextureID()));
-				else
-					ob.addObject(new Object(((screenWidthPixels - 266 + increment * x) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * y) / (double(screenHeightPixels) / 2)), 12, vh.getVAO(), vh.getTextureID()));
-				if (clicked) {
-					selectedItemId = *it;
-				}
-			}
-			else {
-				size_t tempX = x, tempY = y - 1;
-				it = std::find_if(p.begin(), p.end(), [tempX, tempY](std::pair<std::pair<int, bool>, std::pair<size_t, size_t>>& p) { return (p.second.first == tempX && p.second.second == tempY); });
-				if (it != p.end()) {
-					if (it->first.second) {
-						ob.addObject(new Object(((screenWidthPixels - 266 + increment * tempX) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * tempY) / (double(screenHeightPixels) / 2)), 14, vh.getVAO(), vh.getTextureID()));
-						if (clicked) {
-							selectedItemId = *it;
-							selectedItemId.second.first = it->second.first;
-							selectedItemId.second.second = it->second.second;
-						}
-					}
-				}
-				else {
-					tempX = x - 1, tempY = y;
-					it = std::find_if(p.begin(), p.end(), [tempX, tempY](std::pair<std::pair<int, bool>, std::pair<size_t, size_t>>& p) { return (p.second.first == tempX && p.second.second == tempY); });
-					if (it != p.end()) {
-						if (it->first.second) {
-							ob.addObject(new Object(((screenWidthPixels - 266 + increment * tempX) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * tempY) / (double(screenHeightPixels) / 2)), 14, vh.getVAO(), vh.getTextureID()));
-							if (clicked) {
-								selectedItemId = *it;
-								selectedItemId.second.first = it->second.first;
-								selectedItemId.second.second = it->second.second;
-							}
-						}
-					}
-					else {
-						tempX = x - 1, tempY = y - 1;
-						it = std::find_if(p.begin(), p.end(), [tempX, tempY](std::pair<std::pair<int, bool>, std::pair<size_t, size_t>>& p) { return (p.second.first == tempX && p.second.second == tempY); });
-						if (it != p.end()) {
-							if (it->first.second) {
-								ob.addObject(new Object(((screenWidthPixels - 266 + increment * tempX) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * tempY) / (double(screenHeightPixels) / 2)), 14, vh.getVAO(), vh.getTextureID()));
-								if (clicked) {
-									selectedItemId = *it;
-									selectedItemId.second.first = it->second.first;
-									selectedItemId.second.second = it->second.second;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+	if (ToggleButtonGroup* tg = dynamic_cast<ToggleButtonGroup*>(leftPanel.getElementByName("tileSelectionToggles"))) {
+		tg->clearAll();
+		
+		if (palettes.at(paletteID).getPalette().size() > 0) {
+			int maxYByScreenSize = ((screenHeightPixels / 90) - 2) * 90 / 64;
 
-		if (selectedItemId.first.first != -1) {
-			if (selectedItemId.first.second)
-				ob.addObject(new Object(((screenWidthPixels - 266 + increment * selectedItemId.second.first) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * selectedItemId.second.second) / (double(screenHeightPixels) / 2)), 15, vh.getVAO(), vh.getTextureID()));
-			else
-				ob.addObject(new Object(((screenWidthPixels - 266 + increment * selectedItemId.second.first) / (double(screenWidthPixels) / 2)), 0.0 + ((startDropDown + 2 + increment * selectedItemId.second.second) / (double(screenHeightPixels) / 2)), 13, vh.getVAO(), vh.getTextureID()));
+			int minY = palettePage * (maxYByScreenSize + 1), maxY = minY + maxYByScreenSize, yStart = 60, xStart = screenWidthPixels - 267;
+			paletteMaxPage = palettes.at(paletteID).getMaxPage(maxYByScreenSize);
+			leftPanel.getElementByName("selectedPalettePageTextLeft")->setText(std::to_string(palettePage));
+			leftPanel.getElementByName("selectedPalettePageTextRight")->setText(std::to_string(paletteMaxPage));
+			for (auto& i : palettes.at(paletteID).getPalette()) {
+				if (i.second.second >= minY && i.second.second <= maxY) {
+					if (!i.first.second)
+						tg->addElement(new ToggleButton(std::to_string(i.first.first), i.first.first, leftPanelYellowSquareSmall, leftPanelRedSquareSmall, xStart + i.second.first * 64, yStart + (i.second.second - minY) * 64, 64, 64, [&]() { selectedItemId = i; generate_GUI_Preview_Tiles(getObjectByName(objects, "GUI_Preview_Tiles_")); }, true));
+					else
+						tg->addElement(new ToggleButton(std::to_string(i.first.first), i.first.first, leftPanelYellowSquareBig, leftPanelRedSquareBig, xStart + i.second.first * 64, yStart + (i.second.second - minY) * 64, 128, 128, [&]() { selectedItemId = i; generate_GUI_Preview_Tiles(getObjectByName(objects, "GUI_Preview_Tiles_")); }, true, true));
+				}
+			}
 		}
 	}
 }
@@ -275,8 +296,8 @@ void generate_GUI_Preview_Tiles(Objects & ob)
 	for (auto& item : thingsToDraw) {
 		if (item.getId() < 0) {
 			if(vh.getName().compare("GUI_1") != 0) vh = VertecesHandler::findByName(verteces, "GUI_1");
-			id = 23;
-			if (eraseToggle) id = 22;
+			id = destroyToggleID;
+			if (eraseToggle) id = eraseToggleID;
 			else if (destroyTileToggle) id = destroyTileToggleID;
 			else if (copyToggle) id = copyToggleID;
 			else if (cutToggle) id = cutToggleID;
@@ -303,8 +324,8 @@ void generate_GUI_Preview_Tiles(Objects & ob)
 	}
 	if (eraseToggle || destroyToggle || destroyTileToggle || copyToggle || cutToggle) {
 		vh = VertecesHandler::findByName(verteces, "GUI_1");
-		id = 23;
-		if (eraseToggle) id = 22;
+		id = destroyToggleID;
+		if (eraseToggle) id = eraseToggleID;
 		else if (destroyTileToggle) id = destroyTileToggleID;
 		else if (copyToggle) id = copyToggleID;
 		else if (cutToggle) id = cutToggleID;
@@ -655,3 +676,96 @@ void generate_GUI_Item_Info_Panel(Objects & ob, VertecesHandler vh) {
 		itemInfo.createObjects(ob);
 	}
 }
+
+void generate_Palette_Modifier(Objects & ob, VertecesHandler vh) {
+	int width = 679, height = 724, startX = ((screenWidth - width) / 2), startY = ((screenHeight - height) / 2);
+	paletteModifier.setDimensions(startX, startY, width, height);
+	paletteModifier.toggleShow();
+
+	// Base
+	paletteModifier.addElement(new GUIElement("basePanel", vh.getVAO(), vh.getTextureID(), paletteModifierPanel, startX, startY, width, height, ""));
+
+	// Empty tiles left
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 4; j++) {
+			paletteModifier.addElement(new GUIElement("emptyTile", vh.getVAO(), vh.getTextureID(), paletteModifierEmptyTileMarker, startX + 31 + 64 * j, startY + 37 + 64 * i, 64, 64, ""));
+		}
+	}
+
+	ToggleButtonGroup* tbg = new ToggleButtonGroup("itemsToggleGroup");
+	paletteModifier.addElement(tbg);
+
+	// Empty tiles right
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 4; j++) {
+			paletteModifier.addElement(new GUIElement("emptyTile", vh.getVAO(), vh.getTextureID(), paletteModifierEmptyTileMarker, startX + 392 + 64*j, startY + 37 + 64*i, 64, 64, ""));
+		}
+	}
+
+	tbg = new ToggleButtonGroup("paletteToggleGroup");
+	paletteModifier.addElement(tbg);
+	
+
+	// Drop down for items
+	{
+		ToggleButton* tb = new ToggleButton("itemsToggleButton", vh.getVAO(), vh.getTextureID(), paletteModifierDropDownUnPressed, -1, paletteModifierDropDownPressed, startX + 210, startY + 13, 102, 24, [&]() { paletteModifier.getElementByName("itemsSelection")->toggleShow(); });
+		tb->toggleHover();
+		tb->toggleCleanreset();
+		paletteModifier.addElement(tb);
+		DropDown* d = new DropDown("itemsSelection", vh.getVAO(), vh.getTextureID(), paletteModifierDropDownElement, -1, -1, paletteModifierDropDownElementHover, startX + 210, startY + 37, 102, 24);
+		d->setPadding(1);
+		for (auto& i : palettes) {
+			d->add(i.getName(), [&]() {
+				if (ToggleButton* t = dynamic_cast<ToggleButton*>(paletteModifier.getElementByName("itemsToggleButton"))) {
+					t->setText(i.getName());
+					t->resetToggle();
+				}	
+			});
+		}
+		paletteModifier.addElement(d);
+	}
+
+	// Search icon
+	paletteModifier.addElement(new ExpandingButton("searchIcon", vh.getVAO(), vh.getTextureID(), paletteModifierSearchIcon, paletteModifierSearchIconHover, paletteModifierSearchIconPressed, startX + 180, startY + 12, 22, 22, 1.5, "", []() {}));
+
+	// Drop down for palettes
+	{
+		ToggleButton* tb = new ToggleButton("paletteToggleButton", vh.getVAO(), vh.getTextureID(), paletteModifierDropDownUnPressed, -1, paletteModifierDropDownPressed, startX + 460, startY + 13, 102, 24, [&]() { paletteModifier.getElementByName("paletteSelection")->toggleShow(); });
+		tb->toggleHover();
+		tb->toggleCleanreset();
+		paletteModifier.addElement(tb);
+		DropDown* d = new DropDown("paletteSelection", vh.getVAO(), vh.getTextureID(), paletteModifierDropDownElement, -1, -1, paletteModifierDropDownElementHover, startX + 460, startY + 37, 102, 24);
+		d->setPadding(1);
+		for (auto& i : palettes) {
+			d->add(i.getName(), [&]() {
+				generate_Palette_Modifier_Fill_Palette(getObjectByName(objects, "GUI_Palette_Modifier_"), i);
+				if (ToggleButton* t = dynamic_cast<ToggleButton*>(paletteModifier.getElementByName("paletteToggleButton"))) {
+					t->setText(i.getName());
+					t->resetToggle();
+				}
+			});
+		}
+		paletteModifier.addElement(d);
+	}
+
+}
+
+void generate_Palette_Modifier_Fill_Palette(Objects & ob, Palette& p) {
+	if (ToggleButtonGroup* tgb = dynamic_cast<ToggleButtonGroup*>(paletteModifier.getElementByName("paletteToggleGroup"))) {
+		tgb->clearAll();
+
+		if ( p.getPalette().size() > 0) {
+			int maxYByScreenSize = 11;
+
+			int minY = 0, maxY = minY + maxYByScreenSize, width = 679, height = 724, startX = ((screenWidth - width) / 2) + 392, startY = ((screenHeight - height) / 2) + 37;
+			for (auto& i : p.getPalette()) {
+				if (i.second.second >= minY && i.second.second <= maxY) {
+					if (!i.first.second)
+						tgb->addElement(new ToggleButton(std::to_string(i.first.first), i.first.first, leftPanelYellowSquareSmall, leftPanelRedSquareSmall, startX + i.second.first * 64, startY + (i.second.second - minY) * 64, 64, 64, [&]() {  }, true));
+					else
+						tgb->addElement(new ToggleButton(std::to_string(i.first.first), i.first.first, leftPanelYellowSquareBig, leftPanelRedSquareBig, startX + i.second.first * 64, startY + (i.second.second - minY) * 64, 128, 128, [&]() { }, true, true));
+				}
+			}
+		}
+	}
+};

@@ -6,7 +6,7 @@
 void AnimationObject::checkAnimation()
 {
 	__int64 now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-	if (item->getAnimationState() && endAnimation != getID() && now - timeStamp > animationDelay) {
+	if (animationState && endAnimation != getID() && now - timeStamp > animationDelay) {
 		if (++pos == animationIDs.size())
 			pos = 0;
 		setID(animationIDs.at(pos));
@@ -54,7 +54,64 @@ void Objects::checkAnimations()
 
 void checkAnimations()
 {
+	int from = 0, to = z;
+	if (z > 6) {
+		from = 7;
+		to = z;
+	}
+	int section = 0;
+	bool skip = false, skipRight = false, skipDown = false;
+
+	double x(0), y(0);
+	for (int floorAt = from; floorAt <= to; floorAt++) {
+		for (int sections = 0; sections < 4; sections++) {
+			skip = false;
+			switch (sections)
+			{
+			case 1:
+				if (currentSection % 40 != 39)
+					section++;
+				else {
+					skip = true;
+					skipRight = true;
+				}
+				break;
+			case 2:
+				if (currentSection < 1560)
+					section = currentSection + SECTIONS_WIDTH;
+				else {
+					skip = true;
+					skipDown = true;
+				}
+				break;
+			case 3:
+				if (!skipRight && !skipDown)
+					section = currentSection + SECTIONS_WIDTH + 1;
+				else
+					skip = true;
+				break;
+			default:
+				section = currentSection;
+				break;
+			}
+			if (!skip)
+				for (auto& t : world.getFloor(floorAt).getSection(section)) {
+					auto& object = t->getObject();
+					x = 0.0 + (width * object->getXPosition());
+					y = 0.0 - (height * object->getYPosition());
+					if (x < xCameraPos + 1.0f * zoom && x >= xCameraPos - 1.1f * zoom && y <= yCameraPos + 1.2f * zoom && y > yCameraPos - 1.0f * zoom && object->getDraw()) {
+						for (auto& i : t->getAllItems()) {
+							if (AnimationObject* check = dynamic_cast<AnimationObject*>(i->getObject())) {
+								check->checkAnimation();
+							}
+						}
+					}
+				}
+		}
+	}
+	/*
 	for (auto& o : objects) {
 		o.checkAnimations();
 	}
+	*/
 }

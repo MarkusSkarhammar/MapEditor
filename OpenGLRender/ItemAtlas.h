@@ -38,8 +38,9 @@ public:
 	std::vector<std::pair<std::string, std::string>> getItem(size_t id, std::string category);
 	void addNewAnimation(int itemID, int animationDelay);
 	void addAnimation(int itemID, int animationID);
-	AnimationObject* getAnimationObject(float x, float y, int id, int VAO, int texturePos, Item* item);
+	AnimationObject* getAnimationObject(float x, float y, int id, int VAO, int texturePos);
 	bool checkIfAnimation(int id);
+	bool checkIfDouleSize(int id);
 private:
 	pugi::xml_document doc;
 	std::vector<Item*> items;

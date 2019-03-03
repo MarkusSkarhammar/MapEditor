@@ -9,6 +9,9 @@ GLuint projection(0);
 GLuint model(0);
 GLuint view(0);
 
+// TextOffset
+glm::vec2 textOffsetValues(0);
+
 
 game_state current_state;
 game_state previous_state;
@@ -23,6 +26,7 @@ std::vector<Objects> objects;
 // Store temp objects
 std::vector<Objects> tiles;
 std::vector<Objects> items;
+std::vector<Object*> itemsToDraw;
 
 std::vector<std::pair<std::string, int>> paths = { 
 std::pair<std::string, int>("Tiles_1024", 19), std::pair<std::string, int>("Letters_", 256),  std::pair<std::string, int>("GUI_1", -1),
@@ -115,9 +119,11 @@ size_t FPS(0);
 
 // Erase Toggle button
 bool eraseToggle(false);
+int eraseToggleID(false);
 
 // Destroy Toggle button
 bool destroyToggle(false);
+int destroyToggleID(false);
 
 // Destroy tileDestroy toggle button
 bool destroyTileToggle(false);
@@ -181,6 +187,7 @@ std::atomic<bool> copyBufferLock(false);
 
 // Tiles to be rendered
 World world("Chunje");
+World worldTemp("Temp");
 
 // Render section below
 bool sectionBelow(false);
@@ -197,6 +204,44 @@ size_t brush(0);
 
 // Fow saving/loading
 Serialize serializer;
+
+
+//-----------------------------------
+//			Left Panel
+//-----------------------------------
+
+// lefPanel
+GUIPanel leftPanel("leftPanel");
+
+// bottom bar IDs
+int fillerPixel;
+int displayBar;
+int displayBarButton;
+int displayBarButtonHover;
+int displayBarButtonPressed;
+int tileAreaTop;
+int tileAreaMiddle;
+int tileAreaBottom;
+int tileAreaLeftButton;
+int tileAreaLeftButtonHover;
+int tileAreaLeftButtonPressed;
+int tileAreaRightButton;
+int tileAreaRightButtonHover;
+int tileAreaRightButtonPressed;
+int leftPanelDropDownMiddleSection;
+int leftPanelDropDownBottomSection;
+int leftPanelDropDownHover;
+int leftPanelYellowSquareSmall;
+int leftPanelRedSquareSmall;
+int leftPanelYellowSquareBig;
+int leftPanelRedSquareBig;
+
+// Show left panel
+bool leftPanelShow(true);
+
+//-----------------------------------
+//			DONE: Left Panel
+//-----------------------------------
 
 //-----------------------------------
 //			bottom bar
@@ -276,6 +321,28 @@ bool itemInfoWindow(false);
 
 //-----------------------------------
 //			DONE Tile info window
+//-----------------------------------
+
+//-----------------------------------
+//			Palette modifier window
+//-----------------------------------
+
+// GUIPanel
+GUIPanel paletteModifier("paletteModifier");
+
+// palette modifier IDs
+int paletteModifierPanel(0);
+int paletteModifierSearchIcon(0);
+int paletteModifierSearchIconHover(0);
+int paletteModifierSearchIconPressed(0);
+int paletteModifierDropDownUnPressed(0);
+int paletteModifierDropDownPressed(0);
+int paletteModifierDropDownElement(0);
+int paletteModifierDropDownElementHover(0);
+int paletteModifierEmptyTileMarker(0);
+
+//-----------------------------------
+//			DONE Palette modifier window
 //-----------------------------------
 
 size_t size = 0;
