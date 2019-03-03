@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include "Item.h"
 
 class Object {
 public:
@@ -17,25 +16,35 @@ public:
 	size_t getTexturePos() { return texturePos; };
 	float getXPosition() { return x; };
 	float getYPosition() { return y; };
+	void setXPosition(int& v) { x = v; };
+	void setYPosition(int& v) { y = v; };
 	bool& getDraw() { return draw; };
 	void setDraw(bool value) { draw = value; };
+	void setAnimationState(bool b) { animationState = b; };
+	bool& getAnimationState() { return animationState; };
+	float getScale() { return scale; }
+	void setScale(float value) { scale = value; };
+	void setOffsetX(float x) { textOffsetX = x; };
+	void setOffsetY(float y) { textOffsetY = y; };
+	float getTextOffsetX() { return textOffsetX; };
+	float getTextOffsetY() { return textOffsetY; };
+protected:
+	bool animationState{ true };
 private:
 	bool draw{ true };
-	float x{ 0.0 }, y{ 0.0 };
+	float x{ 0.0 }, y{ 0.0 }, scale{ 1.0 }, textOffsetX{ 0 }, textOffsetY{ 0 };
 	size_t id{ 0 }, VAO{ 0 }, texturePos{0};
 };
 
 class AnimationObject : public Object {
 public:
 	AnimationObject(float x, float y, int id, int VAO, int texturePos, int animationDelay, __int64 timeStamp) : animationDelay(animationDelay), timeStamp(timeStamp), Object(x, y, id, VAO, texturePos) {};
-	AnimationObject(AnimationObject* a): Object(a->getXPosition(), a->getYPosition(), a->getID(), a->getVAO(), a->getTexturePos()){ *this = *a; };
+	AnimationObject(AnimationObject* a) : Object(a->getXPosition(), a->getYPosition(), a->getID(), a->getVAO(), a->getTexturePos()) { *this = *a; };
 	~AnimationObject() {};
 	void checkAnimation();
 	void insertAnimationID(int id) { animationIDs.push_back(id); };
 	void setEndAnimation(int value) { endAnimation = value; };
-	void setItem(Item*& i) { item = i; };
 private:
-	Item * item = nullptr;
 	int animationDelay, pos{ 0 }, endAnimation{ 0 };
 	__int64 timeStamp{ 0 };
 	std::vector<int> animationIDs;

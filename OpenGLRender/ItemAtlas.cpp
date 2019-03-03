@@ -217,11 +217,11 @@ void ItemAtals::addAnimation(int itemID, int animationID) {
 	}
 };
 
-AnimationObject* ItemAtals::getAnimationObject(float x, float y, int id, int VAO, int texturePos, Item* item) {
+
+AnimationObject* ItemAtals::getAnimationObject(float x, float y, int id, int VAO, int texturePos) {
 	auto it = std::find_if(animations.begin(), animations.end(), [id](AnimationInfo& a) { return (a.getID() == id); });
 	if (it != animations.end()) {
 		AnimationObject* a = new AnimationObject(x, y, id, VAO, texturePos, (*it).getAnimationDelay(), std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-		a->setItem(item);
 		if ((*it).getEndAnimation() != 0) a->setEndAnimation((*it).getEndAnimation());
 		for (auto& aID : (*it).getAnimationIDs() ) {
 			a->insertAnimationID(aID);
@@ -239,7 +239,18 @@ bool ItemAtals::checkIfAnimation(int id) {
 	}
 	else
 		return false;
-};
+}
+bool ItemAtals::checkIfDouleSize(int ID)
+{
+	if (ID / 1024 == 2) {
+		return true;
+	}
+	else if (ID / 1024 == 5) {
+		return true;
+	}
+	return false;
+}
+;
 
 /*std::vector<ItemInfo> ItemAtals::getTiles()
 {

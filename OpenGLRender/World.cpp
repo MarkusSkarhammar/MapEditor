@@ -4,6 +4,7 @@
 
 void insert_Things_Form_ThingsToDraw()
 {
+	worldTemp.copyWorld(world);
 	bool current(false), east(false), south(false), southEast(false);
 	if ( (cutToggle || copyToggle) && copyBuffer.size() > 0) {
 		thingsToDraw.clear();
@@ -21,7 +22,7 @@ void insert_Things_Form_ThingsToDraw()
 			i.second->setX(xCopy);
 			i.second->setY(yCopy);
 			i.second->setZ(z);
-			auto& section = world.getFloor(z).getSection((xCopy / 50 + (yCopy / 50) * 40));
+			auto& section = worldTemp.getFloor(z).getSection((xCopy / 50 + (yCopy / 50) * 40));
 			if (i.first.getSection() == currentSection) current = true;
 			if (i.first.getSection() == currentSection + 1) east = true;
 			if (i.first.getSection() == currentSection + 40) south = true;
@@ -48,7 +49,7 @@ void insert_Things_Form_ThingsToDraw()
 			x = element.getX(); y = element.getY(); z = element.getZ();
 			Item* item = nullptr;
 			if (element.getId() >= 0) item = itemAtlas.getItem(element.getId());
-			auto& section = world.getFloor(z).getSection(element.getSection());
+			auto& section = worldTemp.getFloor(z).getSection(element.getSection());
 			auto it = std::find_if(section.begin(), section.end(), [x, y](tile*& t) { return (t->getX() == x && t->getY() == y); });
 			if (it == section.end()) {
 				if (element.getId() / 1024 != 0) {
@@ -116,11 +117,10 @@ void insert_Things_Form_ThingsToDraw()
 	if (east)sortSection(currentSection + 1);
 	if (south)sortSection(currentSection + 40);
 	if (southEast)sortSection(currentSection + 41);
-	//while (updateMapFloor) { std::this_thread::yield(); };
-	updateWhatToDrawOnFloor(z, true, true);
+	
 	printf("done\n");
-	updateMap = true;
 	updateMapFloor = false;
+	updateMap = true;
 }
 
 
@@ -133,7 +133,7 @@ void updateWhatToDrawOnAllCurrentFloors() {
 	else {
 		updateWhatToDrawOnFloors(7, 13, true, true);
 	}
-	updateMap = true;
+	//updateMap = true;
 }
 
 void updateWhatToDrawOnFloors(size_t fromFloor, size_t toFloor, bool tiles, bool items) {
@@ -152,7 +152,7 @@ void updateWhatToDrawOnFloors(size_t fromFloor, size_t toFloor, bool tiles, bool
 }
 
 void updateWhatToDrawOnFloor(size_t floor, bool tilesB, bool itemsB) {
-	float widthStart = 0.0f;
+	/*float widthStart = 0.0f;
 	float heightStart = 0.0f;
 	double width = (imgScale / (screenWidth / 2));
 	double height = (imgScale / (screenHeight / 2));
@@ -211,7 +211,7 @@ void updateWhatToDrawOnFloor(size_t floor, bool tilesB, bool itemsB) {
 					vh = VertecesHandler::findByName(verteces, "Doodads_1024");
 				}
 				if (itemAtlas.checkIfAnimation(item->getID())) {
-					AnimationObject* a = itemAtlas.getAnimationObject(tile->getX(), tile->getY(), item->getID(), vh.getVAO(), vh.getTextureID(), item);
+					AnimationObject* a = itemAtlas.getAnimationObject(tile->getX(), tile->getY(), item->getID(), vh.getVAO(), vh.getTextureID(), item->getAnimationState());
 					_Items.addObject(a);
 				}
 				else
@@ -226,7 +226,7 @@ void updateWhatToDrawOnFloor(size_t floor, bool tilesB, bool itemsB) {
 			atSection = currentSection + 41;
 		else
 			i++;
-	}
+	}*/
 
 	
 	/*
@@ -253,11 +253,11 @@ void sortSection(size_t currentSection) {
 	});
 }
 
-bool checkAbove(int xCheck, int yCheck, int zCheck) {
+bool checkAbove(int xCheck, int yCheck, int section, int zCheck) {
 	int from = zCheck, to = z;
 	if ((from != z) && ((from < 7 && z == 6) || (from >= 7 && z >= 7))) {
 		for (int floor = from + 1; floor <= to; floor++) {
-			auto& tiles = world.getFloor(floor).getSection(currentSection);
+			auto& tiles = world.getFloor(floor).getSection(section);
 			auto it = std::find_if(tiles.begin(), tiles.end(), [xCheck, yCheck](tile*& t) { return (t->getX() == xCheck && t->getY() == yCheck && t->getID() != -1); });
 			if (it != tiles.end()) {
 					return true;
@@ -267,7 +267,7 @@ bool checkAbove(int xCheck, int yCheck, int zCheck) {
 	return false;
 }
 
-bool checkAbove(int xCheck, int yCheck, int zCheck, bool bigItem) {
+bool checkAbove(int xCheck, int yCheck, int section, int zCheck, bool bigItem) {
 	int tempX(0), tempY(0);
 	int from = zCheck, to = z;
 	if ((from != z) && ((from < 7 && z == 6) || (from >= 7 && z >= 7))) {
@@ -305,9 +305,57 @@ void newFloor() {
 		to = z;
 	}
 	std::string currentName = "";
+	int section = 0;
+	bool skip = false, skipRight = false, skipDown = false;
 
 	// Draw order tiles > Borders > Entities > Doodads
 	double x(0), y(0);
+	for (int floorAt = from; floorAt <= to; floorAt++) {
+		for (int sections = 0; sections < 4; sections++) {
+			skip = false;
+			switch (sections)
+			{
+			case 1:
+				if (currentSection % 40 != 39)
+					section++;
+				else {
+					skip = true;
+					skipRight = true;
+				}
+				break;
+			case 2:
+				if(currentSection < 1560)
+					section = currentSection + SECTIONS_WIDTH;
+				else {
+					skip = true;
+					skipDown = true;
+				}
+				break;
+			case 3:
+				if (!skipRight && !skipDown)
+					section = currentSection + SECTIONS_WIDTH + 1;
+				else
+					skip = true;
+				break;
+			default:
+				section = currentSection;
+				break;
+			}
+			if (!skip)
+				for (auto& t : world.getFloor(floorAt).getSection(section)) {
+					auto& object = t->getObject();
+					object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt));
+					for (auto& i : t->getAllItems()) {
+						auto& object = i->getObject();
+						if (itemAtlas.checkIfDouleSize(object->getID()))
+							object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt, true));
+						else
+							object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt));
+					}
+				}
+		}
+	}
+	/*
 	for (auto& objects : objects) {
 		currentName = objects.getName();
 		if (currentName.at(currentName.size() - 1) != '_') { // Check to see if Objects container does not contain GUI elements
@@ -324,4 +372,6 @@ void newFloor() {
 			}
 		}
 	}
+	*/
+	updateMapFloor = false;
 }

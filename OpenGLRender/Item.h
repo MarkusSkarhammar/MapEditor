@@ -1,14 +1,16 @@
 #ifndef ITEM_H
 #define ITEM_H
 #include <string>
+#include "Object.h"
+#include "VertecesHandler.h"
 
 using std::string;
 
 class Item {
 public:
-	Item(int id, string article, string name) : id(id), article(article), name(name)  {};
-	Item(Item* i) { *this = *i; };
-	virtual ~Item() {};
+	Item(int id, string article, string name);
+	Item(Item* i);
+	virtual ~Item() { delete ob; };
 	int& getID();
 	int& getUID();
 	void setUID(int id);
@@ -34,19 +36,26 @@ public:
 	string& getArticle();
 	string& getType();
 	void setType(string value);
-	bool& getAnimationState() { return animationOn; };
-	void setAnimationState(bool value) { animationOn = value; };
+	bool& getAnimationState() { return ob->getAnimationState(); };
+	void setAnimationState(bool value) { ob->setAnimationState(value); };
+	void updateObjectPosition(int& x, int& y) { ob->setXPosition(x); ob->setYPosition(y); };
+	Object*& getObject() { return ob; };
 private:
 	int id{ 0 }, uID{ 0 };
 	string article{ "" }, name{ "" }, description{ "" }, type{ "" };
-	bool blockProjectile{ false }, blockPathfind{ false }, blockObject{ false }, moveable{ false }, pickupable{ false }, useable{ false }, hangeable{ false }, alwaysOnTop{ false }, animationOn{ false };
+	bool blockProjectile{ false }, blockPathfind{ false }, blockObject{ false }, moveable{ false }, pickupable{ false }, useable{ false }, hangeable{ false }, alwaysOnTop{ false };
+	Object* ob{ nullptr };
 };
 
 class NonStaticItem : public Item {
 public:
 	NonStaticItem(int id, string article, string name) : Item(id, article, name) { setMoveable(true); setPickupable(true); };
-	NonStaticItem(NonStaticItem* n) : Item(n->getID(), n->getArticle(), n->getName()) { *this = *n; };
-	virtual ~NonStaticItem() { };
+	NonStaticItem(NonStaticItem* n) : Item(n) {
+		this->setWeight(n->getWeight());
+		this->setStack(n->getStack());
+		this->setMaxStack(n->getStackMax());
+	};
+	virtual ~NonStaticItem() {};
 	void setWeight(float value) { weight = value; };
 	void setStack(int value) { stack = value; };
 	void setMaxStack(int value) { stackMax = value; };
@@ -61,8 +70,12 @@ private:
 class Weapon : public NonStaticItem {
 public:
 	Weapon(int id, string article, string name) : NonStaticItem(id, article, name) {};
-	Weapon(Weapon* w) : NonStaticItem(w->getID(), w->getArticle(), w->getName()) { *this = *w; };
-	~Weapon() {};
+	Weapon(Weapon* w) : NonStaticItem(w) { 
+		this->setAttack(w->getAttack());
+		this->setDefense(w->getDefense());
+		this->setWeaponType(w->getWeaponType());
+	};
+	~Weapon() {  };
 	void setAttack(int value) { attack = value; };
 	int& getAttack() { return attack; };
 	void setDefense(int value) { defense = value; };
@@ -77,7 +90,10 @@ private:
 class Armor : public NonStaticItem {
 public:
 	Armor(int id, string article, string name) : NonStaticItem(id, article, name) {};
-	Armor(Armor* a) : NonStaticItem(a->getID(), a->getArticle(), a->getName()) { *this = *a; };
+	Armor(Armor* a) : NonStaticItem(a) { 
+		this->setArmor(a->getArmor());
+		this->setArmorType(a->getArmorType());
+	};
 	~Armor() {};
 	void setArmor(int value) { armor = value; };
 	int& getArmor() { return armor; };

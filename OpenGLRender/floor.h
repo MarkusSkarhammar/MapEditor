@@ -33,6 +33,12 @@ public:
 		clearSection(section);
 		sections[section].insert(other.begin(), other.begin(), other.end());
 	};
+	void setNewSection(vector<tile*>& other, size_t section) {
+		if(sections[section].size() > 0) clearSection(section);
+		for (auto& t : other) {
+			sections[section].push_back(new tile(t));
+		}
+	};
 	void clearSection(int section) {
 		for (auto& t : sections[section]) {
 			delete t;

@@ -38,7 +38,7 @@ using namespace glm;
 
 GLuint gTileArrayTexture(0);
 GLuint gGUIArrayTexture(0);
-GLuint gLayer(0);
+GLuint gLayer(0), textOffset(0);
 GLuint tilesVAO(0), vao2(0), vao3(0);
 GLuint vbo(0), vbo2(0);
 GLuint program(0);
@@ -178,16 +178,6 @@ int main(int argc, wchar_t *argv[])
 
 	init();
 
-	/*for (auto& v : verteces) {
-		printf("%s :", &v.getName()[0]);
-		printf(" %i objects \n", int(v.getVerteces().size()));
-	}
-
-	for (auto& obj : objects) {
-		printf("%s :", &obj.getName()[0]);
-		printf(" %i objects \n", int(obj.getObjects().size()));
-	}*/
-
 	using clock = std::chrono::high_resolution_clock;
 
 
@@ -260,19 +250,9 @@ void render(game_state const &interpolated_state, GLFWwindow* window) {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glClear(GL_DEPTH_BUFFER_BIT);
-	//glClear(GL_STENCIL_BUFFER_BIT);
 
 	// Update camera based on a interpolated state
 	setCameraPosition(interpolated_state.xCameraPos, interpolated_state.yCameraPos);
-
-	// Send our transformation to the currently bound shader, 
-	// in the "MVP" uniform
-	//glUniformMatrix4fv(mvp, 1, GL_FALSE, &MVP[0][0]);
-
-	//glUniform1i(gTileArrayTexture, 0);
-
-	//glActiveTexture(GL_TEXTURE0);
 
 	bool overTen(false);
 	size_t from = 0, obj = 0;
@@ -282,54 +262,25 @@ void render(game_state const &interpolated_state, GLFWwindow* window) {
 		to = z;
 	}
 	std::string currentName = "";
+	itemsToDraw.clear();
+	itemsToDraw.shrink_to_fit();
 
+	//----------------------------------------------------------
+	//						Draw game stuff
+	//----------------------------------------------------------
 	// Draw order tiles > Borders > Entities > Doodads
+
 	double x(0), y(0);
-	for (auto& objects : objects) {
-		currentName = objects.getName();
-		if (currentName.at(currentName.size()-1) != '_') { // Check to see if Objects container does not contain GUI elements
-
-			//----------------------------------------------------------
-			//						Draw tiles/creatures/items
-			//----------------------------------------------------------
-
-			obj = std::stoi(currentName.substr(currentName.size() - 1));
-			//if(obj = 9 c)
-			//if (updateMapFloor && updatingFloor != obj) printf("Hit! \n");
-			if ( obj >= from && obj <= to) { // Check to see if Object container is within a floor to be drawn
-				for (auto& object : objects.getObjects()) {
-					x = 0.0 + (width * object->getXPosition());
-					y = 0.0 - (height * object->getYPosition());
-					if (x < xCameraPos + 1.0f * zoom && x >= xCameraPos - 1.1f * zoom && y <= yCameraPos + 1.2f * zoom && y > yCameraPos - 1.0f * zoom && object->getDraw()) { // Check to see if object is within viewport
-
-						Model = glm::mat4(1.0f);
-
-						Model = glm::translate(Model, glm::vec3(x, y, 0.0f));
-
-						glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(Model));
-
-						glUniform1i(gLayer, object->getTexturePos());
-
-						glBindVertexArray(object->getVAO());
-						glDrawArrays(GL_TRIANGLES, 0 + (4 * object->getID() % 1024), 3);
-						glDrawArrays(GL_TRIANGLES, 1 + (4 * object->getID() % 1024), 3);
-					}
-				}
-			}
-		}
-		else { // Object container contain GUI elements
-
-			   //----------------------------------------------------------
-			   //						Draw GUI
-			   //----------------------------------------------------------
-
-			if (!((currentName.compare("GUI_LeftPanel_DropDown_") == 0 || currentName.compare("GUI_LeftPanel_DropDown_Text_") == 0) && !clickPaletteDropDown)) {
-				for (auto& object : objects.getObjects()) {
-
+	for (int floorAt = from; floorAt <= to; floorAt++) {
+		for (auto& t : world.getFloor(floorAt).getSection(currentSection)) {
+			auto& object = t->getObject();
+			x = 0.0 + (width * object->getXPosition());
+			y = 0.0 - (height * object->getYPosition());
+			if (x < xCameraPos + 1.0f * zoom && x >= xCameraPos - 1.1f * zoom && y <= yCameraPos + 1.2f * zoom && y > yCameraPos - 1.0f * zoom) { // Check to see if object is within viewport
+				if (object->getDraw()) {
 					Model = glm::mat4(1.0f);
 
-					if(currentName.compare("GUI_Preview_Tiles_") == 0) Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + object->getXPosition(), yCameraPos + 1.0f - object->getYPosition(), 0.0 ));
-					else Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + object->getXPosition(), yCameraPos + 1.0f - object->getYPosition(), (zoom - 1.0)));
+					Model = glm::translate(Model, glm::vec3(x, y, 0.0f));
 
 					glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(Model));
 
@@ -338,8 +289,65 @@ void render(game_state const &interpolated_state, GLFWwindow* window) {
 					glBindVertexArray(object->getVAO());
 					glDrawArrays(GL_TRIANGLES, 0 + (4 * object->getID() % 1024), 3);
 					glDrawArrays(GL_TRIANGLES, 1 + (4 * object->getID() % 1024), 3);
-
 				}
+				for (auto& i : t->getAllItems()) {
+					itemsToDraw.push_back(i->getObject());
+				}
+			}
+		}
+
+		for (auto& object : itemsToDraw) {
+			x = 0.0 + (width * object->getXPosition());
+			y = 0.0 - (height * object->getYPosition());
+			if (object->getDraw()) { // Check to see if object is within viewport
+
+				Model = glm::mat4(1.0f);
+
+				Model = glm::translate(Model, glm::vec3(x, y, 0.0f));
+
+				glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(Model));
+
+				glUniform1i(gLayer, object->getTexturePos());
+
+				glBindVertexArray(object->getVAO());
+				glDrawArrays(GL_TRIANGLES, 0 + (4 * object->getID() % 1024), 3);
+				glDrawArrays(GL_TRIANGLES, 1 + (4 * object->getID() % 1024), 3);
+			}
+		}
+		itemsToDraw.clear();
+	}
+
+	//----------------------------------------------------------
+	//						Draw GUI
+	//----------------------------------------------------------
+
+	for (auto& objects : objects) {
+		currentName = objects.getName();
+		if (!((currentName.compare("GUI_LeftPanel_DropDown_") == 0 || currentName.compare("GUI_LeftPanel_DropDown_Text_") == 0) && !clickPaletteDropDown)) {
+			for (auto& object : objects.getObjects()) {
+
+				Model = glm::mat4(1.0f);
+				if (currentName.compare("GUI_Preview_Tiles_") == 0) Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + object->getXPosition(), yCameraPos + 1.0f - object->getYPosition(), 0.0));
+				else Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + object->getXPosition(), yCameraPos + 1.0f - object->getYPosition(), (zoom - 1.0)));
+				
+				// Handle scaling
+				if(object->getScale() != 1.0) 
+					Model = glm::scale(Model, glm::vec3(object->getScale(), object->getScale(), object->getScale()));
+
+				// Handle transformation
+				glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(Model));
+
+				if (object->getTextOffsetX() > 0 || object->getTextOffsetY() > 0) {
+					textOffsetValues = { object->getTextOffsetX(), object->getTextOffsetY() };
+					glUniformMatrix2fv(textOffset, 1, GL_FALSE, glm::value_ptr(textOffsetValues));
+				}
+
+				glUniform1i(gLayer, object->getTexturePos());
+
+				glBindVertexArray(object->getVAO());
+				glDrawArrays(GL_TRIANGLES, 0 + (4 * object->getID() % 1024), 3);
+				glDrawArrays(GL_TRIANGLES, 1 + (4 * object->getID() % 1024), 3);
+
 			}
 		}
 	}
@@ -395,42 +403,13 @@ void update(game_state* state, GLFWwindow* window) {
 
 	// Check hovering and update
 	handelHover();
-
 }
 
 void createThingsToRender() {
 
+	
 	if (updateMap) {
-		std::string name;
-		for (int i = 0; i < MAX_FLOORS; i++) {
-			auto& _Tiles = tiles.at(i).getObjects();
-			if (_Tiles.size() > 0 || (thingsToDraw.size() == 1 && thingsToDraw.begin()->getId() == -1 && thingsToDraw.begin()->getZ() == i) || thingsToDraw.size() == 0 ) {
-				name = "Floor_Tiles_" + std::to_string(i);
-				auto itTiles = std::find_if(objects.begin(), objects.end(), [name](Objects& object) {
-					return (object.getName() == name);
-				});
-				itTiles->setObjects(_Tiles);
-				//tiles.at(i).clearObjects();
-				//_Tiles.clear();
-
-				auto& _Items = items.at(i).getObjects();
-				if (_Items.size() > 0) {
-					name = "Floor_Items_" + std::to_string(i);
-					auto itItems = std::find_if(objects.begin(), objects.end(), [name](Objects& object) {
-						return (object.getName() == name);
-					});
-					itItems->setObjects(_Items);
-					//items.at(i).clearObjects();
-					//_Items.clear();
-				}
-				else {
-					auto& obj = getObjectByName(objects, "Floor_Items_" + std::to_string(i));
-					//if (obj.getObjects().size() > 0)
-						//obj.clearObjects();
-				}
-			}
-		}
-		newFloor();
+		world.copyWorld(worldTemp);
 		thingsToDraw.clear();
 		updateMap = false;
 	}
@@ -506,19 +485,19 @@ void generateTextures() {
 
 void mapUpdate() {
 
-	if (newZ != z) {
-		z = newZ;
-		newFloor();
-	}
-
 	if (!lbutton_down && !updateMap && thingsToDraw.size() > 0 && !updateMapFloor) {
 		updateMapFloor = true;
 		std::thread(insert_Things_Form_ThingsToDraw).detach();
 	}
 
+	if (newZ != z && !updateMapFloor) {
+		updateMapFloor = true;
+		z = newZ;
+		newFloor();
+	}
+
 	if (int((xCameraPos - 1.0) / ((50 * 64) / (float(screenWidthPixels) / 2))) != currentSection) {
 		currentSection = (xCameraPos - 1) / ((50 * 64) / (float(screenWidthPixels) / 2));
-		std::thread(updateWhatToDrawOnAllCurrentFloors).detach();
 	}
 }
 
@@ -631,6 +610,9 @@ void init() {
 	// Get a handle for our "cameraPos" uniform
 	gLayer = glGetUniformLocation(program, "layer");
 
+	// Get a handle for our "textOffset" uniform
+	textOffset = glGetUniformLocation(program, "textOffset");
+
 	fillPalettes(palettes);
 
 	for (size_t i = 0; i < MAX_FLOORS; i++) {
@@ -639,6 +621,7 @@ void init() {
 		tiles.push_back(Objects("Tiles_" + std::to_string(i)));
 		items.push_back(Objects("Items_" + std::to_string(i)));
 	}
+
 	Objects temp = Objects("GUI_Preview_Tiles_");
 	objects.push_back(temp);
 	temp = Objects("GUI_BottomBar_");
@@ -650,20 +633,13 @@ void init() {
 	temp = Objects("GUI_LeftPanel_");
 	generate_GUI_Left_Panel(temp, VertecesHandler::findByName(verteces, "GUI_1"), 0);
 	objects.push_back(temp);
-	temp = Objects("GUI_LeftPanel_Tiles_");
-	objects.push_back(temp);
-	temp = Objects("GUI_LeftPanel_select_");
-	objects.push_back(temp);
 	temp = Objects("GUI_LeftPanel_Text_");
 	generate_GUI_Left_Panel_Text_(temp, VertecesHandler::findByName(verteces, "Letters_"));
 	objects.push_back(temp);
-	temp = Objects("GUI_LeftPanel_DropDown_");
-	generate_GUI_Left_Panel_DropDown(temp, VertecesHandler::findByName(verteces, "GUI_1"), -1);
-	objects.push_back(temp);
-	temp = Objects("GUI_LeftPanel_DropDown_Text_");
-	generate_GUI_Left_Panel_DropDown_Text(temp, VertecesHandler::findByName(verteces, "Letters_"));
-	objects.push_back(temp);
 	temp = Objects("GUI_Item_Info_Panel_");
+	objects.push_back(temp);
+	temp = Objects("GUI_Palette_Modifier_");
+	generate_Palette_Modifier(temp, VertecesHandler::findByName(verteces, "GUI_1"));
 	objects.push_back(temp);
 
 }

@@ -10,55 +10,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_LEFT) {
 		if (action == GLFW_PRESS) {
 
-			if ((xPos >= screenWidth - 26 && xPos <= screenWidth - 10) && (yPos >= 33 && yPos <= 50)) {
-				if (!clickPaletteDropDown) {
-					clickPaletteDropDown = true;
-					leftPanelState = 2;
-					generate_GUI_Left_Panel(getObjectByName(objects, "GUI_LeftPanel_"), VertecesHandler::findByName(verteces, "GUI_1"), leftPanelState);
-				}
-				else {
-					clickPaletteDropDown = false;
-					leftPanelState = 1;
-					generate_GUI_Left_Panel(getObjectByName(objects, "GUI_LeftPanel_"), VertecesHandler::findByName(verteces, "GUI_1"), leftPanelState);
-				}
-			}
-			else if (clickPaletteDropDown && (xPos >= screenWidth - 267 && xPos <= screenWidth - 29) && (yPos >= 54 && yPos <= startDropDown + SIZE_DROP_DOWN_TEXT * 36)) {
-				size_t item = (yPos - startDropDown) / 36;
-				paletteID = item;
-				leftPanelState = 0;
-				generate_GUI_Left_Panel(getObjectByName(objects, "GUI_LeftPanel_"), VertecesHandler::findByName(verteces, "GUI_1"), leftPanelState);
-				generate_GUI_Left_Panel_Text_(getObjectByName(objects, "GUI_LeftPanel_Text_"), VertecesHandler::findByName(verteces, "Letters_"));
-				clickPaletteDropDown = false;
-				generate_GUI_Left_Panel_Tiles(getObjectByName(objects, "GUI_LeftPanel_Tiles_"));
-				selectedItemId = std::pair<std::pair<int, bool>, std::pair<int, int>>(std::pair<int, bool>(-1, false), std::pair<int, int>(-1, -1));
-				palettePage = 0;
-				if (palettes.at(paletteID).getPalette().size() > 0) {
-					paletteMaxPage = palettes.at(paletteID).getMaxPage(paletteMaxY);
-				}else
-					paletteMaxPage = 0;
-			}
-			else if (!clickPaletteDropDown && (xPos >= screenWidth - 267 && xPos <= screenWidth - 10) && (yPos >= startDropDown + 2 && yPos <= screenHeight - 30)) {
-				size_t x = (xPos - (screenWidth - 267)) / 64;
-				size_t y = (yPos - (startDropDown)) / 64;
-				generate_GUI_Left_Panel_Selector(getObjectByName(objects, "GUI_LeftPanel_select_"), x, y, true);
-				if ((xPos >= screenWidth - 188 && xPos <= screenWidth - 170) && (yPos >= startDropDown + 2 + (paletteMaxY * 64) + 7 && yPos <= screenHeight - 35)) {
-					paletteLeftPressed = true;
-					generate_GUI_Left_Panel(getObjectByName(objects, "GUI_LeftPanel_"), VertecesHandler::findByName(verteces, "GUI_1"), leftPanelState);
-					if (palettePage > 0) { 
-						palettePage--; 
-						generate_GUI_Left_Panel_Tiles(getObjectByName(objects, "GUI_LeftPanel_Tiles_"));
-					}
-				}
-				else if ((xPos >= screenWidth - 103 && xPos <= screenWidth - 85) && (yPos >= startDropDown + 2 + (paletteMaxY * 64) + 7 && yPos <= screenHeight - 35)) {
-					paletteRightPressed = true;
-					generate_GUI_Left_Panel(getObjectByName(objects, "GUI_LeftPanel_"), VertecesHandler::findByName(verteces, "GUI_1"), leftPanelState);
-					if (palettePage < paletteMaxPage) {
-						palettePage++;
-						generate_GUI_Left_Panel_Tiles(getObjectByName(objects, "GUI_LeftPanel_Tiles_"));
-					}
-				}
-			}
-			else if ((xPos >= 0.0 && xPos <= screenWidth - 276) && (yPos >= 0.0 && yPos <= screenHeight - 30)) {
+			if ((xPos >= 0.0 && xPos <= screenWidth - 276) && (yPos >= 0.0 && yPos <= screenHeight - 30)) {
 				if (lControl && !itemInfoWindow) {
 					itemInfoTile = world.getFloor(z).getTile((x / 50 + (y / 50) * 40), x, y);
 					if (itemInfoTile != nullptr) {
@@ -98,8 +50,17 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 					itemInfo.checkClicked(getObjectByName(objects, "GUI_Item_Info_Panel_"), xPos, yPos, 1);
 				}
 			}
-			else if (bottomBarShow) {
+			// Handle clicks on the bottom bar
+			if (bottomBarShow) {
 				bottomBar.checkClicked(getObjectByName(objects, "GUI_BottomBar_"), xPos, yPos, 1);
+			}
+			// Handle clicks on the left panel
+			if (leftPanelShow) {
+				leftPanel.checkClicked(getObjectByName(objects, "GUI_LeftPanel_"), xPos, yPos, 1);
+			}
+			// Handle clicks on the platte modifier window
+			if (paletteModifier.getShow()) {
+				paletteModifier.checkClicked(getObjectByName(objects, "GUI_Palette_Modifier_"), xPos, yPos, 1);
 			}
 
 			lbutton_down = true;
@@ -118,24 +79,51 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 				descriptionButtonPressed = false;
 				generate_GUI_Item_Info_Panel(getObjectByName(objects, "GUI_Item_Info_Panel_"), VertecesHandler::findByName(verteces, "GUI_1"));
 			}
+
+			if (leftPanelShow) {
+				leftPanel.checkClicked(getObjectByName(objects, "GUI_LeftPanel_"), xPos, yPos, 0);
+			}
+
+			// Handle clicks on the platte modifier window
+			if (paletteModifier.getShow()) {
+				paletteModifier.checkClicked(getObjectByName(objects, "GUI_Palette_Modifier_"), xPos, yPos, 0);
+			}
 		}
 
 	}
 
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		if (clickPaletteDropDown) {
-			clickPaletteDropDown = false;
-			generate_GUI_Left_Panel(getObjectByName(objects, "GUI_LeftPanel_"), VertecesHandler::findByName(verteces, "GUI_1"), 0);
-		}
 		if (selectedItemId.first.first != -1) {
 			thingsToDraw.clear();
 			selectedItemId = std::pair<std::pair<int, bool>, std::pair<int, int>>(std::pair<int, bool>(-1, false), std::pair<int, int>(-1, -1));
-			getObjectByName(objects, "GUI_LeftPanel_select_").clearObjects();
 		}
 		if (ToggleButtonGroup* check = dynamic_cast<ToggleButtonGroup*>(bottomBar.getElementByName("toggles"))) {
 			check->resetAll();
 			thingsToDraw.clear();
 			getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects();
+		}
+		// Reset left panel
+		if (leftPanelShow) {
+			if (ToggleButtonGroup* tg = dynamic_cast<ToggleButtonGroup*>(leftPanel.getElementByName("tileSelectionToggles"))) {
+				tg->resetAll();
+			}
+			if (DropDown* d = dynamic_cast<DropDown*>(leftPanel.getElementByName("paletteSelection"))) {
+				if (d->getShow()) {
+					if (ToggleButton* t = dynamic_cast<ToggleButton*>(leftPanel.getElementByName("displayBarToggle"))) {
+						t->resetToggle();
+					}
+				}
+			}
+		}
+		if (paletteModifier.getShow()) {
+			if (paletteModifier.getElementByName("paletteSelection")->getShow()) {
+				if (ToggleButton* tb = dynamic_cast<ToggleButton*>(paletteModifier.getElementByName("paletteToggleButton")))
+					tb->resetToggle();
+			}
+			if (paletteModifier.getElementByName("itemsSelection")->getShow()) {
+				if (ToggleButton* tb = dynamic_cast<ToggleButton*>(paletteModifier.getElementByName("itemsToggleButton")))
+					tb->resetToggle();
+			}
 		}
 		rbutton_down = true;
 	}
@@ -247,6 +235,8 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 		if (lControl) {
+			paletteModifier.toggleShow();
+			paletteModifier.reCreateObjects(getObjectByName(objects, "GUI_Palette_Modifier_"));
 		}
 	}
 
@@ -374,6 +364,9 @@ void handelHover() {
 		if (itemInfoWindow) {
 			itemInfo.checkHover(getObjectByName(objects, "GUI_Item_Info_Panel_"), xPos, yPos);
 		}
+		else if (paletteModifier.getShow()) {
+			paletteModifier.checkHover(getObjectByName(objects, "GUI_Palette_Modifier_"), xPos, yPos);
+		}
 		else {
 			generate_GUI_Bottom_Bar_text(getObjectByName(objects, "GUI_BottomBar_Text_"), VertecesHandler::findByName(verteces, "Letters_"), "X:" + std::to_string(x), "Y:" + std::to_string(y), "Z:" + std::to_string(z));
 			if (eraseToggle || destroyToggle || destroyTileToggle || copyToggle || cutToggle || selectedItemId.first.first != -1) {
@@ -395,48 +388,12 @@ void handelHover() {
 			}
 		}
 	}
-	else if (!clickPaletteDropDown && !hoveringPaletteDropDown && (xPos >= screenWidth - 26 && xPos <= screenWidth - 10) && (yPos >= 33 && yPos <= 50)) {
-		leftPanelState = 1;
-		generate_GUI_Left_Panel(getObjectByName(objects, "GUI_LeftPanel_"), VertecesHandler::findByName(verteces, "GUI_1"), leftPanelState);
-		hoveringPaletteDropDown = true;
+	// Handle hover over left panel
+	if (leftPanelShow) {
+		leftPanel.checkHover(getObjectByName(objects, "GUI_LeftPanel_"), xPos, yPos);
 	}
-	else if (!clickPaletteDropDown && hoveringPaletteDropDown && !((xPos >= screenWidth - 26 && xPos <= screenWidth - 10) && (yPos >= 33 && yPos <= 50))) {
-		leftPanelState = 0;
-		generate_GUI_Left_Panel(getObjectByName(objects, "GUI_LeftPanel_"), VertecesHandler::findByName(verteces, "GUI_1"), leftPanelState);
-		hoveringPaletteDropDown = false;
-	}else if (clickPaletteDropDown && ((xPos >= screenWidth - 267 && xPos <= screenWidth - 29) && (yPos >= 54 && yPos <= startDropDown + palettes.size() * 36))) {
-		size_t item = (yPos - startDropDown) / 36;
-		generate_GUI_Left_Panel_DropDown(getObjectByName(objects, "GUI_LeftPanel_DropDown_"), VertecesHandler::findByName(verteces, "GUI_1"), item);
-	}
-	else if (!clickPaletteDropDown && (xPos >= screenWidth - 267 && xPos <= screenWidth - 10) && (yPos >= startDropDown + 2 && yPos <= screenHeight - 30)) {
-		if(!isWithinTileArea) isWithinTileArea = true;
-		size_t x = (xPos - (screenWidth - 267)) / 64;
-		size_t y = (yPos - (startDropDown)) / 64;
-		generate_GUI_Left_Panel_Selector(getObjectByName(objects, "GUI_LeftPanel_select_"), x, y, false);
-		if ((xPos >= screenWidth - 188 && xPos <= screenWidth - 170) && (yPos >= startDropDown + 2 + (paletteMaxY * 64) + 7 && yPos <= screenHeight - 35)) {
-			paletteLeftHover = true;
-			generate_GUI_Left_Panel(getObjectByName(objects, "GUI_LeftPanel_"), VertecesHandler::findByName(verteces, "GUI_1"), leftPanelState);
-		}
-		else if ((xPos >= screenWidth - 103 && xPos <= screenWidth - 85) && (yPos >= startDropDown + 2 + (paletteMaxY * 64) + 7 && yPos <= screenHeight - 35)) {
-			paletteRightHover = true;
-			generate_GUI_Left_Panel(getObjectByName(objects, "GUI_LeftPanel_"), VertecesHandler::findByName(verteces, "GUI_1"), leftPanelState);
-		}
-	}if (bottomBarShow) {
+	// Handle hover over bottom bar
+	if (bottomBarShow) {
 		bottomBar.checkHover(getObjectByName(objects, "GUI_BottomBar_"), xPos, yPos);
-	}
-
-	if (isWithinTileArea && !(xPos >= screenWidth - 267 && xPos <= screenWidth - 10) && (yPos >= startDropDown + 2 && yPos <= screenHeight - 30)) {
-		isWithinTileArea = false;
-		generate_GUI_Left_Panel_Selector(getObjectByName(objects, "GUI_LeftPanel_select_"), -1, -1, false);
-	}
-	if ( !( (xPos >= screenWidth - 188 && xPos <= screenWidth - 170) && (yPos >= startDropDown + 2 + (paletteMaxY * 64) + 7 && yPos <= screenHeight - 35) ) ) {
-		paletteLeftHover = false;
-		paletteLeftPressed = false;
-		generate_GUI_Left_Panel(getObjectByName(objects, "GUI_LeftPanel_"), VertecesHandler::findByName(verteces, "GUI_1"), leftPanelState);
-	}
-	if ( !( (xPos >= screenWidth - 103 && xPos <= screenWidth - 85) && (yPos >= startDropDown + 2 + (paletteMaxY * 64) + 7 && yPos <= screenHeight - 35) ) ) {
-		paletteRightHover = false;
-		paletteRightPressed = false;
-		generate_GUI_Left_Panel(getObjectByName(objects, "GUI_LeftPanel_"), VertecesHandler::findByName(verteces, "GUI_1"), leftPanelState);
 	}
 }

@@ -1,12 +1,28 @@
 #include "Tile.h"
+#include "VertecesHandler.h"
+#include "Global.h"
 
 tile::tile( int x,  int y,  int z, int id) : x(x), y(y), z(z), id(id)
 {
+	VertecesHandler vh;
+	getVertecesHandlerFromID(vh, id);
+	if (itemAtlas.checkIfAnimation(id)) {
+		ob = itemAtlas.getAnimationObject(x, y, id, vh.getVAO(), vh.getTextureID());
+	}else
+		ob = new Object(x, y, id, vh.getVAO(), vh.getTextureID());
 }
 
 tile::tile(tile *& t)
 {
 	*this = *t;
+	VertecesHandler vh;
+	getVertecesHandlerFromID(vh, id);
+	if (itemAtlas.checkIfAnimation(id)) {
+		ob = itemAtlas.getAnimationObject(x, y, id, vh.getVAO(), vh.getTextureID());
+	}
+	else
+		ob = new Object(x, y, id, vh.getVAO(), vh.getTextureID());
+	ob->setAnimationState(t->getObject()->getAnimationState());
 	items.clear();
 	for (auto& i : t->getAllItems()) {
 		if (Weapon* check = dynamic_cast<Weapon*>(i)) {
@@ -120,6 +136,7 @@ void tile::setBlockPathfind(bool value)
 
 void tile::insertItem(Item* insert)
 {
+	insert->updateObjectPosition(x, y);
 	items.push_back(insert);
 }
 
@@ -136,6 +153,11 @@ std::vector<Item*>& tile::getAllItems()
 void tile::setItems(std::vector<Item*>& otherItems)
 {
 	items = otherItems;
+	for (auto& i : items) {
+		auto& obj = i->getObject();
+		obj->setXPosition(x);
+		obj->setYPosition(y);
+	}
 }
 
 void tile::clearItems()
