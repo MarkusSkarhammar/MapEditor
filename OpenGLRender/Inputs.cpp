@@ -51,16 +51,17 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 				}
 			}
 			// Handle clicks on the bottom bar
-			if (bottomBarShow) {
+			if (bottomBar.getShow()) {
 				bottomBar.checkClicked(getObjectByName(objects, "GUI_BottomBar_"), xPos, yPos, 1);
 			}
 			// Handle clicks on the left panel
-			if (leftPanelShow) {
+			if (leftPanel.getShow()) {
 				leftPanel.checkClicked(getObjectByName(objects, "GUI_LeftPanel_"), xPos, yPos, 1);
 			}
 			// Handle clicks on the platte modifier window
 			if (paletteModifier.getShow()) {
 				paletteModifier.checkClicked(getObjectByName(objects, "GUI_Palette_Modifier_"), xPos, yPos, 1);
+				changeElementSizeAndTexture(Vertices::findByName(verticesContainer, "paletteModifierSearchIcon"), 0, 0, 50, 0);
 			}
 
 			lbutton_down = true;
@@ -73,14 +74,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 					generate_GUI_Item_Info_Panel(getObjectByName(objects, "GUI_Item_Info_Panel_"), VertecesHandler::findByName(verteces, "GUI_1"));
 				}
 			}
-			if (paletteLeftPressed) paletteLeftPressed = false;
-			if (paletteRightPressed) paletteRightPressed = false;
-			if (descriptionButtonPressed) {
-				descriptionButtonPressed = false;
-				generate_GUI_Item_Info_Panel(getObjectByName(objects, "GUI_Item_Info_Panel_"), VertecesHandler::findByName(verteces, "GUI_1"));
-			}
 
-			if (leftPanelShow) {
+			if (leftPanel.getShow()) {
 				leftPanel.checkClicked(getObjectByName(objects, "GUI_LeftPanel_"), xPos, yPos, 0);
 			}
 
@@ -103,7 +98,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 			getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects();
 		}
 		// Reset left panel
-		if (leftPanelShow) {
+		if (leftPanel.getShow()) {
 			if (ToggleButtonGroup* tg = dynamic_cast<ToggleButtonGroup*>(leftPanel.getElementByName("tileSelectionToggles"))) {
 				tg->resetAll();
 			}
@@ -137,14 +132,12 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_5 && action == GLFW_PRESS) {
 		if (!itemInfoWindow && z < 13) {
 			newZ += 1;
-			generate_GUI_Bottom_Bar_text(getObjectByName(objects, "GUI_BottomBar_Text_"), VertecesHandler::findByName(verteces, "Letters_"), "X:" + std::to_string(x), "Y:" + std::to_string(y), "Z:" + std::to_string(z));
 		}
 	}
 
 	if (button == GLFW_MOUSE_BUTTON_4 && action == GLFW_PRESS) {
 		if (!itemInfoWindow && z > 0) {
 			newZ -= 1;
-			generate_GUI_Bottom_Bar_text(getObjectByName(objects, "GUI_BottomBar_Text_"), VertecesHandler::findByName(verteces, "Letters_"), "X:" + std::to_string(x), "Y:" + std::to_string(y), "Z:" + std::to_string(z));
 		}
 	}
 }
@@ -361,6 +354,7 @@ void handelHover() {
 	if ( (xPos >= 0.0 && xPos <= screenWidth - 276) && (yPos >= 0.0 && yPos <= screenHeight - 30) ) {
 		x = /*(xCoord / imgScale)*/ ((xCameraPos - 1.0f) / (imgScale / (screenWidth / 2))) + (xPos / imgScale);
 		y = -((yCameraPos + 1.f) / (imgScale / (screenHeight / 2))) + (yPos / imgScale);
+		xText = std::to_string(x), yText = std::to_string(y), zText = std::to_string(z);
 		if (itemInfoWindow) {
 			itemInfo.checkHover(getObjectByName(objects, "GUI_Item_Info_Panel_"), xPos, yPos);
 		}
@@ -368,7 +362,7 @@ void handelHover() {
 			paletteModifier.checkHover(getObjectByName(objects, "GUI_Palette_Modifier_"), xPos, yPos);
 		}
 		else {
-			generate_GUI_Bottom_Bar_text(getObjectByName(objects, "GUI_BottomBar_Text_"), VertecesHandler::findByName(verteces, "Letters_"), "X:" + std::to_string(x), "Y:" + std::to_string(y), "Z:" + std::to_string(z));
+			//bottomBar.updateLabels(getObjectByName(objects, "GUI_BottomBar_"));
 			if (eraseToggle || destroyToggle || destroyTileToggle || copyToggle || cutToggle || selectedItemId.first.first != -1) {
 				if (lbutton_down) {
 					int tempID(0);
@@ -389,11 +383,11 @@ void handelHover() {
 		}
 	}
 	// Handle hover over left panel
-	if (leftPanelShow) {
+	if (leftPanel.getShow()) {
 		leftPanel.checkHover(getObjectByName(objects, "GUI_LeftPanel_"), xPos, yPos);
 	}
 	// Handle hover over bottom bar
-	if (bottomBarShow) {
+	if (bottomBar.getShow()) {
 		bottomBar.checkHover(getObjectByName(objects, "GUI_BottomBar_"), xPos, yPos);
 	}
 }

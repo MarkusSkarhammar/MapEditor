@@ -4,24 +4,24 @@
 
 tile::tile( int x,  int y,  int z, int id) : x(x), y(y), z(z), id(id)
 {
-	VertecesHandler vh;
+	VertecesHandler* vh = nullptr;
 	getVertecesHandlerFromID(vh, id);
 	if (itemAtlas.checkIfAnimation(id)) {
-		ob = itemAtlas.getAnimationObject(x, y, id, vh.getVAO(), vh.getTextureID());
+		ob = itemAtlas.getAnimationObject(x, y, id, vh->getVAO(), vh->getTextureID());
 	}else
-		ob = new Object(x, y, id, vh.getVAO(), vh.getTextureID());
+		ob = new Object(x, y, id, vh->getVAO(), vh->getTextureID());
 }
 
 tile::tile(tile *& t)
 {
 	*this = *t;
-	VertecesHandler vh;
+	VertecesHandler* vh = nullptr;
 	getVertecesHandlerFromID(vh, id);
 	if (itemAtlas.checkIfAnimation(id)) {
-		ob = itemAtlas.getAnimationObject(x, y, id, vh.getVAO(), vh.getTextureID());
+		ob = itemAtlas.getAnimationObject(x, y, id, vh->getVAO(), vh->getTextureID());
 	}
 	else
-		ob = new Object(x, y, id, vh.getVAO(), vh.getTextureID());
+		ob = new Object(x, y, id, vh->getVAO(), vh->getTextureID());
 	ob->setAnimationState(t->getObject()->getAnimationState());
 	items.clear();
 	for (auto& i : t->getAllItems()) {

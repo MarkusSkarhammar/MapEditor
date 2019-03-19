@@ -313,7 +313,6 @@
 	
 	<!-- Monsters -->
 	<Monsters>
-		<Item id="4096" article="a" name="Goblin" />
 	</Monsters>
 	
 	<!-- Nature -->

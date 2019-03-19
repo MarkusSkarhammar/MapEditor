@@ -3,6 +3,17 @@
 
 ItemAtals::ItemAtals()
 {
+	
+}
+
+ItemAtals::~ItemAtals() {
+	for (auto& item : items) {
+		delete item;
+	}
+}
+
+void ItemAtals::generateAtlas()
+{
 	pugi::xml_parse_result result = doc.load_file("./resources/Items/Items.xml");
 	std::vector<string> types;
 	std::string typeS;
@@ -24,7 +35,7 @@ ItemAtals::ItemAtals()
 			typeS = item.attribute("type").as_string();
 			Item* temp = nullptr;
 			if (typeS.compare("Weapon") == 0) {
-				temp = new Weapon(id, article, name);	
+				temp = new Weapon(id, article, name);
 			}
 			else if (typeS.compare("Armor") == 0) {
 				temp = new Armor(id, article, name);
@@ -117,12 +128,6 @@ ItemAtals::ItemAtals()
 			}
 			items.push_back(temp);
 		}
-	}
-}
-
-ItemAtals::~ItemAtals() {
-	for (auto& item : items) {
-		delete item;
 	}
 }
 
@@ -250,7 +255,6 @@ bool ItemAtals::checkIfDouleSize(int ID)
 	}
 	return false;
 }
-;
 
 /*std::vector<ItemInfo> ItemAtals::getTiles()
 {

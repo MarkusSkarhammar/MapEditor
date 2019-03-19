@@ -32,6 +32,12 @@ extern GLuint view;
 // TextOffset
 extern glm::vec2 textOffsetValues;
 
+// Vertices container
+extern std::vector<Vertices*> verticesContainer;
+extern std::vector<Vertices*> verticesContainer64xTiles;
+extern std::vector<Vertices*> verticesContainer128xTiles;
+extern std::vector<Vertices*> verticesContainerLetters;
+
 
 struct game_state {
 	// this contains the state of your game, such as positions and velocities
@@ -52,7 +58,7 @@ struct SPosition
 };
 
 // Store all the verteces
-extern std::vector<VertecesHandler> verteces;
+extern std::vector<VertecesHandler*> verteces;
 
 // Store all the objects
 extern std::vector<Objects> objects;
@@ -116,6 +122,7 @@ extern double xPos, yPos;
 
 // The coordinates for a tile depending on where the mouse currently is or where it last were. 
 extern size_t x, y, z;
+extern std::string xText, yText, zText;
 
 extern bool changeFloor;
 extern int newZ;
@@ -269,40 +276,15 @@ extern size_t brush;
 extern Serialize serializer;
 
 //-----------------------------------
-//			bottom bar
+//			Left panel
 //-----------------------------------
 
 // lefPanel
 extern GUIPanel leftPanel;
 
-// bottom bar IDs
-extern int fillerPixel;
-extern int displayBar;
-extern int displayBarButton;
-extern int displayBarButtonHover;
-extern int displayBarButtonPressed;
-extern int tileAreaTop;
-extern int tileAreaMiddle;
-extern int tileAreaBottom;
-extern int tileAreaLeftButton;
-extern int tileAreaLeftButtonHover;
-extern int tileAreaLeftButtonPressed;
-extern int tileAreaRightButton;
-extern int tileAreaRightButtonHover;
-extern int tileAreaRightButtonPressed;
-extern int leftPanelDropDownMiddleSection;
-extern int leftPanelDropDownBottomSection;
-extern int leftPanelDropDownHover;
-extern int leftPanelYellowSquareSmall;
-extern int leftPanelRedSquareSmall;
-extern int leftPanelYellowSquareBig;
-extern int leftPanelRedSquareBig;
-
-// Show left panel
-extern bool leftPanelShow;
 
 //-----------------------------------
-//			DONE: bottom bar
+//			DONE: Left panel
 //-----------------------------------
 
 //-----------------------------------
@@ -311,28 +293,6 @@ extern bool leftPanelShow;
 
 // GUIPanel
 extern GUIPanel bottomBar;
-
-// bottom bar IDs
-extern int bottomBarBasic;
-extern int bottomBarLabel;
-extern int bottomBarEraser;
-extern int bottomBarEraserHover;
-extern int bottomBarEraserPressed;
-extern int bottomBarDestroyer;
-extern int bottomBarDestroyerHover;
-extern int bottomBarDestroyerPressed;
-extern int bottomBarTileDestroyer;
-extern int bottomBarTileDestroyerHover;
-extern int bottomBarTileDestroyerPressed;
-extern int bottomBarCut;
-extern int bottomBarCutHover;
-extern int bottomBarCutPressed;
-extern int bottomBarCopy;
-extern int bottomBarCopyHover;
-extern int bottomBarCopyPressed;
-
-// Show bottom bar
-extern bool bottomBarShow;
 
 // Copy buffer
 extern std::vector<std::pair<ToDraw, tile*>> copyBuffer;
@@ -357,24 +317,6 @@ extern tile* itemInfoTile;
 extern int itemInfoCurrentPage;
 extern int itemInfoMaxPage;
 extern int itemInfoSubPage;
-
-// item info first page: Tile
-extern bool descriptionButtonHover;
-extern bool descriptionButtonPressed;
-
-// item info panel
-extern int itemInfoPanelID;
-extern int itemInfoTextSectionID;
-extern int itemInfoRightArrowID;
-extern int itemInfoRightArrowHoverID;
-extern int itemInfoRightArrowPressedID;
-extern int itemInfoLeftArrowID;
-extern int itemInfoLeftArrowHoverID;
-extern int itemInfoLeftArrowPressedID;
-extern int itemInfoTextAreaID;
-extern int itemInfoButtonID;
-extern int itemInfoButtonHoverID;
-extern int itemInfoButtonPressedID;
 
 // Show item info window
 extern bool itemInfoWindow;
@@ -447,6 +389,6 @@ extern size_t targetMoveY;
 //			DONE Character stuff
 //-----------------------------------
 
-
+extern std::string getTextFromID(int ID, bool& x124);
 
 #endif // !GLOBAL_VARIABLES_H

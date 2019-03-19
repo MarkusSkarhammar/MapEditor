@@ -233,8 +233,9 @@ int main(int argc, wchar_t *argv[])
 
 
 	for (auto vert : verteces) {
-		glDeleteBuffers(1, &vert.getVBO());
-		glDeleteVertexArrays(1, &vert.getVAO());
+		glDeleteBuffers(1, &vert->getVBO());
+		glDeleteVertexArrays(1, &vert->getVAO());
+		delete vert;
 	}
 
 	glDeleteTextures(1, &gTileArrayTexture);
@@ -438,7 +439,7 @@ void generateTextures() {
 	fipWinImage img;
 	std::string path;
 	for (size_t i = 0; i < texturesAmount; ++i) {
-		verteces.at(i).setTextureID(i);
+		verteces.at(i+1)->setTextureID(i);
 		path = "./resources/images/" + paths[i].first + ".png";
 		bool read(false);
 		read = img.load(&path[0]);
@@ -518,45 +519,53 @@ void generateVBOs() {
 
 
 	for (auto path : paths ) {
-		VertecesHandler temp = VertecesHandler(path.first, path.second);
+		VertecesHandler* temp = new VertecesHandler(path.first);
 		if (path.second > 0) {
-			generateVetecesSquares(temp);
+			generateVetecesSquares(temp, path.second);
 
-			glGenVertexArrays(1, &temp.getVAO());
+			glGenVertexArrays(1, &temp->getVAO());
 
-			glGenBuffers(1, &temp.getVBO()); // Generate 1 buffer
+			glGenBuffers(1, &temp->getVBO()); // Generate 1 buffer
+			glGenBuffers(1, &temp->getVBOText()); // Generate 1 buffer
 
-											 //vector<float> *tilesVptr = &temp.getVerteces();
+			glBindVertexArray(temp->getVAO());
+			glBindBuffer(GL_ARRAY_BUFFER, temp->getVBO());
+			//glBufferData(GL_ARRAY_BUFFER, temp.getVerteces().size() * sizeof(float), &temp.getVerteces()[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, temp->getVerteces().size() * sizeof(float) + temp->getVertecesText().size() * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, temp->getVerteces().size() * sizeof(float), &temp->getVerteces()[0]);
 
-			glBindVertexArray(temp.getVAO());
-			glBindBuffer(GL_ARRAY_BUFFER, temp.getVBO());
-			glBufferData(GL_ARRAY_BUFFER, temp.getVerteces().size() * sizeof(float), &temp.getVerteces()[0], GL_STATIC_DRAW);
-
+			//glBindBuffer(GL_ARRAY_BUFFER, temp.getVBOText());
+			//glBufferData(GL_ARRAY_BUFFER, temp.getVertecesText().size() * sizeof(float), &temp.getVertecesText()[0], GL_DYNAMIC_DRAW);
+			glBufferSubData(GL_ARRAY_BUFFER, temp->getVerteces().size() * sizeof(float), temp->getVertecesText().size() * sizeof(float), &temp->getVertecesText()[0]);
 
 			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(SPosition), (GLvoid*)0);
+			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 			glEnableVertexAttribArray(1);
-			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(SPosition), (GLvoid*)8);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(temp->getVerteces().size() * sizeof(float)));
 		}
 		else if (path.second == -1) {
-
+			
 			generateGUI(temp, path.first);
 
-			glGenVertexArrays(1, &temp.getVAO());
+			glGenVertexArrays(1, &temp->getVAO());
 
-			glGenBuffers(1, &temp.getVBO()); // Generate 1 buffer
+			glGenBuffers(1, &temp->getVBO()); // Generate 1 buffer
+			glGenBuffers(1, &temp->getVBOText()); // Generate 1 buffer
 
-											 //vector<float> *tilesVptr = &temp.getVerteces();
+			glBindVertexArray(temp->getVAO());
+			glBindBuffer(GL_ARRAY_BUFFER, temp->getVBO());
+			//glBufferData(GL_ARRAY_BUFFER, temp.getVerteces().size() * sizeof(float), &temp.getVerteces()[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, temp->getVerteces().size() * sizeof(float) + temp->getVertecesText().size() * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, temp->getVerteces().size() * sizeof(float), &temp->getVerteces()[0]);
 
-			glBindVertexArray(temp.getVAO());
-			glBindBuffer(GL_ARRAY_BUFFER, temp.getVBO());
-			glBufferData(GL_ARRAY_BUFFER, temp.getVerteces().size() * sizeof(float), &temp.getVerteces()[0], GL_STATIC_DRAW);
-
+			//glBindBuffer(GL_ARRAY_BUFFER, temp.getVBOText());
+			//glBufferData(GL_ARRAY_BUFFER, temp.getVertecesText().size() * sizeof(float), &temp.getVertecesText()[0], GL_DYNAMIC_DRAW);
+			glBufferSubData(GL_ARRAY_BUFFER, temp->getVerteces().size() * sizeof(float), temp->getVertecesText().size() * sizeof(float), &temp->getVertecesText()[0]);
 
 			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(SPosition), (GLvoid*)0);
+			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 			glEnableVertexAttribArray(1);
-			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(SPosition), (GLvoid*)8);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(temp->getVerteces().size() * sizeof(float)));
 		}
 
 		verteces.push_back(temp);
@@ -589,7 +598,6 @@ void init() {
 	// Create Vertex Array Object
 	generateVBOs();
 
-
 	// Create and compile the vertex shader and fragment shader
 
 	program = LoadShaders("./TransformVertexShader.vertexshader", "./ColorFragmentShader.fragmentshader");
@@ -599,8 +607,11 @@ void init() {
 
 	//glUniform1i(0, 0); //Sampler refers to texture unit 0
 
-					   //Generate Textures
+	//Generate Textures
 	generateTextures();
+
+	// Generate itemAtlas
+	itemAtlas.generateAtlas();
 
 	// Get a handle for our "MVP" uniform
 	model = glGetUniformLocation(program, "model");
@@ -626,9 +637,6 @@ void init() {
 	objects.push_back(temp);
 	temp = Objects("GUI_BottomBar_");
 	generate_GUI_Bottom_Bar(temp, VertecesHandler::findByName(verteces, "GUI_1"));
-	objects.push_back(temp);
-	temp = Objects("GUI_BottomBar_Text_");
-	generate_GUI_Bottom_Bar_text(temp, VertecesHandler::findByName(verteces, "Letters_"), "X:" + std::to_string(x), "Y:" + std::to_string(y), "Z:" + std::to_string(z));
 	objects.push_back(temp);
 	temp = Objects("GUI_LeftPanel_");
 	generate_GUI_Left_Panel(temp, VertecesHandler::findByName(verteces, "GUI_1"), 0);

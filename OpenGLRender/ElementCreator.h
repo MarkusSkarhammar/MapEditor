@@ -15,29 +15,27 @@ using std::vector;
 using std::string;
 
 // Bottom bar
-void generate_GUI_Bottom_Bar(Objects& ob, VertecesHandler vh);
-void generate_GUI_Bottom_Bar_text(Objects& ob, VertecesHandler vh, std::string xText, std::string yText, std::string zText);
+void generate_GUI_Bottom_Bar(Objects& ob, VertecesHandler*& vh);
+void generate_GUI_Bottom_Bar_text(Objects& ob, VertecesHandler*& vh, std::string xText, std::string yText, std::string zText);
 
 // Text
-void generate_GUI_Text(Objects& ob, VertecesHandler& vh, double x, double y, std::string text);
-void generate_GUI_Text(Objects& ob, VertecesHandler& vh, double x, double y, std::string text, int rowLength);
+void generate_GUI_Text(Objects& ob, VertecesHandler*& vh, double x, double y, std::string text);
+void generate_GUI_Text(std::vector<Object*>& vec, VertecesHandler*& vh, double x, double y, std::string text);
+void generate_GUI_Text(Objects& ob, VertecesHandler*& vh, double x, double y, std::string text, int rowLength);
 
 // left panel
-void generate_GUI_Left_Panel(Objects& ob, VertecesHandler vh, size_t displayState);
-void generate_GUI_Left_Panel_Text_(Objects& ob, VertecesHandler vh);
-void generate_GUI_Left_Panel_DropDown(Objects& ob, VertecesHandler vh, int hover);
-void generate_GUI_Left_Panel_DropDown_Text(Objects& ob, VertecesHandler vh);
-void generate_GUI_Left_Panel_Tiles(Objects& ob);
+void generate_GUI_Left_Panel(Objects& ob, VertecesHandler*& vh, size_t displayState);
+void generate_GUI_Left_Panel_Text_(Objects& ob, VertecesHandler*& vh);
 void generate_GUI_Left_Panel_Selector(Objects & ob);
 
 // Preview tiles
 void generate_GUI_Preview_Tiles(Objects& ob);
 
 // ItemInfo panel
-void generate_GUI_Item_Info_Panel(Objects & ob, VertecesHandler vh);
+void generate_GUI_Item_Info_Panel(Objects & ob, VertecesHandler*& vh);
 
 // Palette modifier
-void generate_Palette_Modifier(Objects & ob, VertecesHandler vh);
+void generate_Palette_Modifier(Objects & ob, VertecesHandler*& vh);
 
 void generate_Palette_Modifier_Fill_Palette(Objects & ob, Palette& p);
 
