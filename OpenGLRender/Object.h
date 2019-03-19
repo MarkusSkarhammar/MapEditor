@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include "VertecesHandler.h"
 
 class Object {
 public:
@@ -58,6 +59,7 @@ public:
 	void addObject(Object* o);
 	void setObjects(std::vector<Object*> input);
 	std::vector<Object*>& getObjects() { return objects; };
+	std::vector<Object*> getCopyObjects() { return objects; };
 	void clearObjects();
 	void checkAnimations();
 private:
@@ -74,5 +76,6 @@ static Objects& getObjectByName(std::vector<Objects>& ob, std::string name) {
 }
 
 void checkAnimations();
+void changeElementSizeAndTexture(Vertices*& v, int xLeftDifference, int yLeftDifference, int xRightDifference, int yRightDifference);
 
 #endif

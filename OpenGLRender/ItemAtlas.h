@@ -31,6 +31,7 @@ class ItemAtals {
 public:
 	ItemAtals();
 	~ItemAtals();
+	void generateAtlas();
 	std::vector<size_t> getItemTexturePositionForSelectionArea(std::string category);
 	Item* getItem(size_t id);
 	std::string& getWeaponType(int& id);

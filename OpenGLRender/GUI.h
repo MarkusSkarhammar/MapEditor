@@ -12,13 +12,13 @@ class GUIElement {
 public:
 	GUIElement(std::string name);
 	GUIElement(std::string name, int xStart, int yStart, int width, int height): name(name), xStart(xStart), yStart(yStart), width(width), height(height) {};
-	GUIElement(std::string name, int vao, int textPos, int id, int xStart, int yStart, int width, int height, std::string text);
+	GUIElement(std::string name, Vertices* v, int xStart, int yStart, int width, int height, std::string text);
 	virtual void testHover(double& xPos, double& yPos);
 	virtual void testClicked(double& xPos, double& yPos, int mouseState, bool& isClicked);
 	virtual void createObject(Objects & ob);
 	std::string& getName();
-	void setID(int& id);
-	int& getID();
+	Vertices*& getV() { return v; };
+	void setV(Vertices*& p) { v = p; };
 	virtual void setUpdate(bool value);
 	virtual bool getUpdate();
 	bool getHover();
@@ -31,7 +31,8 @@ public:
 protected:
 	std::string name{ "" }, text{ "" };
 	bool isClicked{ false }, isHover{ false }, isCenteredText{ false }, show{ true };
-	int VAO{ 0 }, textPos{ 0 }, id{ -1 }, xStart{ 0 }, yStart{ 0 }, width{ 0 }, height{ 0 };
+	int xStart{ 0 }, yStart{ 0 }, width{ 0 }, height{ 0 };
+	Vertices* v = nullptr;
 private:
 	bool update{ false };
 	virtual void handleHover();
@@ -40,9 +41,9 @@ private:
 
 class Button : public GUIElement {
 public:
-	Button(std::string name, int vao, int textPos, int id1, int id2, int id3, int xStart, int yStart, int width, int height, std::string text, std::function<void()> const& lambda);
+	Button(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::string text, std::function<void()> const& lambda);
 protected:
-	int buttonID, hoverID, clickedID;
+	Vertices* button = nullptr, *hover = nullptr, *clicked = nullptr;
 private:
 	std::function<void()> const lambda;
 	void handleHover();
@@ -51,7 +52,7 @@ private:
 
 class ExpandingButton : public Button {
 public:
-	ExpandingButton(std::string name, int vao, int textPos, int id1, int id2, int id3, int xStart, int yStart, int width, int height, float scale, std::string text, std::function<void()> const& lambda);
+	ExpandingButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, float scale, std::string text, std::function<void()> const& lambda);
 	void createObject(Objects& ob);
 private:
 	float scaling{ 1.0 };
@@ -59,17 +60,19 @@ private:
 
 class ToggleButton : public GUIElement {
 public:
-	ToggleButton(std::string name, int vao, int textPos, int id1, int id2, int id3, int xStart, int yStart, int width, int height, std::function<void()> const& lambda);
-	ToggleButton(std::string name, int id1, int id2, int id3, int xStart, int yStart, int width, int height, std::function<void()> const& lambda, bool isTile);
-	ToggleButton(std::string name, int id1, int id2, int id3, int xStart, int yStart, int width, int height, std::function<void()> const& lambda, bool isTile, bool doubleSize);
+	ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::function<void()> const& lambda);
 	void createObject(Objects & ob);
 	void resetToggle();
 	bool& getToggle() { return toggle; };
 	void toggleCleanreset() { cleanReset = !cleanReset; };
 	void toggleHover() { doHover = !doHover; };
+	void toggleAlwaysShowBase() { alwaysShowBase = !alwaysShowBase; };
+	void setOffset(int v) { offset = v; };
+	void setTextOffset(int v) { textOffset = v; };
 private:
-	int buttonID, hoverID, clickedID;
-	bool toggle{ false }, isTile{ false }, doubleSize{ false }, cleanReset{ true }, doHover{ true };
+	Vertices* button, *hover, *clicked;
+	bool toggle{ false }, cleanReset{ true }, doHover{ true }, alwaysShowBase{ false };
+	int offset{ 0 }, textOffset{ 0 };
 	std::function<void()> const lambda;
 	void handleHover();
 	void handleClicked(int& mouseState);
@@ -112,6 +115,7 @@ public:
 	void setCheckIfOutside(bool value) { checkIfOutside = value; };
 	void toggleShow() { show = !show; };
 	bool getShow() { return show; };
+	void updateLabels(Objects & ob);
 private:
 	int xStart{ 0 }, yStart{ 0 }, width{ 0 }, height{ 0 };
 	bool checkIfOutside{ false }, isClicked{ false }, show{ true };
@@ -121,20 +125,19 @@ private:
 
 class DropDownElement : public GUIElement {
 public:
-	DropDownElement(std::string name, int vao, int textPos, int sectionID, int hoverID, int xStart, int yStart, int width, int height, std::function<void()> const& lambda);
-	void setCurrentID(int ID);
+	DropDownElement(std::string name, Vertices* section, Vertices* hover, int xStart, int yStart, int width, int height, std::function<void()> const& lambda);
 	virtual void createObject(Objects & ob);
 	void runLambda() { lambda(); };
 private:
 	std::function<void()> const lambda;
-	int sectionID, hoverID;
+	Vertices *section, *hover;
 	void handleHover();
 	void handleClicked(int& mouseState);
 };
 
 class DropDown : public GUIElement{
 public:
-	DropDown(std::string name, int vao, int textPos, int topSectionID, int middleSectionID, int bottomSectionID, int hoverID, int xStart, int yStart, int widthEntry, int heightEntry);
+	DropDown(std::string name, Vertices* topSection, Vertices* middleSection, Vertices* bottomSection, Vertices* hover, int xStart, int yStart, int widthEntry, int heightEntry);
 	~DropDown();
 	void add(std::string text, std::function<void()> const& lambda);
 	void createObject(Objects & ob);
@@ -145,8 +148,8 @@ public:
 	void setUpdate(bool value);
 private:
 	std::vector<DropDownElement*> items;
-	int vao, textPos, xStart, yStart, width, height, currentSelected{ -1 }, padding { 0 };
-	int topSectionID, middleSectionID, bottomSectionID, hoverID;
+	int xStart, yStart, width, height, currentSelected{ -1 }, padding { 0 };
+	Vertices* topSection, *middleSection, *bottomSection, *hover;
 	void handleHover();
 	void handleClicked(int& mouseState);
 };
@@ -156,6 +159,17 @@ public:
 	GUIText(std::string name, int xStart, int yStart, int width, int height, std::string text) : GUIElement(name, xStart, yStart, width, height) { setText(text); };
 	void createObject(Objects & ob);
 private:
+};
+
+class GUILabel : public GUIElement {
+public:
+	GUILabel(std::string name, Vertices* v, int xStart, int yStart, int width, int height, std::string text, std::string& ref) : textRef(ref), GUIElement(name, v, xStart, yStart, width, height, text) { };
+	void createObject(Objects & ob);
+	void update(Objects & ob);
+private:
+	std::string& textRef;
+	Object* o = nullptr;
+	int size = 0;
 };
 
 #endif

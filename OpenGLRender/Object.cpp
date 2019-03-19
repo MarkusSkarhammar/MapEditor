@@ -115,3 +115,45 @@ void checkAnimations()
 	}
 	*/
 }
+
+void changeElementSizeAndTexture(Vertices*& v, int xLeftDifference, int yLeftDifference, int xRightDifference, int yRightDifference)
+{
+
+	VertecesHandler*& vh = v->getVertecesHandler();
+	//glBindVertexArray(vh.getVAO());
+	glBindBuffer(GL_ARRAY_BUFFER, vh->getVBO());
+	{ // Texture
+		auto it = vh->getVertecesText().begin() + (v->getID() * 8);
+		double amountX = (*(it + 2) - *(it)) * 0.5;
+		// X
+		*(it + (1 * 2)) -= amountX;
+		// Y
+		//textCoords.at(1 * 2 + 1) -= (amount / double(screenHeightPixels / 2));
+		// X
+		*(it + (3 * 2)) -= amountX;
+		// Y
+		//textCoords.at(3 * 2 + 1) -= (amount / double(screenHeightPixels / 2));
+		std::vector<float> textCoords;
+		for (auto it = vh->getVertecesText().begin() + (v->getID() * 8); it != vh->getVertecesText().begin() + (v->getID() * 8) + 8; it++) {
+			textCoords.push_back(*it);
+		}
+		glBufferSubData(GL_ARRAY_BUFFER, (vh->getVerteces().size() + (v->getID() * 8)) * sizeof(float), 8 * sizeof(float), &textCoords[0]);
+	}
+	{ // Position
+		auto it = vh->getVerteces().begin() + (v->getID() * 8);
+		double amountX = (*(it + 2) - *(it)) * 0.5;
+		// X
+		*(it + (1 * 2)) -= amountX;
+		// Y
+		//textCoords.at(1 * 2 + 1) -= (amount / double(screenHeightPixels / 2));
+		// X
+		*(it + (3 * 2)) -= amountX;
+		// Y
+		//textCoords.at(3 * 2 + 1) -= (amount / double(screenHeightPixels / 2));
+		std::vector<float> coords;
+		for (auto itTemp = it; itTemp != it + 8; itTemp++) {
+			coords.push_back(*itTemp);
+		}
+		glBufferSubData(GL_ARRAY_BUFFER, (v->getID() * 8) * sizeof(float), 8 * sizeof(float), &coords[0]);
+	}
+}

@@ -16,8 +16,15 @@ glm::vec2 textOffsetValues(0);
 game_state current_state;
 game_state previous_state;
 
+// Vertices container
+VertecesHandler* tempVH = new VertecesHandler("wrong");
+std::vector<Vertices*> verticesContainer = { new Vertices("wrong", tempVH, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) };
+std::vector<Vertices*> verticesContainer64xTiles = { new Vertices("wrong", tempVH, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) };
+std::vector<Vertices*> verticesContainer128xTiles = { new Vertices("wrong", tempVH, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) };
+std::vector<Vertices*> verticesContainerLetters = { new Vertices("wrong", tempVH, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) };
+
 // Store all the verteces
-std::vector<VertecesHandler> verteces;
+std::vector<VertecesHandler*> verteces = {tempVH};
 
 // Store all the objects
 std::vector<Objects> objects;
@@ -67,6 +74,7 @@ const size_t SIZE_DROP_DOWN_TEXT = 7;
 
 // The coordinates for a tile depending on where the mouse currently is and where the camera is positioned. 
 size_t x(0), y(0), z(7);
+std::string xText{"0"}, yText{ "0" }, zText{ "7" };
 
 bool changeFloor(false);
 int newZ(7);
@@ -213,31 +221,6 @@ Serialize serializer;
 // lefPanel
 GUIPanel leftPanel("leftPanel");
 
-// bottom bar IDs
-int fillerPixel;
-int displayBar;
-int displayBarButton;
-int displayBarButtonHover;
-int displayBarButtonPressed;
-int tileAreaTop;
-int tileAreaMiddle;
-int tileAreaBottom;
-int tileAreaLeftButton;
-int tileAreaLeftButtonHover;
-int tileAreaLeftButtonPressed;
-int tileAreaRightButton;
-int tileAreaRightButtonHover;
-int tileAreaRightButtonPressed;
-int leftPanelDropDownMiddleSection;
-int leftPanelDropDownBottomSection;
-int leftPanelDropDownHover;
-int leftPanelYellowSquareSmall;
-int leftPanelRedSquareSmall;
-int leftPanelYellowSquareBig;
-int leftPanelRedSquareBig;
-
-// Show left panel
-bool leftPanelShow(true);
 
 //-----------------------------------
 //			DONE: Left Panel
@@ -249,28 +232,6 @@ bool leftPanelShow(true);
 
 // GUIPanel
 GUIPanel bottomBar("bottomBar");
-
-// bottom bar IDs
-int bottomBarBasic(0);
-int bottomBarLabel(0);
-int bottomBarEraser(0);
-int bottomBarEraserHover(0);
-int bottomBarEraserPressed(0);
-int bottomBarDestroyer(0);
-int bottomBarDestroyerHover(0);
-int bottomBarDestroyerPressed(0);
-int bottomBarTileDestroyer(0);
-int bottomBarTileDestroyerHover(0);
-int bottomBarTileDestroyerPressed(0);
-int bottomBarCut(0);
-int bottomBarCutHover(0);
-int bottomBarCutPressed(0);
-int bottomBarCopy(0);
-int bottomBarCopyHover(0);
-int bottomBarCopyPressed(0);
-
-// Show bottom bar
-bool bottomBarShow(true);
 
 // Copy buffer
 std::vector<std::pair<ToDraw, tile*>> copyBuffer;
@@ -296,24 +257,6 @@ tile* itemInfoTile(nullptr);
 int itemInfoCurrentPage(0);
 int itemInfoMaxPage(0);
 int itemInfoSubPage(0);
-
-// item info first page: Tile
-bool descriptionButtonHover(false);
-bool descriptionButtonPressed(false);
-
-// item info panel IDs
-int itemInfoPanelID(0);
-int itemInfoTextSectionID(0);
-int itemInfoRightArrowID(0);
-int itemInfoRightArrowHoverID(0);
-int itemInfoRightArrowPressedID(0);
-int itemInfoLeftArrowID(0);
-int itemInfoLeftArrowHoverID(0);
-int itemInfoLeftArrowPressedID(0);
-int itemInfoTextAreaID(0);
-int itemInfoButtonID(0);
-int itemInfoButtonHoverID(0);
-int itemInfoButtonPressedID(0);
 
 
 // Show tile info window
@@ -386,3 +329,25 @@ size_t targetMoveY(10000);
 //-----------------------------------
 //			DONE Character stuff
 //-----------------------------------
+
+std::string getTextFromID(int ID, bool & x124)
+{
+	std::string s = "";
+	if (ID / 1024 == 0) {
+		s = "Tiles_1024_" + std::to_string(ID);
+	}
+	else if (ID / 1024 == 1) {
+		s = "Items_1024_" + std::to_string(ID % 1024);
+	}
+	else if (ID / 1024 == 2) {
+		s = "Doodads_1024_" + std::to_string(ID % 1024);
+		x124 = true;
+	}
+	else if (ID / 1024 == 3) {
+		s = "Borders_1024_" + std::to_string(ID % 1024);
+	}
+	else if (ID / 1024 == 5) {
+		s = "Nature_1024_" + std::to_string(ID % 1024);
+	}
+	return s;
+}

@@ -8,7 +8,7 @@ GUIElement::GUIElement(std::string name): name(name)
 {
 }
 
-GUIElement::GUIElement(std::string name, int vao, int textPos, int id, int xStart, int yStart, int width, int height, std::string text = "") : name(name), VAO(vao), textPos(textPos), id(id), xStart(xStart), yStart(yStart), width(width), height(height), text(text)
+GUIElement::GUIElement(std::string name, Vertices* v, int xStart, int yStart, int width, int height, std::string text = "") : name(name), v(v), xStart(xStart), yStart(yStart), width(width), height(height), text(text)
 {
 }
 
@@ -39,18 +39,18 @@ void GUIElement::testClicked(double & xPos, double & yPos, int mouseState, bool&
 
 void GUIElement::createObject(Objects & ob)
 {
-	if(id != -1 && show)
-		ob.addObject(new Object( (xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), id, this->VAO, textPos));
+	if(v && show)
+		ob.addObject(new Object( (xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), v->getID(), v->getVertecesHandler()->getVAO(), v->getVertecesHandler()->getTextureID()));
 	if (text.size() > 0) {
-		VertecesHandler vhText = VertecesHandler::findByName(verteces, "Letters_");
+		VertecesHandler*& vhText = VertecesHandler::findByName(verteces, "Letters_");
 
 		if (!isCenteredText) {
 			// Text
-			generate_GUI_Text(ob, vhText, ((xStart + 70) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 70) / (double(screenHeightPixels) / 2)), text, width - 36);
+			generate_GUI_Text(ob, vhText, ((xStart) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart) / (double(screenHeightPixels) / 2)), text, width - 36);
 		}
 		else {
 			// Text
-			generate_GUI_Text(ob, vhText, ((xStart + 30 + (width / 2) ) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 70) / (double(screenHeightPixels) / 2)), text, width - 36);
+			generate_GUI_Text(ob, vhText, ((xStart + (width / 2) ) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart) / (double(screenHeightPixels) / 2)), text, width - 36);
 		}
 	}
 }
@@ -58,16 +58,6 @@ void GUIElement::createObject(Objects & ob)
 std::string & GUIElement::getName()
 {
 	return name;
-}
-
-void GUIElement::setID(int & id)
-{
-	this->id = id;
-}
-
-int & GUIElement::getID()
-{
-	return id;
 }
 
 void GUIElement::setUpdate(bool value)
@@ -215,90 +205,68 @@ void GUIPanel::checkUpdates(Objects & ob)
 	}
 }
 
-Button::Button(std::string name, int vao, int textPos, int id1, int id2, int id3, int xStart, int yStart, int width, int height, std::string text = "", std::function<void()> const & lambda = []() {}) : buttonID(id1), hoverID(id2), clickedID(id3), lambda(lambda), GUIElement(name, vao, textPos, id1, xStart, yStart, width, height, text)
+void GUIPanel::updateLabels(Objects & ob)
+{
+	for (auto& e : elements) {
+		if (GUILabel* l = dynamic_cast<GUILabel*>(e)) {
+			l->update(ob);
+		}
+	}
+}
+
+Button::Button(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::string text = "", std::function<void()> const & lambda = []() {}) : button(button), hover(hover), clicked(clicked), lambda(lambda), GUIElement(name, button, xStart, yStart, width, height, text)
 {
 }
 
 void Button::handleHover()
 {
-	if (!getClicked() && getHover() && getID() != hoverID) {
-		setID(hoverID);
+	if (!getClicked() && getHover() && getV() != hover) {
+		setV(hover);
 		setUpdate(true);
 	}
-	else if (!getClicked() && !getHover() && getID() != buttonID) {
-		setID(buttonID);
+	else if (!getClicked() && !getHover() && getV() != button) {
+		setV(button);
 		setUpdate(true);
 	}
 }
 
 void Button::handleClicked(int& mouseState)
 {
-	if (mouseState == 1 && getClicked() && getID() != clickedID) {
-		setID(clickedID);
+	if (mouseState == 1 && getClicked() && getV() != clicked) {
+		setV(clicked);
 		setUpdate(true);
 	}
-	else if(mouseState == 0 && !getClicked() && getID() == clickedID){
+	else if(mouseState == 0 && !getClicked() && getV() == clicked){
 		lambda();
 		if (getHover()) {
-			setID(hoverID);
+			setV(hover);
 		}else
-			setID(buttonID);
+			setV(button);
 		setUpdate(true);
 	}
 }
 
-ToggleButton::ToggleButton(std::string name, int vao, int textPos, int id1, int id2, int id3, int xStart, int yStart, int width, int height, std::function<void()> const & lambda = []() {}) : buttonID(id1), hoverID(id2), clickedID(id3), lambda(lambda), GUIElement(name, vao, textPos, id1, xStart, yStart, width, height)
+ToggleButton::ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::function<void()> const & lambda = []() {}) : button(button), hover(hover), clicked(clicked), lambda(lambda), GUIElement(name, button, xStart, yStart, width, height)
 {
-}
-
-ToggleButton::ToggleButton(std::string name, int id1, int id2, int id3, int xStart, int yStart, int width, int height, std::function<void()> const & lambda, bool isTile) : buttonID(id1), hoverID(id2), clickedID(id3), lambda(lambda), isTile(isTile), GUIElement(name, xStart, yStart, width, height)
-{
-	setID(buttonID);
-}
-
-ToggleButton::ToggleButton(std::string name, int id1, int id2, int id3, int xStart, int yStart, int width, int height, std::function<void()> const & lambda, bool isTile, bool doubleSize) : buttonID(id1), hoverID(id2), clickedID(id3), lambda(lambda), isTile(isTile), doubleSize(doubleSize), GUIElement(name, xStart, yStart, width, height)
-{
-	setID(buttonID);
 }
 
 void ToggleButton::createObject(Objects & ob)
 {
-	if (isTile) {
-		VertecesHandler vh("wut");
-		getVertecesHandlerFromID(vh, buttonID);
-
-		if(!doubleSize)
-			ob.addObject(new Object((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), buttonID, vh.getVAO(), vh.getTextureID()));
-		else
-			ob.addObject(new Object(((xStart + 64) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 64) / (double(screenHeightPixels) / 2)), buttonID, vh.getVAO(), vh.getTextureID()));
-		if (getID() != buttonID) {
-			vh = VertecesHandler::findByName(verteces, "GUI_1");
-			ob.addObject(new Object((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), id, vh.getVAO(), vh.getTextureID()));
-		}
+	if (getV()) {
+		if(alwaysShowBase || getV() == button)
+			ob.addObject(new Object(((xStart + 64 * offset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 64 * offset) / (double(screenHeightPixels) / 2)), button->getID(), button->getVertecesHandler()->getVAO(), button->getVertecesHandler()->getTextureID()));
+		if(!(getV() == button))
+			ob.addObject(new Object((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), getV()->getID(), getV()->getVertecesHandler()->getVAO(), getV()->getVertecesHandler()->getTextureID()));
 		if (text.size() > 0) {
-			VertecesHandler vhText = VertecesHandler::findByName(verteces, "Letters_");
-			if (!isCenteredText) {
-				// Text
-				generate_GUI_Text(ob, vhText, ((xStart + 70) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 70) / (double(screenHeightPixels) / 2)), text, width - 36);
-			}
-			else {
-				// Text
-				generate_GUI_Text(ob, vhText, ((xStart + 30 + (width / 2)) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 70) / (double(screenHeightPixels) / 2)), text, width - 36);
-			}
-		}
-	}
-	else if (!isTile && getID() != -1) {
-		ob.addObject(new Object((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), id, this->VAO, textPos));
-		if (text.size() > 0) {
-			VertecesHandler vhText = VertecesHandler::findByName(verteces, "Letters_");
+			VertecesHandler*& vhText = VertecesHandler::findByName(verteces, "Letters_");
 
 			if (!isCenteredText) {
 				// Text
-				generate_GUI_Text(ob, vhText, ((xStart + 70) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 70) / (double(screenHeightPixels) / 2)), text, width - 36);
+				generate_GUI_Text(ob, vhText, ((xStart + (width / 2) - (text.size() * 16) / 4 - textOffset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + (height / 2) - 8) / (double(screenHeightPixels) / 2)), text, width - 36);
 			}
 			else {
 				// Text
-				generate_GUI_Text(ob, vhText, ((xStart + 30 + (width / 2)) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 70) / (double(screenHeightPixels) / 2)), text, width - 36);
+				generate_GUI_Text(ob, vhText, ((xStart + (width / 2)) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart) / (double(screenHeightPixels) / 2)), text, width - 36);
 			}
 		}
 	}
@@ -306,7 +274,7 @@ void ToggleButton::createObject(Objects & ob)
 
 void ToggleButton::resetToggle()
 {
-	setID(buttonID);
+	setV(button);
 	if (!cleanReset && toggle) {
 		lambda();
 	}
@@ -318,15 +286,15 @@ void ToggleButton::resetToggle()
 
 void ToggleButton::handleHover()
 {
-	if (!toggle && getHover() && getID() != hoverID) {
+	if (!toggle && getHover() && getV() != hover) {
 		if (doHover) {
-			setID(hoverID);
+			setV(hover);
 			setUpdate(true);
 		}
 	}
-	else if (!toggle && !getHover() && getID() != buttonID) {
+	else if (!toggle && !getHover() && getV() != button) {
 		if (doHover) {
-			setID(buttonID);
+			setV(button);
 			setUpdate(true);
 		}
 	}
@@ -337,9 +305,9 @@ void ToggleButton::handleClicked(int& mouseState)
 	if (mouseState == 1 && xPos >= xStart && xPos <= xStart + width && yPos >= yStart && yPos <= yStart + height) {
 		toggle = !toggle;
 		lambda();
-		if(toggle) setID(clickedID);
-		else if(getHover() && doHover) setID(hoverID);
-		else setID(buttonID);
+		if(toggle) setV(clicked);
+		else if(getHover() && doHover) setV(hover);
+		else setV(button);
 		setUpdate(true);
 	}
 
@@ -436,8 +404,8 @@ void ToggleButtonGroup::handleClicked(int & mouseState)
 {
 }
 
-DropDown::DropDown(std::string name, int vao, int textPos, int topSectionID, int middleSectionID, int bottomSectionID, int hoverID, int xStart, int yStart, int width, int height) : vao(vao), textPos(textPos), topSectionID(topSectionID), middleSectionID(middleSectionID),
-				   bottomSectionID(bottomSectionID), hoverID(hoverID), xStart(xStart), yStart(yStart), width(width), height(height), GUIElement(name)
+DropDown::DropDown(std::string name, Vertices* topSection, Vertices* middleSection, Vertices* bottomSection, Vertices* hover, int xStart, int yStart, int width, int height) : topSection(topSection), middleSection(middleSection),
+				   bottomSection(bottomSection), hover(hover), xStart(xStart), yStart(yStart), width(width), height(height), GUIElement(name)
 {
 	show = false;
 }
@@ -453,17 +421,17 @@ void DropDown::add(std::string text, std::function<void()> const& lambda)
 {
 	int xPos = xStart, yPos = yStart;
 	if (items.size() == 0) {
-		items.push_back(new DropDownElement(text, vao, textPos, topSectionID, hoverID, xPos, yPos + padding, width, height, lambda));
+		items.push_back(new DropDownElement(text, topSection, hover, xPos, yPos + padding, width, height, lambda));
 	}
 	else {
-		if (!(middleSectionID == -1 && bottomSectionID == -1)) {
-			(*items.begin())->setCurrentID(topSectionID);
+		if (!(!middleSection && !bottomSection)) {
+			(*items.begin())->setV(topSection);
 			for (auto i = items.begin() + 1; i < items.end(); i++) {
-				(*i)->setCurrentID(middleSectionID);
+				(*i)->setV(middleSection);
 			}
-			items.push_back(new DropDownElement(text, vao, textPos, bottomSectionID, hoverID, xPos, yPos + (height * items.size()) + (padding * items.size()), width, height, lambda));
+			items.push_back(new DropDownElement(text, bottomSection, hover, xPos, yPos + (height * items.size()) + (padding * items.size()), width, height, lambda));
 		}else
-			items.push_back(new DropDownElement(text, vao, textPos, topSectionID, hoverID, xPos, yPos + (height * items.size()) + (padding + padding * items.size()), width, height, lambda));
+			items.push_back(new DropDownElement(text, topSection, hover, xPos, yPos + (height * items.size()) + (padding + padding * items.size()), width, height, lambda));
 	}
 }
 
@@ -531,29 +499,22 @@ void DropDown::handleClicked(int& mouseState)
 {
 }
 
-DropDownElement::DropDownElement(std::string name, int vao, int textPos, int sectionID, int hoverID, int xStart, int yStart, int width, int height, std::function<void()> const& lambda) : sectionID(sectionID), hoverID(hoverID), lambda(lambda), GUIElement(name, vao, textPos, sectionID, xStart, yStart, width, height, name)
+DropDownElement::DropDownElement(std::string name, Vertices* section, Vertices* hover, int xStart, int yStart, int width, int height, std::function<void()> const& lambda) : section(section), hover(hover), lambda(lambda), GUIElement(name, section, xStart, yStart, width, height, name)
 
 {
 	setCentered(true);
 }
 
-void DropDownElement::setCurrentID(int ID)
-
-{
-	sectionID = ID;
-	setID(ID);
-}
-
 void DropDownElement::createObject(Objects & ob)
 {
-	Object* o = new Object((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), id, this->VAO, textPos);
+	Object* o = new Object((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), section->getID(), section->getVertecesHandler()->getVAO(), section->getVertecesHandler()->getTextureID());
 	ob.addObject(o);
 	if (getHover()) {
-		Object* o = new Object((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), hoverID, this->VAO, textPos);
+		Object* o = new Object((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), hover->getID(), hover->getVertecesHandler()->getVAO(), hover->getVertecesHandler()->getTextureID());
 		ob.addObject(o);
 	}
 	if (name.size() > 0) {
-		VertecesHandler vhText = VertecesHandler::findByName(verteces, "Letters_");
+		VertecesHandler*& vhText = VertecesHandler::findByName(verteces, "Letters_");
 
 		if (!isCenteredText) {
 			// Text
@@ -561,19 +522,19 @@ void DropDownElement::createObject(Objects & ob)
 		}
 		else {
 			// Text
-			generate_GUI_Text(ob, vhText, ((xStart + 30 + (width / 2)) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 70) / (double(screenHeightPixels) / 2)), text, width - 36);
+			generate_GUI_Text(ob, vhText, ((xStart + (width / 2) - 40) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 5) / (double(screenHeightPixels) / 2)), text, width - 36);
 		}
 	}
 }
 
 void DropDownElement::handleHover()
 {
-	if (getHover() && getID() != hoverID) {
-		setID(hoverID);
+	if (getHover() && getV() != hover) {
+		setV(hover);
 		setUpdate(true);
 	}
-	else if (!getHover() && getID() != sectionID) {
-		setID(sectionID);
+	else if (!getHover() && getV() != section) {
+		setV(section);
 		setUpdate(true);
 	}
 }
@@ -582,7 +543,7 @@ void DropDownElement::handleClicked(int& mouseState)
 {
 	if (mouseState == 1) {
 		lambda();
-		setID(sectionID);
+		setV(section);
 		isHover = false;
 		setUpdate(true);
 	}
@@ -591,28 +552,28 @@ void DropDownElement::handleClicked(int& mouseState)
 void GUIText::createObject(Objects & ob)
 {
 	if (text.size() > 0) {
-		VertecesHandler vhText = VertecesHandler::findByName(verteces, "Letters_");
+		VertecesHandler*& vhText = VertecesHandler::findByName(verteces, "Letters_");
 
 		if (!isCenteredText) {
 			// Text
-			generate_GUI_Text(ob, vhText, ((xStart + 70) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 70) / (double(screenHeightPixels) / 2)), text, width - 36);
+			generate_GUI_Text(ob, vhText, ((xStart + 5) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 5) / (double(screenHeightPixels) / 2)), text, width - 36);
 		}
 		else {
 			// Text
-			generate_GUI_Text(ob, vhText, ((xStart + 30 + (width / 2)) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 70) / (double(screenHeightPixels) / 2)), text, width - 36);
+			generate_GUI_Text(ob, vhText, ((xStart + (width / 2) - 40) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 5) / (double(screenHeightPixels) / 2)), text, width - 36);
 		}
 	}
 }
 
-ExpandingButton::ExpandingButton(std::string name, int vao, int textPos, int id1, int id2, int id3, int xStart, int yStart, int width, int height, float scaling, std::string text, std::function<void()> const & lambda) : scaling(scaling), Button(name, vao, textPos, id1, id2, id3, xStart, yStart, width, height, text, lambda)
+ExpandingButton::ExpandingButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, float scaling, std::string text, std::function<void()> const & lambda) : scaling(scaling), Button(name, button, hover, clicked, xStart, yStart, width, height, text, lambda)
 {
 }
 
 void ExpandingButton::createObject(Objects & ob)
 {
-	if (id != -1) {
-		if (getID() == buttonID) {
-			Object* o = new Object((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), id, this->VAO, textPos);
+	if (getV()) {
+		if (getV() == button) {
+			Object* o = new Object((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), button->getID(), button->getVertecesHandler()->getVAO(), button->getVertecesHandler()->getTextureID());
 			ob.addObject(o);
 		}
 		else {
@@ -625,9 +586,49 @@ void ExpandingButton::createObject(Objects & ob)
 				differenceWidth = -(scaling * width);
 				differenceHeight = -(scaling * height);
 			}
-			Object* o = new Object(( (xStart + differenceWidth ) / (double(screenWidthPixels) / 2)), 0.0 + ( (yStart + differenceHeight) / (double(screenHeightPixels) / 2)), id, this->VAO, textPos);
+			Object* o = new Object(( (xStart + differenceWidth ) / (double(screenWidthPixels) / 2)), 0.0 + ( (yStart + differenceHeight) / (double(screenHeightPixels) / 2)), getV()->getID(), getV()->getVertecesHandler()->getVAO(), getV()->getVertecesHandler()->getTextureID());
 			o->setScale(scaling);
 			ob.addObject(o);
 		}
+	}
+}
+
+void GUILabel::createObject(Objects & ob)
+{
+	if (getV()) {
+		o = new Object((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), getV()->getID(), getV()->getVertecesHandler()->getVAO(), getV()->getVertecesHandler()->getTextureID());
+		ob.addObject(o);
+
+		VertecesHandler*& vhText = VertecesHandler::findByName(verteces, "Letters_");
+		
+		size = text.size() + textRef.size();
+
+		// Text
+		generate_GUI_Text(ob, vhText, ((xStart + 5) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 5) / (double(screenHeightPixels) / 2)), text + textRef);
+	}
+}
+
+void GUILabel::update(Objects & ob)
+{
+	auto& list = ob.getObjects();
+	auto& object = o;
+	auto it = std::find_if(list.begin(), list.end(), [object](Object* os) { return os == object; });
+	if (it != list.end()) {
+		it++;
+		for (auto i = it; i != it + size-2; i++ ) {
+			delete *i;
+		}
+		list.erase(it, it + size-2);
+
+		VertecesHandler*& vhText = VertecesHandler::findByName(verteces, "Letters_");
+
+		size = text.size() + textRef.size();
+
+		std::vector<Object*> temp;
+		// Text
+		generate_GUI_Text(temp, vhText, ((xStart + 5) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 5) / (double(screenHeightPixels) / 2)), text + textRef);
+
+		it = std::find_if(list.begin(), list.end(), [object](Object* os) { return os == object; });
+		list.insert(it, temp.begin(), temp.end());
 	}
 }
