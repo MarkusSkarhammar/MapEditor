@@ -12,6 +12,7 @@
 #include "World.h"
 #include <atomic> 
 #include "GUI.h"
+#include "RendToText.h"
 
 // Include GLM
 #include <glm/ext.hpp>
@@ -29,6 +30,21 @@ extern GLuint projection;
 extern GLuint model;
 extern GLuint view;
 
+extern GLuint projection2;
+extern GLuint model2;
+extern GLuint view2;
+
+// Texture array layer
+extern GLuint gLayer;
+
+// Render to texture stuff here
+extern GLuint fbo_palette_modifier_left;
+extern GLuint fbo_palette_modifier_left_texture;
+extern GLuint textOffset2;
+
+//Renderbuffer
+extern GLuint rbo;
+
 // TextOffset
 extern glm::vec2 textOffsetValues;
 
@@ -37,6 +53,9 @@ extern std::vector<Vertices*> verticesContainer;
 extern std::vector<Vertices*> verticesContainer64xTiles;
 extern std::vector<Vertices*> verticesContainer128xTiles;
 extern std::vector<Vertices*> verticesContainerLetters;
+
+// Render to texture containers
+extern std::vector<RendToText*> renderToTextureContainer;
 
 
 struct game_state {
@@ -343,6 +362,18 @@ extern int paletteModifierDropDownElement;
 extern int paletteModifierDropDownElementHover;
 extern int paletteModifierEmptyTileMarker;
 
+// palette y right tiles
+extern int palette_Modifier_Right_page;
+extern int palette_Modifier_Right_Offset;
+extern double palette_Modifier_Right_Offset_Max;
+extern std::string palette_Modifier_Right_Selected_Palette;
+
+// palette y left tiles
+extern int palette_Modifier_Left_page;
+extern int palette_Modifier_Left_Offset;
+extern double palette_Modifier_Left_Offset_Max;
+extern std::string palette_Modifier_Left_Selected_Palette;
+
 //-----------------------------------
 //			DONE Palette modifier window
 //-----------------------------------
@@ -390,5 +421,28 @@ extern size_t targetMoveY;
 //-----------------------------------
 
 extern std::string getTextFromID(int ID, bool& x124);
+
+
+static Palette& findByName(std::vector<Palette>& list, std::string name) {
+	std::vector<Palette>::iterator it = std::find_if(list.begin(), list.end(), [name](Palette verteces) {
+		return (verteces.getName() == name);
+	});
+	if (it != list.end())
+		return (*it);
+	else
+		return *list.begin();
+};
+
+template <class T>
+static T*& findByName(std::vector<T*>& list, std::string name) {
+	typename std::vector<T*>::iterator it = std::find_if(list.begin(), list.end(), [name](T* verteces) {
+		return (verteces->getName() == name);
+	});
+	if (it != list.end())
+		return (*it);
+	else
+		return *list.begin();
+}
+
 
 #endif // !GLOBAL_VARIABLES_H

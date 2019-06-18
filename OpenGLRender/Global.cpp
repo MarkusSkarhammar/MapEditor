@@ -9,6 +9,21 @@ GLuint projection(0);
 GLuint model(0);
 GLuint view(0);
 
+GLuint projection2(0);
+GLuint model2(0);
+GLuint view2(0);
+
+// Texture array layer
+GLuint gLayer(0);
+
+// Render to texture stuff here
+GLuint fbo_palette_modifier_left(0);
+GLuint fbo_palette_modifier_left_texture(0);
+GLuint textOffset2(0);
+
+//Renderbuffer
+GLuint rbo(0);
+
 // TextOffset
 glm::vec2 textOffsetValues(0);
 
@@ -22,6 +37,9 @@ std::vector<Vertices*> verticesContainer = { new Vertices("wrong", tempVH, 0.0, 
 std::vector<Vertices*> verticesContainer64xTiles = { new Vertices("wrong", tempVH, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) };
 std::vector<Vertices*> verticesContainer128xTiles = { new Vertices("wrong", tempVH, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) };
 std::vector<Vertices*> verticesContainerLetters = { new Vertices("wrong", tempVH, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) };
+
+// Render to texture containers
+std::vector<RendToText*> renderToTextureContainer = {};
 
 // Store all the verteces
 std::vector<VertecesHandler*> verteces = {tempVH};
@@ -283,6 +301,18 @@ int paletteModifierDropDownPressed(0);
 int paletteModifierDropDownElement(0);
 int paletteModifierDropDownElementHover(0);
 int paletteModifierEmptyTileMarker(0);
+
+// palette right tiles
+int palette_Modifier_Right_page(0);
+int palette_Modifier_Right_Offset(0);
+double palette_Modifier_Right_Offset_Max(0);
+std::string palette_Modifier_Right_Selected_Palette = "";
+
+// palette left tiles
+int palette_Modifier_Left_page(0);
+int palette_Modifier_Left_Offset(0);
+double palette_Modifier_Left_Offset_Max(0);
+std::string palette_Modifier_Left_Selected_Palette = "";
 
 //-----------------------------------
 //			DONE Palette modifier window

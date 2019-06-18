@@ -38,10 +38,10 @@ using namespace glm;
 
 GLuint gTileArrayTexture(0);
 GLuint gGUIArrayTexture(0);
-GLuint gLayer(0), textOffset(0);
 GLuint tilesVAO(0), vao2(0), vao3(0);
 GLuint vbo(0), vbo2(0);
 GLuint program(0);
+GLuint program2(0);
 
 // Verteces
 std::vector<float> v;
@@ -53,6 +53,7 @@ void createThingsToRender();
 void generateTextures();
 void mapUpdate();
 void sortTileVector(std::vector<tile>& tileVector);
+void Setup_Render_To_Texture();
 
 using namespace std::chrono_literals;
 
@@ -169,9 +170,9 @@ int main(int argc, wchar_t *argv[])
 	//glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 	//glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LEQUAL);
+	glDepthFunc(GL_ALWAYS);
 	//glDepthRange(0.0f, 1.0f);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -240,17 +241,22 @@ int main(int argc, wchar_t *argv[])
 
 	glDeleteTextures(1, &gTileArrayTexture);
 	glDeleteTextures(1, &gGUIArrayTexture);
+	glDeleteFramebuffers(1, &fbo_palette_modifier_left);
+
+	for (RendToText* rtt : renderToTextureContainer) {
+		delete rtt;
+	}
 
 	glfwTerminate();
 	return 0;
 }
-
+	
 void render(game_state const &interpolated_state, GLFWwindow* window) {
 
 	// Clear the screen
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClearDepth(1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
 
 	// Update camera based on a interpolated state
 	setCameraPosition(interpolated_state.xCameraPos, interpolated_state.yCameraPos);
@@ -270,6 +276,9 @@ void render(game_state const &interpolated_state, GLFWwindow* window) {
 	//						Draw game stuff
 	//----------------------------------------------------------
 	// Draw order tiles > Borders > Entities > Doodads
+	glUseProgram(program);
+	//glBindTexture(GL_TEXTURE_2D_ARRAY, gTileArrayTexture);
+	//glBindTexture(GL_TEXTURE_2D, fbo_palette_modifier_left_texture);
 
 	double x(0), y(0);
 	for (int floorAt = from; floorAt <= to; floorAt++) {
@@ -321,11 +330,19 @@ void render(game_state const &interpolated_state, GLFWwindow* window) {
 	//----------------------------------------------------------
 	//						Draw GUI
 	//----------------------------------------------------------
+	glUseProgram(program);
+	//glBindTexture(GL_TEXTURE_2D, fbo_palette_modifier_left_texture);
 
 	for (auto& objects : objects) {
 		currentName = objects.getName();
 		if (!((currentName.compare("GUI_LeftPanel_DropDown_") == 0 || currentName.compare("GUI_LeftPanel_DropDown_Text_") == 0) && !clickPaletteDropDown)) {
 			for (auto& object : objects.getObjects()) {
+
+				if (object->getTexturePos() == -1) {
+					glUseProgram(program2);
+					if(object->getRendToText() != nullptr)
+						glBindTexture(GL_TEXTURE_2D, object->getRendToText()->getTextureID());
+				}
 
 				Model = glm::mat4(1.0f);
 				if (currentName.compare("GUI_Preview_Tiles_") == 0) Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + object->getXPosition(), yCameraPos + 1.0f - object->getYPosition(), 0.0));
@@ -336,19 +353,31 @@ void render(game_state const &interpolated_state, GLFWwindow* window) {
 					Model = glm::scale(Model, glm::vec3(object->getScale(), object->getScale(), object->getScale()));
 
 				// Handle transformation
-				glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(Model));
+				if (object->getTexturePos() == -1) {
+					glUniformMatrix4fv(projection2, 1, GL_FALSE, glm::value_ptr(Projection));
+					glUniformMatrix4fv(view2, 1, GL_FALSE, glm::value_ptr(View));
+					glUniformMatrix4fv(model2, 1, GL_FALSE, glm::value_ptr(Model));
 
-				if (object->getTextOffsetX() > 0 || object->getTextOffsetY() > 0) {
-					textOffsetValues = { object->getTextOffsetX(), object->getTextOffsetY() };
-					glUniformMatrix2fv(textOffset, 1, GL_FALSE, glm::value_ptr(textOffsetValues));
+					if (object->getTextOffsetX() >= 0 || object->getTextOffsetY() >= 0) {
+						//textOffsetValues = { object->getTextOffsetX(), object->getTextOffsetY() };
+						glUniform2f(textOffset2, object->getTextOffsetX(), object->getTextOffsetY());
+					}
 				}
+				else
+					glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(Model));
 
-				glUniform1i(gLayer, object->getTexturePos());
+				if (object->getTexturePos() != -1)
+					glUniform1i(gLayer, object->getTexturePos());
 
 				glBindVertexArray(object->getVAO());
+
 				glDrawArrays(GL_TRIANGLES, 0 + (4 * object->getID() % 1024), 3);
 				glDrawArrays(GL_TRIANGLES, 1 + (4 * object->getID() % 1024), 3);
 
+				if (object->getTexturePos() == -1) {
+					glUseProgram(program);
+					glBindTexture(GL_TEXTURE_2D_ARRAY, gTileArrayTexture);
+				}
 			}
 		}
 	}
@@ -386,6 +415,8 @@ void update(game_state* state, GLFWwindow* window) {
 
 		yCameraPos = state->yGoal;
 	}
+
+	//generate_Palette_Modifier_Left_Texture();
 
 	//Update animations
 	checkAnimations();
@@ -571,8 +602,33 @@ void generateVBOs() {
 		verteces.push_back(temp);
 	}
 
-	//printf("%s interpolation X velocity\n", "heehej");
-	//printf("%i <--- is it true? \n",  VertecesHandler::findByName(verteces, "Tiles024").getName() == "Tiles_1024" );
+	{ // Generate vertices for render to texture
+		VertecesHandler* temp = new VertecesHandler("Palette_Modifier_Rend_To_Text");
+
+		temp->setTextureID(-1);
+
+		generate_Palette_Modifier_Rend_To_text(temp);
+
+		glGenVertexArrays(1, &temp->getVAO());
+
+		glGenBuffers(1, &temp->getVBO()); // Generate 1 buffer
+		glGenBuffers(1, &temp->getVBOText()); // Generate 1 buffer
+
+		glBindVertexArray(temp->getVAO());
+		glBindBuffer(GL_ARRAY_BUFFER, temp->getVBO());
+		//glBufferData(GL_ARRAY_BUFFER, temp.getVerteces().size() * sizeof(float), &temp.getVerteces()[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, temp->getVerteces().size() * sizeof(float) + temp->getVertecesText().size() * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, temp->getVerteces().size() * sizeof(float), &temp->getVerteces()[0]);
+
+		//glBindBuffer(GL_ARRAY_BUFFER, temp.getVBOText());
+		//glBufferData(GL_ARRAY_BUFFER, temp.getVertecesText().size() * sizeof(float), &temp.getVertecesText()[0], GL_DYNAMIC_DRAW);
+		glBufferSubData(GL_ARRAY_BUFFER, temp->getVerteces().size() * sizeof(float), temp->getVertecesText().size() * sizeof(float), &temp->getVertecesText()[0]);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(temp->getVerteces().size() * sizeof(float)));
+	}
 }
 
 void handlePlayerMovement(game_state* state, GLFWwindow* window) {
@@ -594,18 +650,79 @@ void handlePlayerMovement(game_state* state, GLFWwindow* window) {
 }
 
 
+void Setup_Render_To_Texture() {
+	renderToTextureContainer.push_back(new RendToText("paletteModifier", screenWidth, screenHeight));
+	/*
+	// Framebuffer
+	glGenFramebuffers(1, &fbo_palette_modifier_left);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo_palette_modifier_left);
+
+	// Renderbuffer object setup
+	{
+		glGenRenderbuffers(1, &rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, screenWidth, screenHeight);
+
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	}
+
+	// Render to text texture setup
+	{
+		glGenTextures(1, &fbo_palette_modifier_left_texture);
+		glBindTexture(GL_TEXTURE_2D, fbo_palette_modifier_left_texture);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screenWidth, screenHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbo_palette_modifier_left_texture, 0);
+	}
+
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	*/
+}
+
+
 void init() {
+
 	// Create Vertex Array Object
 	generateVBOs();
 
 	// Create and compile the vertex shader and fragment shader
-
 	program = LoadShaders("./TransformVertexShader.vertexshader", "./ColorFragmentShader.fragmentshader");
+
+	// Create and compile the vertex shader and fragment shader for rend to text
+	program2 = LoadShaders("./RendToTextVertexShader.vertexshader", "./RendToTextFragmentShader.fragmentshader");
+
+
+	//************************************
+
+	// FIXA SHARED UNIFORMS IST FÖR ATT GÖRA SAMMA SAK FÖR VARJE SHADER
+
+	//****************************************
+
+	// Use our shader
+	glUseProgram(program2);
+
+	// Get a handle for our "MVP" uniform
+	model2 = glGetUniformLocation(program2, "model2");
+	view2 = glGetUniformLocation(program2, "view2");
+	projection2 = glGetUniformLocation(program2, "projection2");
+
+	// Get a handle for our "textOffset" uniform
+	textOffset2 = glGetUniformLocation(program2, "textOffset2");
+
 	// Use our shader
 	glUseProgram(program);
 
-
-	//glUniform1i(0, 0); //Sampler refers to texture unit 0
+	Setup_Render_To_Texture();
 
 	//Generate Textures
 	generateTextures();
@@ -620,9 +737,6 @@ void init() {
 
 	// Get a handle for our "cameraPos" uniform
 	gLayer = glGetUniformLocation(program, "layer");
-
-	// Get a handle for our "textOffset" uniform
-	textOffset = glGetUniformLocation(program, "textOffset");
 
 	fillPalettes(palettes);
 

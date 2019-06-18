@@ -93,6 +93,12 @@
     <ClCompile Include="GUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RendToText.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Palette.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ColorFragmentShader.fragmentshader">
@@ -101,7 +107,10 @@
     <None Include="TransformVertexShader.vertexshader">
       <Filter>renders</Filter>
     </None>
-    <None Include="GUIVertexShader.vertexshader">
+    <None Include="RendToTextFragmentShader.fragmentshader">
+      <Filter>renders</Filter>
+    </None>
+    <None Include="RendToTextVertexShader.vertexshader">
       <Filter>renders</Filter>
     </None>
   </ItemGroup>
@@ -149,6 +158,9 @@
       <Filter>Resource Files\Camera</Filter>
     </ClInclude>
     <ClInclude Include="GUI.h">
+      <Filter>Resource Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="RendToText.h">
       <Filter>Resource Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>

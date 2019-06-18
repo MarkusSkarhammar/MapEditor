@@ -74,7 +74,29 @@ void generateVetecesSquares(VertecesHandler* vh, int amount)
 			x = i % 32;
 			verticesContainer64xTiles.push_back(new Vertices(vh->getName() + "_" + std::to_string(i), vh, 0 + 64 * x, 0 + y * 64, 64, 64, 64, 64));
 		}
+		// Left palette window top
+		for (int i = 0; i < 4; i++) {
+			verticesContainer64xTiles.push_back(new Vertices(vh->getName() + "_Top_" + std::to_string(i), vh, 0, 0, 64, 64, 64, 64));
+		}
+		// Left palette window bottom
+		for (int i = 0; i < 4; i++) {
+			verticesContainer64xTiles.push_back(new Vertices(vh->getName() + "_Bottom_" + std::to_string(i), vh, 0, 0, 64, 64, 64, 64));
+		}
 	}
+}
+
+void generate_Palette_Modifier_Rend_To_text(VertecesHandler* vh) {
+	size_t amount = 0;
+
+	std::vector<float> v, vt;
+	vh->setAmount(amount);
+	vh->addVerteces(v);
+	vh->addVertecesText(vt);
+
+	verticesContainer.push_back(new Vertices("Palette_Modifier_Right_Rend_To_Text", vh, 0.0, 0.0, 255.0, 640.0, 255.0, 640.0, -1));
+	verticesContainer.push_back(new Vertices("Palette_Modifier_Left_Rend_To_Text", vh, (64.0*4.0), 0.0, 255.0, 640.0, 255.0, 640.0, -1));
+	//verticesContainer.push_back(new Vertices("Palette_Modifier_Right_Rend_To_Text", vh, 0.0, 0.0, 2048, 2048, screenWidth, screenHeight));
+
 }
 
 void generateGUI(VertecesHandler* vh, std::string textName)
@@ -256,6 +278,14 @@ void generate_Palette_Modifier_UI(VertecesHandler*& vh) {
 	verticesContainer.push_back(new Vertices("paletteModifierDropDownElementHover", vh, 1266.0, 791.0, 102.0, 24.0, 102.0, 24.0));
 
 	verticesContainer.push_back(new Vertices("paletteModifierEmptyTileMarker", vh, 1109.0, 701.0, 64.0, 64.0, 64.0, 64.0));
+
+	verticesContainer.push_back(new Vertices("paletteModifierYellowSquareSmallBottom", vh, 0.0, 550.0, 64.0, 64.0, 64.0, 64.0));
+
+	verticesContainer.push_back(new Vertices("paletteModifierEmptyTileMarkerLeftBottom", vh, 1109.0, 701.0, 64.0, 64.0, 64.0, 64.0));
+
+	verticesContainer.push_back(new Vertices("paletteModifierYellowSquareSmallTop", vh, 0.0, 550.0, 64.0, 64.0, 64.0, 64.0));
+
+	verticesContainer.push_back(new Vertices("paletteModifierEmptyTileMarkerLeftTop", vh, 1109.0, 701.0, 64.0, 64.0, 64.0, 64.0));
 }
 
 Vertices::Vertices(std::string name, VertecesHandler* vh, float xStartText, float yStartText, float widthText, float heightText, float width, float height) : name(name), vh(vh), xStartText(xStartText), yStartText(yStartText),
@@ -285,6 +315,35 @@ width(width), height(height), widthText(widthText), heightText(heightText)
 	ID = amount;
 	amount++;
 	
+}
+
+Vertices::Vertices(std::string name, VertecesHandler* vh, float xStartText, float yStartText, float widthText, float heightText, float width, float height, int textToRend) : name(name), vh(vh), xStartText(xStartText), yStartText(yStartText),
+width(width), height(height), widthText(widthText), heightText(heightText)
+{
+	auto& v = vh->getVerteces();
+	auto& vt = vh->getVertecesText();
+
+	float widthStart = 0.0f;
+	float heightStart = 0.0f;
+
+	float widthPos = (this->width / (double(screenWidthPixels) / 2));
+	float heightPos = (this->height / (double(screenHeightPixels) / 2));
+
+	float textWidthStart = (xStartText / screenWidthPixels);
+	float textHeightStart = (yStartText / screenHeightPixels);
+	float textWidthEnd = textWidthStart + (widthText / screenWidthPixels);
+	float textHeightEnd = textHeightStart + (heightText / screenHeightPixels);
+
+	v.push_back(widthStart); v.push_back(heightStart); vt.push_back(textWidthStart); vt.push_back(textHeightStart); // Top-left
+	v.push_back(widthStart + widthPos); v.push_back(heightStart); vt.push_back(textWidthEnd); vt.push_back(textHeightStart); // Top-right
+	v.push_back(widthStart); v.push_back(heightStart - heightPos); vt.push_back(textWidthStart); vt.push_back(textHeightEnd); // Bottom-left
+
+	//Second triangle
+	v.push_back(widthStart + widthPos); v.push_back(heightStart - heightPos); vt.push_back(textWidthEnd); vt.push_back(textHeightEnd); // Bottom-right
+	int& amount = vh->getAmount();
+	ID = amount;
+	amount++;
+
 }
 
 Vertices::Vertices(std::string name, VertecesHandler* vh, float xStartText, float yStartText, float widthText, float heightText, float width, float height, bool doubleSize) : name(name), vh(vh), xStartText(xStartText), yStartText(yStartText),

@@ -1,6 +1,7 @@
 #include "Inputs.h"
 #include <thread>
 #include "Serializer.h"
+#pragma warning(disable: 4244)
 
 
 
@@ -61,7 +62,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 			// Handle clicks on the platte modifier window
 			if (paletteModifier.getShow()) {
 				paletteModifier.checkClicked(getObjectByName(objects, "GUI_Palette_Modifier_"), xPos, yPos, 1);
-				changeElementSizeAndTexture(Vertices::findByName(verticesContainer, "paletteModifierSearchIcon"), 0, 0, 50, 0);
 			}
 
 			lbutton_down = true;
@@ -111,14 +111,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 			}
 		}
 		if (paletteModifier.getShow()) {
-			if (paletteModifier.getElementByName("paletteSelection")->getShow()) {
-				if (ToggleButton* tb = dynamic_cast<ToggleButton*>(paletteModifier.getElementByName("paletteToggleButton")))
-					tb->resetToggle();
-			}
-			if (paletteModifier.getElementByName("itemsSelection")->getShow()) {
-				if (ToggleButton* tb = dynamic_cast<ToggleButton*>(paletteModifier.getElementByName("itemsToggleButton")))
-					tb->resetToggle();
-			}
+			paletteModifier.checkClicked(getObjectByName(objects, "GUI_Palette_Modifier_"), xPos, yPos, 2);
 		}
 		rbutton_down = true;
 	}
@@ -155,11 +148,16 @@ void mouse_scroll_callback(GLFWwindow* window, double xOffset, double yOffset) {
 		//setCameraZoom(zoom / 90);
 	}
 	else if (!rbutton_down && !isWithinTileArea && yOffset != 0) {
-		yCameraPos += yOffset * (imgScale / (screenHeightPixels / 2.0));
-		current_state.yGoal = yCameraPos;
-		if (yCameraPos > -1.0f) {
-			yCameraPos = -1.0f;
+		if (paletteModifier.getShow()) {
+			paletteModifier.checkScroll(getObjectByName(objects, "GUI_Palette_Modifier_"), xPos, yPos, yOffset);
+		}
+		else {
+			yCameraPos += yOffset * (imgScale / (screenHeightPixels / 2.0));
 			current_state.yGoal = yCameraPos;
+			if (yCameraPos > -1.0f) {
+				yCameraPos = -1.0f;
+				current_state.yGoal = yCameraPos;
+			}
 		}
 	}
 	else if (!isWithinTileArea && yOffset != 0) {
@@ -230,6 +228,7 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 		if (lControl) {
 			paletteModifier.toggleShow();
 			paletteModifier.reCreateObjects(getObjectByName(objects, "GUI_Palette_Modifier_"));
+			generate_Palette_Modifier_Rend_To_Text();
 		}
 	}
 

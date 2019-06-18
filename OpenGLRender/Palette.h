@@ -15,6 +15,8 @@ public:
 	std::string getName() { return name; };
 	void addItem(int id, bool doubleSize, size_t xPos, size_t yPos) { items.push_back(std::pair<std::pair<int, bool>, std::pair<size_t, size_t>>(std::pair<int, bool>(id, doubleSize), std::pair<size_t, size_t> (xPos, yPos))); };
 	std::vector<std::pair<std::pair<int, bool>, std::pair<size_t, size_t>>>& getPalette() { return items; };
+	std::pair<std::pair<int, bool>, std::pair<size_t, size_t>>& getItemAtLocation(int x, int y);
+	void removeItemAtLocation(int x, int y);
 	int getMaxPage(int& paletteMaxY) { return items.at(items.size() - 1).second.second / paletteMaxY; };
 private:
 	std::vector<std::pair<std::pair<int, bool>, std::pair<size_t, size_t>>> items;

@@ -330,9 +330,6 @@
       <attribute key="animationOn" value="1" />
       <attribute key="animationDelay" value="750" />
       <attribute key="animationID" value="1030" />
-      <attribute key="animationID" value="1031" />
-      <attribute key="animationID" value="1032" />
-      <attribute key="animationID" value="1033" />
     </Item>
   <Item id="1030" article="a" name="fire" type="">
     <attribute key="description" value="A raging fire." />

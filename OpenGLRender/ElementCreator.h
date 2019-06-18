@@ -37,7 +37,11 @@ void generate_GUI_Item_Info_Panel(Objects & ob, VertecesHandler*& vh);
 // Palette modifier
 void generate_Palette_Modifier(Objects & ob, VertecesHandler*& vh);
 
-void generate_Palette_Modifier_Fill_Palette(Objects & ob, Palette& p);
+void generate_Palette_Modifier_Fill_Palette_Right(Objects & ob, Palette& p);
+void generate_Palette_Modifier_Fill_Palette_Left(Objects & ob, Palette& p);
+
+// Render to text stuff
+void generate_Palette_Modifier_Rend_To_Text();
 
 #endif
 

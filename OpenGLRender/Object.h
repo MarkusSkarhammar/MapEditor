@@ -5,16 +5,18 @@
 #include <vector>
 #include <algorithm>
 #include "VertecesHandler.h"
+#include "RendToText.h"
+#pragma warning(disable: 4244)
 
 class Object {
 public:
-	Object(float x, float y, size_t id, size_t VAO, size_t texturePos) : x(x), y(y), id(id), VAO(VAO), texturePos(texturePos) {};
+	Object(float x, float y, size_t id, size_t VAO, int texturePos) : x(x), y(y), id(id), VAO(VAO), texturePos(texturePos) {};
 	Object(Object*& o) { *this = *o; };
 	virtual ~Object() {};
 	size_t getID() { return id; };
 	void setID(int value ) { id = value; };
 	size_t getVAO() { return VAO; };
-	size_t getTexturePos() { return texturePos; };
+	int getTexturePos() { return texturePos; };
 	float getXPosition() { return x; };
 	float getYPosition() { return y; };
 	void setXPosition(int& v) { x = v; };
@@ -29,12 +31,16 @@ public:
 	void setOffsetY(float y) { textOffsetY = y; };
 	float getTextOffsetX() { return textOffsetX; };
 	float getTextOffsetY() { return textOffsetY; };
+	void setRendToText(RendToText* v) { rtt = v; };
+	RendToText* getRendToText() { return rtt; };
 protected:
 	bool animationState{ true };
 private:
 	bool draw{ true };
+	RendToText* rtt;
 	float x{ 0.0 }, y{ 0.0 }, scale{ 1.0 }, textOffsetX{ 0 }, textOffsetY{ 0 };
-	size_t id{ 0 }, VAO{ 0 }, texturePos{0};
+	size_t id{ 0 }, VAO{ 0 };
+	int texturePos{ 0 };
 };
 
 class AnimationObject : public Object {
@@ -76,6 +82,6 @@ static Objects& getObjectByName(std::vector<Objects>& ob, std::string name) {
 }
 
 void checkAnimations();
-void changeElementSizeAndTexture(Vertices*& v, int xLeftDifference, int yLeftDifference, int xRightDifference, int yRightDifference);
-
+void changeElementSizeAndTexture(Vertices*& v, int xTopLeft, int yTopLeft, int xTopRight, int yTopRight, int xBottomLeft, int yBottomLeft, int xBottomRight, int yBottomRight, int xTopLeftText, int yTopLeftText, int xTopRightText, int yTopRightText, int xBottomLeftText, int yBottomLeftText, int xBottomRightText, int yBottomRightText);
+void restoreElement(Vertices*& v);
 #endif

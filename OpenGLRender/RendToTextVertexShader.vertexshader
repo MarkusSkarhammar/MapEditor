@@ -1,0 +1,19 @@
+#version 330 core
+
+	layout (location = 0 ) in vec2 position;
+    layout (location = 1 ) in vec2 texCoord;
+    out vec2 uv;
+
+	out vec2 v_texcoord;
+
+	// Values that stay constant for the whole mesh.
+	uniform mat4 model2;
+	uniform mat4 view2;
+	uniform mat4 projection2;
+    void main()
+    {
+		v_texcoord = vec2(texCoord.s, -texCoord.t);
+		gl_Position = projection2 * view2 * model2 * vec4(position, 0.0f, 1.0f);
+		uv = v_texcoord;
+    }
+

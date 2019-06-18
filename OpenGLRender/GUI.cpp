@@ -2,6 +2,7 @@
 #include "Global.h"
 #include <algorithm>
 #include "ElementCreator.h"
+#pragma warning(disable: 4244)
 
 
 GUIElement::GUIElement(std::string name): name(name)
@@ -10,28 +11,47 @@ GUIElement::GUIElement(std::string name): name(name)
 
 GUIElement::GUIElement(std::string name, Vertices* v, int xStart, int yStart, int width, int height, std::string text = "") : name(name), v(v), xStart(xStart), yStart(yStart), width(width), height(height), text(text)
 {
+	xStartText = xStart; yStartText = yStart;
 }
 
-void GUIElement::testHover(double& xPos, double& yPos)
+GUIElement::GUIElement(std::string name, Vertices* v, int xStartText, int yStartText, int xStart, int yStart, int width, int height, std::string text = "") : name(name), v(v), xStartText(xStartText), xStart(xStart), yStartText(yStartText), yStart(yStart), width(width), height(height), text(text) {
+	rendToText = true;
+}
+
+void GUIElement::testHover(double& xPosRef, double& yPosRef)
 {
-	if (!isHover && xPos >= xStart && xPos <= xStart + width && yPos >= yStart && yPos <= yStart + height) {
-		isHover = true;
-		handleHover();
+	if (!rendToText) {
+		bool test = (xPosRef >= xStart && xPosRef <= xStart + width && yPosRef >= yStart && yPosRef <= yStart + height);
+		if (!isHover && test) {
+			isHover = true;
+			handleHover();
+		}
+		else if (isHover && !test) {
+			isHover = false;
+			handleHover();
+		}
 	}
-	else if (isHover && !(xPos >= xStart && xPos <= xStart + width && yPos >= yStart && yPos <= yStart + height) ){
-		isHover = false;
-		handleHover();
+	else {
+		bool test = (xPosRef >= xStart && xPosRef <= xStart + width && yPosRef >= yStart && yPosRef <= yStart + height);
+		if (!isHover && test) {
+			isHover = true;
+			handleHover();
+		}
+		else if (isHover && !test) {
+			isHover = false;
+			handleHover();
+		}
 	}
 }
 
 void GUIElement::testClicked(double & xPos, double & yPos, int mouseState, bool& isClickedAbove)
 {
-	if (mouseState == 1 && !isClicked && xPos >= xStart && xPos <= xStart + width && yPos >= yStart && yPos <= yStart + height) {
+	if (show && mouseState == 1 && !isClicked && xPos >= xStart && xPos <= xStart + width && yPos >= yStart && yPos <= yStart + height) {
 		isClickedAbove = true;
 		isClicked = true;
 		handleClicked(mouseState);
 	}
-	else if (isClicked) {
+	else if (show && isClicked) {
 		isClicked = false;
 		handleClicked(mouseState);
 	}
@@ -39,21 +59,55 @@ void GUIElement::testClicked(double & xPos, double & yPos, int mouseState, bool&
 
 void GUIElement::createObject(Objects & ob)
 {
-	if(v && show)
-		ob.addObject(new Object( (xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), v->getID(), v->getVertecesHandler()->getVAO(), v->getVertecesHandler()->getTextureID()));
+	if (!rendToText) {
+		if (v && show) {
+			auto* o = new Object((xStartText / (double(screenWidthPixels) / 2)), 0.0 + (yStartText / (double(screenHeightPixels) / 2)), v->getID(), v->getVertecesHandler()->getVAO(), v->getVertecesHandler()->getTextureID());
+			if (rtt != nullptr) o->setRendToText(rtt);
+			o->setOffsetX(xOffset / textureWidth);
+			o->setOffsetY(yOffset / textureHeight);
+			ob.addObject(o);
+		}
+		if (text.size() > 0) {
+			VertecesHandler*& vhText = VertecesHandler::findByName(verteces, "Letters_");
+
+			if (!isCenteredText) {
+				// Text
+				generate_GUI_Text(ob, vhText, ((xStartText) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText) / (double(screenHeightPixels) / 2)), text, width - 36);
+			}
+			else {
+				// Text
+				generate_GUI_Text(ob, vhText, ((xStartText + (width / 2)) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText) / (double(screenHeightPixels) / 2)), text, width - 36);
+			}
+		}
+	}
+}
+
+void GUIElement::createObjectNoRestriction(Objects & ob) {
+	if (v && show) {
+		auto* o = new Object((xStartText / (double(screenWidthPixels) / 2)), 0.0 + (yStartText / (double(screenHeightPixels) / 2)), v->getID(), v->getVertecesHandler()->getVAO(), v->getVertecesHandler()->getTextureID());
+		if(rtt != nullptr) o->setRendToText(rtt);
+		o->setOffsetX(xOffset / textureWidth);
+		o->setOffsetY(yOffset / textureHeight);
+		ob.addObject(o);
+	}
 	if (text.size() > 0) {
 		VertecesHandler*& vhText = VertecesHandler::findByName(verteces, "Letters_");
 
 		if (!isCenteredText) {
 			// Text
-			generate_GUI_Text(ob, vhText, ((xStart) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart) / (double(screenHeightPixels) / 2)), text, width - 36);
+			generate_GUI_Text(ob, vhText, ((xStartText) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText) / (double(screenHeightPixels) / 2)), text, width - 36);
 		}
 		else {
 			// Text
-			generate_GUI_Text(ob, vhText, ((xStart + (width / 2) ) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart) / (double(screenHeightPixels) / 2)), text, width - 36);
+			generate_GUI_Text(ob, vhText, ((xStartText + (width / 2)) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText) / (double(screenHeightPixels) / 2)), text, width - 36);
 		}
 	}
 }
+
+void GUIElement::testScroll(double & scroll)
+{
+}
+
 
 std::string & GUIElement::getName()
 {
@@ -190,6 +244,15 @@ void GUIPanel::checkClicked(Objects& ob, double & xPos, double & yPos, int mouse
 	checkUpdates(ob);
 }
 
+void GUIPanel::checkScroll(Objects& ob, double& xPos, double& yPos, double& scroll)
+{
+	if (xPos >= xStart && xPos <= xStart + width && yPos >= yStart && yPos <= yStart + height) {
+		for (auto& e : elements)
+			e->testScroll(scroll);
+	}
+	checkUpdates(ob);
+}
+
 void GUIPanel::checkUpdates(Objects & ob)
 {
 	bool update = false;
@@ -214,8 +277,9 @@ void GUIPanel::updateLabels(Objects & ob)
 	}
 }
 
-Button::Button(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::string text = "", std::function<void()> const & lambda = []() {}) : button(button), hover(hover), clicked(clicked), lambda(lambda), GUIElement(name, button, xStart, yStart, width, height, text)
+Button::Button(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::string text = "", std::function<void(int& mouseState)> lambda = [](int& mouseState) {}) : GUIElement(name, button, xStart, yStart, width, height, text)
 {
+	clickLambda = lambda;
 }
 
 void Button::handleHover()
@@ -237,7 +301,7 @@ void Button::handleClicked(int& mouseState)
 		setUpdate(true);
 	}
 	else if(mouseState == 0 && !getClicked() && getV() == clicked){
-		lambda();
+		clickLambda(mouseState);
 		if (getHover()) {
 			setV(hover);
 		}else
@@ -245,28 +309,82 @@ void Button::handleClicked(int& mouseState)
 		setUpdate(true);
 	}
 }
-
-ToggleButton::ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::function<void()> const & lambda = []() {}) : button(button), hover(hover), clicked(clicked), lambda(lambda), GUIElement(name, button, xStart, yStart, width, height)
+ToggleButton::ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::function<void(int& mouseState)> lambda) : button(button), hover(hover), clicked(clicked), GUIElement(name, button, xStart, yStart, width, height)
 {
+	clickLambda = lambda;
 }
+ToggleButton::ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStartText, int yStartText, int xStart, int yStart, int width, int height, std::function<void(int& mouseState)> lambda) : button(button), hover(hover), clicked(clicked), GUIElement(name, button, xStartText, yStartText, xStart, yStart, width, height)
+{
+	clickLambda = lambda;
+}
+ToggleButton::ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::function<void(int& mouseState)> lambda, std::function<void(double& x, double& y)> hoverLambda) : button(button), hover(hover), clicked(clicked), GUIElement(name, button, xStart, yStart, width, height)
+{
+	clickLambda = lambda;
+	setHoverLambda(hoverLambda);
+}
+ToggleButton::ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStartText, int yStartText, int xStart, int yStart, int width, int height, std::function<void(int& mouseState)> lambda, std::function<void(double& x, double& y)> hoverLambda) : button(button), hover(hover), clicked(clicked), GUIElement(name, button, xStartText, yStartText, xStart, yStart, width, height)
+{
+	clickLambda = lambda;
+	setHoverLambda(hoverLambda);
+}
+
 
 void ToggleButton::createObject(Objects & ob)
 {
-	if (getV()) {
-		if(alwaysShowBase || getV() == button)
-			ob.addObject(new Object(((xStart + 64 * offset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + 64 * offset) / (double(screenHeightPixels) / 2)), button->getID(), button->getVertecesHandler()->getVAO(), button->getVertecesHandler()->getTextureID()));
-		if(!(getV() == button))
-			ob.addObject(new Object((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), getV()->getID(), getV()->getVertecesHandler()->getVAO(), getV()->getVertecesHandler()->getTextureID()));
+	if (show && !rendToText && (alwaysShowBase || getV())) {
+		if ((alwaysShowBase && button) || (button && getV() == button)) {
+			auto* o = new Object(((xStartText + 64 * offset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText + 64 * offset) / (double(screenHeightPixels) / 2)), button->getID(), button->getVertecesHandler()->getVAO(), button->getVertecesHandler()->getTextureID());
+			o->setOffsetX(xOffset / textureWidth);
+			o->setOffsetY(yOffset / textureHeight);
+			ob.addObject(o);
+		}
+		if (getV() && !(getV() == button)) {
+			auto* o = new Object(((xStartText + xDrawOffset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText + yDrawOffset) / (double(screenHeightPixels) / 2)), getV()->getID(), getV()->getVertecesHandler()->getVAO(), getV()->getVertecesHandler()->getTextureID());
+			o->setOffsetX(xOffset / textureWidth);
+			o->setOffsetY(yOffset / textureHeight);
+			ob.addObject(o);
+		}
 		if (text.size() > 0) {
 			VertecesHandler*& vhText = VertecesHandler::findByName(verteces, "Letters_");
 
 			if (!isCenteredText) {
 				// Text
-				generate_GUI_Text(ob, vhText, ((xStart + (width / 2) - (text.size() * 16) / 4 - textOffset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + (height / 2) - 8) / (double(screenHeightPixels) / 2)), text, width - 36);
+				generate_GUI_Text(ob, vhText, ((xStartText + (width / 2) - (text.size() * 16) / 4 - textOffset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText + (height / 2) - 8) / (double(screenHeightPixels) / 2)), text, width - 36);
 			}
 			else {
 				// Text
-				generate_GUI_Text(ob, vhText, ((xStart + (width / 2)) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart) / (double(screenHeightPixels) / 2)), text, width - 36);
+				generate_GUI_Text(ob, vhText, ((xStartText + (width / 2)) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText) / (double(screenHeightPixels) / 2)), text, width - 36);
+			}
+		}
+	}
+}
+
+void ToggleButton::createObjectNoRestriction(Objects & ob) {
+	if (show && (alwaysShowBase || getV())) {
+		if ((alwaysShowBase && button) || (button && getV() == button)) {
+			auto* o = new Object(((xStartText + 64 * offset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText + 64 * offset) / (double(screenHeightPixels) / 2)), button->getID(), button->getVertecesHandler()->getVAO(), button->getVertecesHandler()->getTextureID());
+			if (rtt != nullptr) o->setRendToText(rtt);
+			o->setOffsetX(xOffset / textureWidth);
+			o->setOffsetY(yOffset / textureHeight);
+			ob.addObject(o);
+		}
+		if (getV() && !(getV() == button)) {
+			auto* o = new Object(((xStartText + xDrawOffset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText + yDrawOffset) / (double(screenHeightPixels) / 2)), getV()->getID(), getV()->getVertecesHandler()->getVAO(), getV()->getVertecesHandler()->getTextureID());
+			if (rtt != nullptr) o->setRendToText(rtt);
+			o->setOffsetX(xOffset / textureWidth);
+			o->setOffsetY(yOffset / textureHeight);
+			ob.addObject(o);
+		}
+		if (text.size() > 0) {
+			VertecesHandler*& vhText = VertecesHandler::findByName(verteces, "Letters_");
+
+			if (!isCenteredText) {
+				// Text
+				generate_GUI_Text(ob, vhText, ((xStartText + (width / 2) - (text.size() * 16) / 4 - textOffset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText + (height / 2) - 8) / (double(screenHeightPixels) / 2)), text, width - 36);
+			}
+			else {
+				// Text
+				generate_GUI_Text(ob, vhText, ((xStartText + (width / 2)) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText) / (double(screenHeightPixels) / 2)), text, width - 36);
 			}
 		}
 	}
@@ -274,9 +392,10 @@ void ToggleButton::createObject(Objects & ob)
 
 void ToggleButton::resetToggle()
 {
-	setV(button);
+	v = button;
 	if (!cleanReset && toggle) {
-		lambda();
+		int mouseState = 1;
+		if(clickLambda != NULL) clickLambda(mouseState);
 	}
 	toggle = false;
 	isClicked = false;
@@ -290,25 +409,35 @@ void ToggleButton::handleHover()
 		if (doHover) {
 			setV(hover);
 			setUpdate(true);
+			if (hoverLambda != NULL) {
+				double x = 0.0, y = 0.0;
+				hoverLambda(x, y);
+			}
 		}
 	}
 	else if (!toggle && !getHover() && getV() != button) {
 		if (doHover) {
 			setV(button);
 			setUpdate(true);
+			if (hoverLambda != NULL) {
+				double x = 0.0, y = 0.0;
+				hoverLambda(x, y);
+			}
 		}
 	}
 }
 
 void ToggleButton::handleClicked(int& mouseState)
 {
-	if (mouseState == 1 && xPos >= xStart && xPos <= xStart + width && yPos >= yStart && yPos <= yStart + height) {
-		toggle = !toggle;
-		lambda();
-		if(toggle) setV(clicked);
-		else if(getHover() && doHover) setV(hover);
-		else setV(button);
-		setUpdate(true);
+	if (mouseState == 1) {
+		if (button != nullptr) {
+			toggle = !toggle;
+			if (toggle) setV(clicked);
+			else if (getHover() && doHover) setV(hover);
+			else setV(button);
+			setUpdate(true);
+		}
+		clickLambda(mouseState);
 	}
 
 }
@@ -327,12 +456,56 @@ void ToggleButtonGroup::createObject(Objects & ob)
 	}
 }
 
+void ToggleButtonGroup::createObjectNoRestriction(Objects & ob) {
+	for (auto& e : toggleButtons) {
+		e->createObjectNoRestriction(ob);
+	}
+}
+
+void ToggleButtonGroup::testScroll(double & scroll)
+{
+	if (scrollLambda != NULL)
+		scrollLambda(scroll);
+}
+
 ToggleButton * ToggleButtonGroup::getElementByName(std::string name)
 {
 	auto it = std::find_if(toggleButtons.begin(), toggleButtons.end(), [name](ToggleButton*& e) { return (e->getName().compare(name) == 0); });
 	if (it != toggleButtons.end())
 		return (*it);
 	return nullptr;
+}
+
+/**
+* The first encountered ToggleButton that is clicked.
+*@return clicked ToggleButton
+*/
+ToggleButton * ToggleButtonGroup::getElementByClicked()
+{
+	ToggleButton* tb = nullptr;
+	for (auto& b : toggleButtons) {
+		if (b->getClicked()) {
+			tb = b;
+			break;
+		}
+	}
+	return tb;
+}
+
+/**
+* The first encountered ToggleButton that is hovered.
+*@return the hovered ToggleButton
+*/
+ToggleButton * ToggleButtonGroup::getElementByHover()
+{
+	ToggleButton* tb = nullptr;
+	for (auto& b : toggleButtons) {
+		if (b->getHover()) {
+			tb = b;
+			break;
+		}
+	}
+	return tb;
 }
 
 void ToggleButtonGroup::addElement(GUIElement * e)
@@ -354,17 +527,46 @@ bool ToggleButtonGroup::getUpdate()
 
 void ToggleButtonGroup::testHover(double & xPos, double & yPos)
 {
-	for (auto& e : toggleButtons) {
-		e->testHover(xPos, yPos);
+	if (!rendToText) {
+		bool test = (xPos >= xStart && xPos <= xStart + width && yPos >= yStart && yPos <= yStart + height);
+		if (width == 0) {
+			for (auto& e : toggleButtons) {
+				e->testHover(xPos, yPos);
+			}
+		}
+		else if (test) {
+			for (auto& e : toggleButtons) {
+				e->testHover(xPos, yPos);
+			}
+			if (hoverLambda != NULL)
+				hoverLambda(xPos, yPos);
+		}
+	}
+	else {
+		bool test = (xPos >= xStart && xPos <= xStart + width && yPos >= yStart && yPos <= yStart + height);
+		double x = xPos-xStart+xRendToTextOffset, y = yPos-yStart+yRendToTextOffset;
+		if (test || checkOutside) {
+			for (auto& e : toggleButtons) {
+				e->testHover(x, y);
+			}
+		}
+		if ((test || checkOutsideOfArea) && hoverLambda != NULL)
+			hoverLambda(x, y);
 	}
 }
 
 void ToggleButtonGroup::testClicked(double & xPos, double & yPos, int mouseState, bool& isClickedAbove)
 {
 	ToggleButton* before = currentlyPressed;
+	double x = xPos, y = yPos;
+	if (rendToText) {
+		x = xPos - xStart + xRendToTextOffset;
+		y = yPos - yStart + yRendToTextOffset;
+	}
+
 	if (mouseState == 1) {
 		for (auto& e : toggleButtons) {
-			e->testClicked(xPos, yPos, mouseState, isClickedAbove);
+			e->testClicked(x, y, mouseState, isClickedAbove);
 			if ((before == nullptr || before->getName().compare(e->getName()) != 0) && e->getToggle()) {
 				currentlyPressed = e;
 			}
@@ -376,6 +578,10 @@ void ToggleButtonGroup::testClicked(double & xPos, double & yPos, int mouseState
 				}
 			}
 		}
+	}
+	if (clickLambda != NULL) {
+		bool test = (xPos >= xStart && xPos <= xStart + width && yPos >= yStart && yPos <= yStart + height);
+		if(test) clickLambda(mouseState);
 	}
 }
 
@@ -394,6 +600,13 @@ void ToggleButtonGroup::clearAll()
 	currentlyPressed = nullptr;
 	toggleButtons.clear();
 	toggleButtons.shrink_to_fit();
+}
+
+void ToggleButtonGroup::setUpdate(bool b)
+{
+	for (auto& e : toggleButtons) {
+		e->setUpdate(b);
+	}
 }
 
 void ToggleButtonGroup::handleHover()
@@ -565,7 +778,7 @@ void GUIText::createObject(Objects & ob)
 	}
 }
 
-ExpandingButton::ExpandingButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, float scaling, std::string text, std::function<void()> const & lambda) : scaling(scaling), Button(name, button, hover, clicked, xStart, yStart, width, height, text, lambda)
+ExpandingButton::ExpandingButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, float scaling, std::string text, std::function<void(int& mouseState)> lambda) : scaling(scaling), Button(name, button, hover, clicked, xStart, yStart, width, height, text, lambda)
 {
 }
 
@@ -631,4 +844,88 @@ void GUILabel::update(Objects & ob)
 		it = std::find_if(list.begin(), list.end(), [object](Object* os) { return os == object; });
 		list.insert(it, temp.begin(), temp.end());
 	}
+}
+
+GUIGroup::~GUIGroup()
+{
+	clear();
+}
+
+void GUIGroup::clear()
+{
+	for (auto e : elements) {
+		delete e;
+	}
+	elements.clear();
+}
+
+void GUIGroup::createObject(Objects & ob)
+{
+	if (!rendToText) {
+		for (auto e : elements) {
+			e->createObject(ob);
+		}
+	}
+}
+
+void GUIGroup::createObjectNoRestriction(Objects & ob)
+{
+	for (auto e : elements) {
+		e->createObject(ob);
+	}
+}
+
+void GUIGroup::addElement(GUIElement * e)
+{
+	elements.push_back(e);
+}
+
+GUIElement * GUIGroup::getElementByName(std::string name)
+{
+	auto it = std::find_if(elements.begin(), elements.end(), [name](GUIElement*& e) { return (e->getName().compare(name) == 0); });
+	if (it != elements.end())
+		return (*it);
+	return nullptr;
+}
+
+void GUIGroup::removeElementByName(std::string name)
+{
+	auto it = std::find_if(elements.begin(), elements.end(), [name](GUIElement*& e) { return (e->getName().compare(name) == 0); });
+	if (it != elements.end()) {
+		delete (*it);
+		elements.erase(it);
+	}
+}
+
+void GUIGroup::testHover(double & xPos, double & yPos)
+{
+}
+
+void GUIGroup::testClicked(double & xPos, double & yPos, int mouseState, bool & isClickedAbove)
+{
+}
+
+void GUIGroup::updateStartX(int x)
+{
+	this->xStart = x;
+	for (auto e : elements) {
+		e->setStartX(x);
+	}
+}
+
+void GUIGroup::setStartY(int y)
+{
+	this->yStart = y;
+	for (auto e : elements) {
+		e->setStartX(y);
+	}
+
+}
+
+void GUIGroup::handleHover()
+{
+}
+
+void GUIGroup::handleClicked(int & mouseState)
+{
 }

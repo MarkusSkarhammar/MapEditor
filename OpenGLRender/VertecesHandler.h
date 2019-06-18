@@ -44,10 +44,17 @@ private:
 class Vertices {
 public:
 	Vertices(std::string name, VertecesHandler* vh, float xStartText, float yStartText, float widthText, float heightText, float width, float height);
+	Vertices(std::string name, VertecesHandler* vh, float xStartText, float yStartText, float widthText, float heightText, float width, float height, int textToRend);
 	Vertices(std::string name, VertecesHandler* vh, float xStartText, float yStartText, float widthText, float heightText, float width, float height, bool doubleSize);
 	VertecesHandler*& getVertecesHandler() { return vh; };
 	std::string getName() { return name; };
 	int getID() { return ID; };
+	float getXStartText() { return xStartText; };
+	float getYStartText() { return yStartText; };
+	float getWidthText() { return widthText; };
+	float getHeightText() { return heightText; };
+	float getWidth() { return width; };
+	float getHeight() { return height; };
 	static Vertices*& findByName(std::vector<Vertices*>& list, std::string name) {
 		std::vector<Vertices*>::iterator it = std::find_if(list.begin(), list.end(), [name](Vertices*& vertices) {
 			return (vertices->getName() == name);
@@ -70,6 +77,7 @@ void getVertecesHandlerFromID(VertecesHandler*& vh, int& ID);
 void getVertecesHandlerFromID(VertecesHandler*& vh, int& ID, bool& size);
 
 void generateVetecesSquares(VertecesHandler* vh, int amount);
+void generate_Palette_Modifier_Rend_To_text(VertecesHandler* vh);
 void generateGUI(VertecesHandler* vh, std::string textName);
 void generate_Left_Panel_GUI(VertecesHandler*& vh);
 void generate_Left_Panel_Drop_Down_GUI(VertecesHandler*& vh);
