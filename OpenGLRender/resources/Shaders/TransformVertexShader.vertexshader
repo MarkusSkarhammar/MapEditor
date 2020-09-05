@@ -1,0 +1,26 @@
+#version 330 core
+
+	layout (location = 0 ) in vec2 position;
+    layout (location = 1 ) in vec2 texCoord;
+	layout (location = 2 ) in vec2 iPosition;
+
+    out vec2 uv;
+
+	uniform int instancing;
+
+	// Values that stay constant for the whole mesh.
+	layout (std140) uniform Matrices
+	{
+		mat4 projection;
+		mat4 view;
+		mat4 model;
+	};
+
+    void main()
+    {
+		vec2 realPosition = position;
+		if(instancing == 1)
+			realPosition += iPosition;
+		gl_Position = projection * view * model * vec4(realPosition, 0.0f, 1.0f);
+		uv = texCoord;
+    }

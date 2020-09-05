@@ -5,11 +5,16 @@
 
     in vec2 uv;
     out vec4 outColor;
-    uniform sampler2DArray textureArray;
-    uniform int layer;
-	uniform vec2 textOffset;
+
+    uniform sampler2D screenTexture;
+
+
+	layout (std140) uniform textStuff
+	{
+		vec2 textOffset;
+	};
+
     void main()
     {
-        vec4 texel = texture2DArray(textureArray, vec3(uv.x + textOffset.x,uv.y + textOffset.y, layer));
-		outColor = texel;
+		outColor = texture(screenTexture, vec2(uv.x + textOffset.x,uv.y - textOffset.y));
     }

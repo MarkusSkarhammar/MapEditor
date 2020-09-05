@@ -8,36 +8,38 @@
 #include <string>
 #include <algorithm>
 #include "Global.h"
-#include "VertecesHandler.h"
-#include "Object.h"
+#include "Vertices.h"
+#include "DrawObject.h"
+#include "ElementCreatorFunctions.h"
 
 using std::vector;
 using std::string;
 
 // Bottom bar
-void generate_GUI_Bottom_Bar(Objects& ob, VertecesHandler*& vh);
-void generate_GUI_Bottom_Bar_text(Objects& ob, VertecesHandler*& vh, std::string xText, std::string yText, std::string zText);
+void generate_GUI_Bottom_Bar();
+void generate_GUI_Bottom_Bar_text(DrawObjects *ob, std::string xText, std::string yText, std::string zText);
 
 // Text
-void generate_GUI_Text(Objects& ob, VertecesHandler*& vh, double x, double y, std::string text);
-void generate_GUI_Text(std::vector<Object*>& vec, VertecesHandler*& vh, double x, double y, std::string text);
-void generate_GUI_Text(Objects& ob, VertecesHandler*& vh, double x, double y, std::string text, int rowLength);
+void generate_GUI_Text(DrawObjects *ob, double x, double y, std::string text);
+void generate_GUI_Text(std::vector<DrawObject*>& vec, double x, double y, std::string text);
+void generate_GUI_Text(DrawObjects* ob, double x, double y, int textStartOffset, int rowLength, std::string text, string textType);
 
 // left panel
-void generate_GUI_Left_Panel(Objects& ob, VertecesHandler*& vh, size_t displayState);
-void generate_GUI_Left_Panel_Text_(Objects& ob, VertecesHandler*& vh);
-void generate_GUI_Left_Panel_Selector(Objects & ob);
+void generate_GUI_Left_Panel(size_t displayState);
+void generate_GUI_Left_Panel_Text_(DrawObjects *ob);
+void generate_Left_Panel_Tiles(Palette& p);
 
 // Preview tiles
-void generate_GUI_Preview_Tiles(Objects& ob);
+void generate_GUI_Preview_Tiles();
 
 // ItemInfo panel
-void generate_GUI_Item_Info_Panel(Objects & ob, VertecesHandler*& vh);
+void generate_GUI_Item_Info_Panel();
 
 // Palette modifier
-void generate_Palette_Modifier(Objects & ob, VertecesHandler*& vh);
+void generate_Palette_Modifier();
 
-void generate_Palette_Modifier_Fill_Palette(Objects & ob, Palette& p);
+// Render to text stuff
+void generate_Left_Panel_Rend_To_Text();
 
 #endif
 

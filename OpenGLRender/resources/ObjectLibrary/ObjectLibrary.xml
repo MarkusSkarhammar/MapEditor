@@ -1,0 +1,1751 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Libraries>
+  <Library id="Tiles">
+	<Object id="0" name="grass1">
+		<attribute xStartText="0" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="1" name="ocean1">
+		<attribute xStartText="64" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="2" name="dirt1">
+		<attribute xStartText="128" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="3" name="planksYellow">
+		<attribute xStartText="192" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="4" name="planksBrown">
+		<attribute xStartText="256" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="5" name="pavementCracked1">
+		<attribute xStartText="320" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="6" name="pavement1">
+		<attribute xStartText="384" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="7" name="roofTiledVerticalUp1">
+		<attribute xStartText="448" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="8" name="roofTiledBeamVertical1">
+		<attribute xStartText="512" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="9" name="roofTiledVerticalDown1">
+		<attribute xStartText="576" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="10" name="stairsDownSouth1">
+		<attribute xStartText="640" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="11" name="dirt2">
+		<attribute xStartText="704" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="12" name="dirt3">
+		<attribute xStartText="768" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="13" name="dirt4">
+		<attribute xStartText="832" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="14" name="dirtRopeUp1">
+		<attribute xStartText="896" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="15" name="dirtWallBackground1">
+		<attribute xStartText="960" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="16" name="blackMarble1">
+		<attribute xStartText="1024" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="17" name="blackMarble2">
+		<attribute xStartText="1088" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+	<Object id="18" name="blackMarble3">
+		<attribute xStartText="1152" />
+		<attribute yStartText="0" />
+		<attribute widthText="64" />
+		<attribute heightText="64" />
+		<attribute width="64" />
+		<attribute height="64" />
+		<attribute textureName="Tiles_1" />
+	</Object>
+  </Library>
+  <Library id="Doodads">
+	<Object id="0" name="whiteCornerTreeBeamWall">
+		<attribute xStartText="0" />
+		<attribute yStartText="0" />
+		<attribute widthText="128" />
+		<attribute heightText="128" />
+		<attribute width="128" />
+		<attribute height="128" />
+		<attribute textureName="Doodads_1" />
+		<attribute doubleSize="1"/>
+	</Object>
+	<Object id="1" name="whiteTreeBeamWallSouth">
+		<attribute xStartText="128" />
+		<attribute yStartText="0" />
+		<attribute widthText="128" />
+		<attribute heightText="128" />
+		<attribute width="128" />
+		<attribute height="128" />
+		<attribute textureName="Doodads_1" />
+		<attribute doubleSize="1"/>
+	</Object>
+	<Object id="2" name="whiteWallSouth">
+		<attribute xStartText="256" />
+		<attribute yStartText="0" />
+		<attribute widthText="128" />
+		<attribute heightText="128" />
+		<attribute width="128" />
+		<attribute height="128" />
+		<attribute textureName="Doodads_1" />
+		<attribute doubleSize="1"/>
+	</Object>
+	<Object id="3" name="whiteTreeBeamWallNorth">
+		<attribute xStartText="384" />
+		<attribute yStartText="0" />
+		<attribute widthText="128" />
+		<attribute heightText="128" />
+		<attribute width="128" />
+		<attribute height="128" />
+		<attribute textureName="Doodads_1" />
+		<attribute doubleSize="1"/>
+	</Object>
+	<Object id="4" name="whiteWallNorth">
+		<attribute xStartText="512" />
+		<attribute yStartText="0" />
+		<attribute widthText="128" />
+		<attribute heightText="128" />
+		<attribute width="128" />
+		<attribute height="128" />
+		<attribute textureName="Doodads_1" />
+		<attribute doubleSize="1"/>
+	</Object>
+	<Object id="5" name="whiteWallDoorNorthSouth">
+		<attribute xStartText="640" />
+		<attribute yStartText="0" />
+		<attribute widthText="128" />
+		<attribute heightText="128" />
+		<attribute width="128" />
+		<attribute height="128" />
+		<attribute textureName="Doodads_1" />
+		<attribute doubleSize="1"/>
+	</Object>
+  </Library>
+  <Library id="Borders">
+	  <Object id="0" name="tileRoofCornerSouthEast">
+			<attribute xStartText="0" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="1" name="tileRoofEndSouth">
+			<attribute xStartText="64" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="2" name="tileRoofCornerEndSouth">
+			<attribute xStartText="128" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="3" name="tileRoofEndNorth">
+			<attribute xStartText="192" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="4" name="tileRoofSideNorth">
+			<attribute xStartText="256" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="5" name="tileRoofSideSouth">
+			<attribute xStartText="320" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="6" name="tileRoofSideMiddle">
+			<attribute xStartText="384" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="7" name="tileRoofCornerEndNorth">
+			<attribute xStartText="448" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="8" name="grassBorderWest">
+			<attribute xStartText="512" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="9" name="grassBorderSouth">
+			<attribute xStartText="576" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="10" name="grassBorderSouthWestCornerPoint">
+			<attribute xStartText="640" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="11" name="grassBorderSouthWestCorner">
+			<attribute xStartText="704" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="12" name="grassBorderNorthWestCorner">
+			<attribute xStartText="768" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="13" name="grassBorderNorthWestCornerPoint">
+			<attribute xStartText="832" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="14" name="grassBorderNorthEastCorner">
+			<attribute xStartText="896" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="15" name="grassBorderEast">
+			<attribute xStartText="960" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="16" name="grassBorderNorth">
+			<attribute xStartText="1024" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="17" name="grassBorderSouthEastCorner">
+			<attribute xStartText="1088" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="18" name="grassBorderNorthEastCornerPoint">
+			<attribute xStartText="1152" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="19" name="grassBorderSouthEastCornerPoint">
+			<attribute xStartText="1216" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="20" name="dirtBorderNorth">
+			<attribute xStartText="1280" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="21" name="dirtBorderNorthWestCorner">
+			<attribute xStartText="1344" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="22" name="dirtBorderEast">
+			<attribute xStartText="1408" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="23" name="dirtBorderSouthEastCorner">
+			<attribute xStartText="1472" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="24" name="dirtBorderSouth">
+			<attribute xStartText="1536" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="25" name="dirtBorderNorthEastCorner">
+			<attribute xStartText="1600" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="26" name="dirtBorderWest">
+			<attribute xStartText="1664" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="27" name="dirtBorderSouthWestCorner">
+			<attribute xStartText="1728" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="28" name="dirtBorderNorthWestCorner">
+			<attribute xStartText="1792" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="29" name="dirtBorderNorthWestCorner">
+			<attribute xStartText="1856" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="30" name="dirtBorderNorthEastCorner">
+			<attribute xStartText="1920" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+		<Object id="31" name="dirtBorderSouthEastCorner">
+			<attribute xStartText="1984" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Borders_1" />
+		</Object>
+  </Library>
+  <Library id="Nature">
+  </Library>
+  <Library id="Monsters">
+  </Library>
+  <Library id="Humanoids">
+  </Library>
+  <Library id="Items">
+	  <Object id="0" name="shortSword">
+			<attribute xStartText="0" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Items_1" />
+		</Object>
+		<Object id="1" name="leatherHelmet">
+			<attribute xStartText="64" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Items_1" />
+		</Object>
+		<Object id="2" name="emptyPotionBottle">
+			<attribute xStartText="128" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Items_1" />
+		</Object>
+		<Object id="3" name="fullHealthPotion">
+			<attribute xStartText="192" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Items_1" />
+		</Object>
+		<Object id="4" name="fullManaPotion">
+			<attribute xStartText="256" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Items_1" />
+		</Object>
+  </Library>
+  <Library id="Random">
+		<Object id="0" name="fire">
+			<attribute xStartText="320" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Items_1" />
+		</Object>
+		<Object id="1" name="fire2">
+			<attribute xStartText="384" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="Items_1" />
+		</Object>
+  </Library>
+  <Library id="Letters">
+		<Object id="0" name="aBlack">
+			<attribute xStartText="16" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="10" />
+		</Object>
+		<Object id="1" name="bBlack">
+			<attribute xStartText="32" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="2" name="cBlack">
+			<attribute xStartText="48" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="10" />
+		</Object>
+		<Object id="3" name="dBlack">
+			<attribute xStartText="64" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="4" name="eBlack">
+			<attribute xStartText="80" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="10" />
+		</Object>
+		<Object id="5" name="fBlack">
+			<attribute xStartText="96" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="9" />
+		</Object>
+		<Object id="6" name="gBlack">
+			<attribute xStartText="112" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="7" name="hBlack">
+			<attribute xStartText="128" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="8" name="iBlack">
+			<attribute xStartText="144" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="5" />
+		</Object>
+		<Object id="9" name="jBlack">
+			<attribute xStartText="160" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="7" />
+		</Object>
+		<Object id="10" name="kBlack">
+			<attribute xStartText="176" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="11" name="lBlack">
+			<attribute xStartText="192" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="5" />
+		</Object>
+		<Object id="12" name="mBlack">
+			<attribute xStartText="208" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="15" />
+		</Object>
+		<Object id="13" name="nBlack">
+			<attribute xStartText="224" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="14" name="oBlack">
+			<attribute xStartText="240" />
+			<attribute yStartText="96" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="15" name="pBlack">
+			<attribute xStartText="0" />
+			<attribute yStartText="112" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="16" name="qBlack">
+			<attribute xStartText="16" />
+			<attribute yStartText="112" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="17" name="rBlack">
+			<attribute xStartText="32" />
+			<attribute yStartText="112" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="9" />
+		</Object>
+		<Object id="18" name="sBlack">
+			<attribute xStartText="48" />
+			<attribute yStartText="112" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="10" />
+		</Object>
+		<Object id="19" name="tBlack">
+			<attribute xStartText="64" />
+			<attribute yStartText="112" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="8" />
+		</Object>
+		<Object id="20" name="uBlack">
+			<attribute xStartText="80" />
+			<attribute yStartText="112" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="21" name="vBlack">
+			<attribute xStartText="96" />
+			<attribute yStartText="112" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="4" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="22" name="wBlack">
+			<attribute xStartText="112" />
+			<attribute yStartText="112" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="16" />
+		</Object>
+		<Object id="23" name="xBlack">
+			<attribute xStartText="128" />
+			<attribute yStartText="112" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="12" />
+		</Object>
+		<Object id="24" name="yBlack">
+			<attribute xStartText="144" />
+			<attribute yStartText="112" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="12" />
+		</Object>
+		<Object id="25" name="zBlack">
+			<attribute xStartText="160" />
+			<attribute yStartText="112" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="10" />
+		</Object>
+		<Object id="26" name="0Black">
+			<attribute xStartText="0" />
+			<attribute yStartText="48" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="27" name="1Black">
+			<attribute xStartText="16" />
+			<attribute yStartText="48" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="8" />
+		</Object>
+		<Object id="28" name="2Black">
+			<attribute xStartText="32" />
+			<attribute yStartText="48" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="29" name="3Black">
+			<attribute xStartText="48" />
+			<attribute yStartText="48" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="30" name="4Black">
+			<attribute xStartText="64" />
+			<attribute yStartText="48" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="31" name="5Black">
+			<attribute xStartText="80" />
+			<attribute yStartText="48" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="32" name="6Black">
+			<attribute xStartText="96" />
+			<attribute yStartText="48" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="33" name="7Black">
+			<attribute xStartText="112" />
+			<attribute yStartText="48" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="34" name="8Black">
+			<attribute xStartText="128" />
+			<attribute yStartText="48" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="35" name="9Black">
+			<attribute xStartText="144" />
+			<attribute yStartText="48" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="36" name=":Black">
+			<attribute xStartText="160" />
+			<attribute yStartText="48" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="5" />
+		</Object>
+		<Object id="37" name=" Black">
+			<attribute xStartText="0" />
+			<attribute yStartText="32" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="0" />
+			<attribute letterPixelsSize="4" />
+		</Object>
+		<Object id="38" name="|Black">
+			<attribute xStartText="192" />
+			<attribute yStartText="112" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="5" />
+		</Object>
+		<Object id="39" name="ABlack">
+			<attribute xStartText="16" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="14" />
+		</Object>
+		<Object id="40" name="BBlack">
+			<attribute xStartText="32" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="13" />
+		</Object>
+		<Object id="41" name="CBlack">
+			<attribute xStartText="48" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="13" />
+		</Object>
+		<Object id="42" name="DBlack">
+			<attribute xStartText="64" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="13" />
+		</Object>
+		<Object id="43" name="EBlack">
+			<attribute xStartText="80" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="12" />
+		</Object>
+		<Object id="44" name="FBlack">
+			<attribute xStartText="96" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="10" />
+		</Object>
+		<Object id="44" name="GBlack">
+			<attribute xStartText="112" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="14" />
+		</Object>
+		<Object id="45" name="HBlack">
+			<attribute xStartText="128" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="13" />
+		</Object>
+		<Object id="46" name="IBlack">
+			<attribute xStartText="144" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="5" />
+		</Object>
+		<Object id="48" name="KBlack">
+			<attribute xStartText="176" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="13" />
+		</Object>
+		<Object id="49" name="LBlack">
+			<attribute xStartText="192" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="11" />
+		</Object>
+		<Object id="50" name="MBlack">
+			<attribute xStartText="208" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="14" />
+		</Object>
+		<Object id="51" name="NBlack">
+			<attribute xStartText="224" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="13" />
+		</Object>
+		<Object id="52" name="OBlack">
+			<attribute xStartText="240" />
+			<attribute yStartText="64" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="14" />
+		</Object>
+		<Object id="53" name="PBlack">
+			<attribute xStartText="0" />
+			<attribute yStartText="80" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="12" />
+		</Object>
+		<Object id="54" name="QBlack">
+			<attribute xStartText="16" />
+			<attribute yStartText="80" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="14" />
+		</Object>
+		<Object id="55" name="RBlack">
+			<attribute xStartText="32" />
+			<attribute yStartText="80" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="14" />
+		</Object>
+		<Object id="56" name="SBlack">
+			<attribute xStartText="48" />
+			<attribute yStartText="80" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="12" />
+		</Object>
+		<Object id="57" name="TBlack">
+			<attribute xStartText="64" />
+			<attribute yStartText="80" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="13" />
+		</Object>
+		<Object id="58" name="UBlack">
+			<attribute xStartText="80" />
+			<attribute yStartText="80" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="13" />
+		</Object>
+		<Object id="59" name="VBlack">
+			<attribute xStartText="86" />
+			<attribute yStartText="80" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="14" />
+		</Object>
+		<Object id="60" name="WBlack">
+			<attribute xStartText="112" />
+			<attribute yStartText="80" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="1" />
+			<attribute letterPixelsSize="16" />
+		</Object>
+		<Object id="61" name="XBlack">
+			<attribute xStartText="128" />
+			<attribute yStartText="80" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="14" />
+		</Object>
+		<Object id="62" name="YBlack">
+			<attribute xStartText="144" />
+			<attribute yStartText="80" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="13" />
+		</Object>
+		<Object id="63" name="ZBlack">
+			<attribute xStartText="176" />
+			<attribute yStartText="80" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="3" />
+			<attribute letterPixelsSize="13" />
+		</Object>
+		
+  </Library>
+  <Library id="GUI">
+		<Object id="0" name="bottomBarBasic">
+			<attribute xStartText="0" />
+			<attribute yStartText="2011" />
+			<attribute widthText="2045" />
+			<attribute heightText="30" />
+			<attribute width="2045" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="1" name="bottomBarLabel">
+			<attribute xStartText="65" />
+			<attribute yStartText="0" />
+			<attribute widthText="64" />
+			<attribute heightText="30" />
+			<attribute width="64" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="2" name="bottomBarEraser">
+			<attribute xStartText="130" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="3" name="bottomBarEraserHover">
+			<attribute xStartText="161" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="4" name="bottomBarEraserPressed">
+			<attribute xStartText="192" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="5" name="bottomBarDestroyer">
+			<attribute xStartText="223" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="6" name="bottomBarDestroyerHover">
+			<attribute xStartText="254" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="7" name="bottomBarDestroyerPressed">
+			<attribute xStartText="285" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="8" name="bottomBarTileDestroyer">
+			<attribute xStartText="316" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="9" name="bottomBarTileDestroyerHover">
+			<attribute xStartText="347" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="10" name="bottomBarTileDestroyerPressed">
+			<attribute xStartText="378" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="11" name="bottomBarCut">
+			<attribute xStartText="409" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="12" name="bottomBarCutHover">
+			<attribute xStartText="440" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="13" name="bottomBarCutPressed">
+			<attribute xStartText="471" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="14" name="bottomBarCopy">
+			<attribute xStartText="502" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="15" name="bottomBarCopyHover">
+			<attribute xStartText="533" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="16" name="bottomBarCopyPressed">
+			<attribute xStartText="564" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="17" name="leftPanelBackground">
+			<attribute xStartText="80" />
+			<attribute yStartText="810" />
+			<attribute widthText="295" />
+			<attribute heightText="1200" />
+			<attribute width="295" />
+			<attribute height="1200" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="18" name="paletteModifierDropDownElement">
+			<attribute xStartText="1163" />
+			<attribute yStartText="791" />
+			<attribute widthText="102" />
+			<attribute heightText="24" />
+			<attribute width="102" />
+			<attribute height="24" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="19" name="paletteModifierDropDownElementHover">
+			<attribute xStartText="1266" />
+			<attribute yStartText="791" />
+			<attribute widthText="102" />
+			<attribute heightText="24" />
+			<attribute width="102" />
+			<attribute height="24" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="20" name="emptyTileMarker">
+			<attribute xStartText="1109" />
+			<attribute yStartText="701" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="21" name="leftPanelRendToText">
+			<attribute xStartText="0" />
+			<attribute yStartText="0" />
+			<attribute widthText="0" />
+			<attribute heightText="0" />
+			<attribute width="0" />
+			<attribute height="0" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="22" name="leftPanelTileArea">
+			<attribute xStartText="376" />
+			<attribute yStartText="810" />
+			<attribute widthText="295" />
+			<attribute heightText="1200" />
+			<attribute width="295" />
+			<attribute height="1200" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="23" name="yellowSquareSmall">
+			<attribute xStartText="0" />
+			<attribute yStartText="550" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="24" name="redSquareSmall">
+			<attribute xStartText="0" />
+			<attribute yStartText="615" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="25" name="eraseTile">
+			<attribute xStartText="0" />
+			<attribute yStartText="745" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="26" name="destroyTile">
+			<attribute xStartText="0" />
+			<attribute yStartText="680" />
+			<attribute widthText="64" />
+			<attribute heightText="64" />
+			<attribute width="64" />
+			<attribute height="64" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="27" name="yellowSquareBig">
+			<attribute xStartText="65" />
+			<attribute yStartText="550" />
+			<attribute widthText="128" />
+			<attribute heightText="128" />
+			<attribute width="128" />
+			<attribute height="128" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="28" name="redSquareBig">
+			<attribute xStartText="194" />
+			<attribute yStartText="550" />
+			<attribute widthText="128" />
+			<attribute heightText="128" />
+			<attribute width="128" />
+			<attribute height="128" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="29" name="scrollbar1Background">
+			<attribute xStartText="0" />
+			<attribute yStartText="810" />
+			<attribute widthText="19" />
+			<attribute heightText="1200" />
+			<attribute width="19" />
+			<attribute height="1200" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="30" name="scrollbar1Bar">
+			<attribute xStartText="20" />
+			<attribute yStartText="810" />
+			<attribute widthText="19" />
+			<attribute heightText="1200" />
+			<attribute width="19" />
+			<attribute height="1200" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="31" name="scrollbar1BarHover">
+			<attribute xStartText="40" />
+			<attribute yStartText="810" />
+			<attribute widthText="19" />
+			<attribute heightText="1200" />
+			<attribute width="19" />
+			<attribute height="1200" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="32" name="scrollbar1BarClicked">
+			<attribute xStartText="60" />
+			<attribute yStartText="810" />
+			<attribute widthText="19" />
+			<attribute heightText="1200" />
+			<attribute width="19" />
+			<attribute height="1200" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="33" name="scrollbar1ButtonUp">
+			<attribute xStartText="1349" />
+			<attribute yStartText="940" />
+			<attribute widthText="19" />
+			<attribute heightText="10" />
+			<attribute width="19" />
+			<attribute height="10" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="34" name="scrollbar1ButtonUpHover">
+			<attribute xStartText="1349" />
+			<attribute yStartText="951" />
+			<attribute widthText="19" />
+			<attribute heightText="10" />
+			<attribute width="19" />
+			<attribute height="10" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="35" name="scrollbar1ButtonUpClicked">
+			<attribute xStartText="1349" />
+			<attribute yStartText="962" />
+			<attribute widthText="19" />
+			<attribute heightText="10" />
+			<attribute width="19" />
+			<attribute height="10" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="36" name="scrollbar1ButtonDown">
+			<attribute xStartText="1349" />
+			<attribute yStartText="995" />
+			<attribute widthText="19" />
+			<attribute heightText="10" />
+			<attribute width="19" />
+			<attribute height="10" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="37" name="scrollbar1ButtonDownHover">
+			<attribute xStartText="1349" />
+			<attribute yStartText="984" />
+			<attribute widthText="19" />
+			<attribute heightText="10" />
+			<attribute width="19" />
+			<attribute height="10" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="38" name="scrollbar1ButtonDownClicked">
+			<attribute xStartText="1349" />
+			<attribute yStartText="973" />
+			<attribute widthText="19" />
+			<attribute heightText="10" />
+			<attribute width="19" />
+			<attribute height="10" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="39" name="paletteModifierPanel">
+			<attribute xStartText="1369" />
+			<attribute yStartText="701" />
+			<attribute widthText="679" />
+			<attribute heightText="724" />
+			<attribute width="679" />
+			<attribute height="724" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="40" name="paletteModifierRendToTextLeft">
+			<attribute xStartText="0" />
+			<attribute yStartText="0" />
+			<attribute widthText="0" />
+			<attribute heightText="0" />
+			<attribute width="0" />
+			<attribute height="0" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="41" name="saveIcon">
+			<attribute xStartText="385" />
+			<attribute yStartText="30" />
+			<attribute widthText="128" />
+			<attribute heightText="128" />
+			<attribute width="128" />
+			<attribute height="128" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="42" name="saveIconHover">
+			<attribute xStartText="514" />
+			<attribute yStartText="30" />
+			<attribute widthText="128" />
+			<attribute heightText="128" />
+			<attribute width="128" />
+			<attribute height="128" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="43" name="saveIconClicked">
+			<attribute xStartText="643" />
+			<attribute yStartText="30" />
+			<attribute widthText="128" />
+			<attribute heightText="128" />
+			<attribute width="128" />
+			<attribute height="128" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="44" name="trashIcon">
+			<attribute xStartText="385" />
+			<attribute yStartText="159" />
+			<attribute widthText="128" />
+			<attribute heightText="128" />
+			<attribute width="127" />
+			<attribute height="127" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="45" name="trashIconHover">
+			<attribute xStartText="515" />
+			<attribute yStartText="159" />
+			<attribute widthText="128" />
+			<attribute heightText="128" />
+			<attribute width="128" />
+			<attribute height="128" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="46" name="trashIconClicked">
+			<attribute xStartText="644" />
+			<attribute yStartText="159" />
+			<attribute widthText="128" />
+			<attribute heightText="128" />
+			<attribute width="128" />
+			<attribute height="128" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="47" name="textField1">
+			<attribute xStartText="1200" />
+			<attribute yStartText="816" />
+			<attribute widthText="148" />
+			<attribute heightText="22" />
+			<attribute width="148" />
+			<attribute height="22" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="48" name="textField1Focused">
+			<attribute xStartText="1200" />
+			<attribute yStartText="839" />
+			<attribute widthText="148" />
+			<attribute heightText="22" />
+			<attribute width="148" />
+			<attribute height="22" />
+			<attribute textureName="GUI_1" />
+		</Object>
+  </Library>
+</Libraries>

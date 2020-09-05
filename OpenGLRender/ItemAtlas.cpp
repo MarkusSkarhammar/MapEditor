@@ -1,4 +1,6 @@
 #include "ItemAtlas.h"
+#include "Vertices.h"
+#include "ObjectLibrary.h"
 #include <chrono>
 
 ItemAtals::ItemAtals()
@@ -8,12 +10,13 @@ ItemAtals::ItemAtals()
 
 ItemAtals::~ItemAtals() {
 	for (auto& item : items) {
-		delete item;
+		delete item.first;
 	}
 }
 
 void ItemAtals::generateAtlas()
 {
+	items.push_back(std::pair<Item*, Object*>(new Item(-1, "", ""), nullptr));
 	pugi::xml_parse_result result = doc.load_file("./resources/Items/Items.xml");
 	std::vector<string> types;
 	std::string typeS;
@@ -22,8 +25,8 @@ void ItemAtals::generateAtlas()
 		typeS = type.attribute("id").as_string();
 		types.push_back(typeS);
 	}
-	std::string article, name;
-	size_t id;
+	std::string article, name, category;
+	size_t id, objID;
 	for (size_t i = 0; i < types.size(); i++) {
 		const pugi::string_t s(types.at(i));
 		for (pugi::xml_node item = doc.child("Items").child(&s[0]).child("Item"); item; item = item.next_sibling("Item"))
@@ -33,6 +36,9 @@ void ItemAtals::generateAtlas()
 			article = item.attribute("article").as_string();
 			name = item.attribute("name").as_string();
 			typeS = item.attribute("type").as_string();
+			category = item.attribute("category").as_string();
+			objID = item.attribute("objectID").as_int();
+
 			Item* temp = nullptr;
 			if (typeS.compare("Weapon") == 0) {
 				temp = new Weapon(id, article, name);
@@ -90,6 +96,12 @@ void ItemAtals::generateAtlas()
 				else if (info.first.compare("animationID") == 0) {
 					addAnimation(id, std::stoi(info.second));
 				}
+				else if (info.first.compare("animationOnly") == 0) {
+					temp->setAnimationOnly(true);
+				}
+				else if (info.first.compare("doubleSize") == 0) {
+					temp->setDoubleSize(true);
+				}
 				else if (info.first.compare("weight") == 0) {
 					if (NonStaticItem* check = dynamic_cast<NonStaticItem*>(temp)) {
 						check->setWeight(std::stof(info.second));
@@ -126,9 +138,13 @@ void ItemAtals::generateAtlas()
 					}
 				}
 			}
-			items.push_back(temp);
+			auto tempObj = getObjectFromLibrary(category, objID);
+			items.push_back(std::pair<Item*, Object*>(temp, tempObj));
 		}
 	}
+	std::sort(items.begin(), items.end(), [](std::pair<Item*, Object*>& lhs, std::pair<Item*, Object*>& rhs) {
+		return lhs.first->getID() < rhs.first->getID();
+		});
 }
 
 std::vector<size_t> ItemAtals::getItemTexturePositionForSelectionArea(const std::string category)
@@ -166,15 +182,42 @@ std::vector<size_t> ItemAtals::getItemTexturePositionForSelectionArea(const std:
 
 Item* ItemAtals::getItem(size_t id)
 {
-	auto it = std::find_if(items.begin(), items.end(), [id](Item*& item) { return (item->getID() == id); });
+	auto it = std::find_if(items.begin(), items.end(), [id](std::pair<Item*, Object*>& item) { return (item.first->getID() == id); });
 	// To do: Throw error if item doesn't exist.
-	return (*it);
+	if (it == items.end())
+		return items.begin()->first;
+	else
+		return it->first;
+}
+
+Object* ItemAtals::getItemObject(int id)
+{
+	if (items.size() > 0) {
+		auto it = std::find_if(items.begin(), items.end(), [id](std::pair<Item*, Object*>& item) { return (item.first->getID() == id); });
+		// To do: Throw error if item doesn't exist.
+		if (it == items.end())
+			return items.begin()->second;
+		else
+			return it->second;
+	}
+	else
+		return nullptr;
+}
+
+std::pair<Item*, Object*> ItemAtals::getItemAndObject(int id)
+{
+	auto item = std::pair<Item*, Object*>(nullptr, nullptr);
+	auto it = std::find_if(items.begin(), items.end(), [id](std::pair<Item*, Object*>& item) { return (item.first->getID() == id); });
+	if (it != items.end())
+		item = std::pair<Item*, Object*>(it->first, it->second);
+	
+	return item;
 }
 
 std::string& ItemAtals::getWeaponType(int& id)
 {
-	auto it = std::find_if(items.begin(), items.end(), [id](Item*& item) { return (item->getID() == id); });
-	if (Weapon* check = dynamic_cast<Weapon*>((*it))) {
+	auto it = std::find_if(items.begin(), items.end(), [id](std::pair<Item*, Object*>& item) { return (item.first->getID() == id); });
+	if (Weapon* check = dynamic_cast<Weapon*>(it->first)) {
 		return check->getWeaponType();
 	}
 	std::string s = "";
@@ -183,8 +226,8 @@ std::string& ItemAtals::getWeaponType(int& id)
 
 std::string& ItemAtals::getArmorType(int& id)
 {
-	auto it = std::find_if(items.begin(), items.end(), [id](Item*& item) { return (item->getID() == id); });
-	if (Armor* check = dynamic_cast<Armor*>((*it))) {
+	auto it = std::find_if(items.begin(), items.end(), [id](std::pair<Item*, Object*>& item) { return (item.first->getID() == id); });
+	if (Armor* check = dynamic_cast<Armor*>(it->first)) {
 		return check->getArmorType();
 	}
 	std::string s = "";
@@ -247,13 +290,26 @@ bool ItemAtals::checkIfAnimation(int id) {
 }
 bool ItemAtals::checkIfDouleSize(int ID)
 {
-	if (ID / 1024 == 2) {
-		return true;
-	}
-	else if (ID / 1024 == 5) {
-		return true;
-	}
-	return false;
+	Item* item = getItem(ID);
+	if (item->getID() != -1)
+		return item->isDoubleSize();
+	else
+		return 0;
+}
+
+bool ItemAtals::checkIfDouleSize(int texturePos, int id)
+{
+	auto it = std::find_if(items.begin(), items.end(), [texturePos, id](std::pair<Item*, Object*>& item) { 
+		if (!item.second)
+			return false;
+		auto v = item.second->getVertices(); 
+		return (v->getTextPos() == texturePos && v->getID() == id);
+		});
+	// To do: Throw error if item doesn't exist.
+	if (it == items.end())
+		return false;
+	else
+		return it->first->isDoubleSize();
 }
 
 /*std::vector<ItemInfo> ItemAtals::getTiles()

@@ -1,0 +1,51 @@
+#version 330 core
+#extension GL_EXT_texture_array: enable
+#extension GL_ARB_explicit_uniform_location: enable
+#extension GL_ARB_shading_language_420pack: enable
+
+    in vec2 uv;
+    out vec4 outColor;
+    uniform sampler2DArray textureArray;
+    uniform int layer;
+	uniform int outline;
+	uniform int GUI;
+	uniform float ambientStrength;
+
+	layout (std140) uniform textStuff
+	{
+		vec2 textOffset;
+	};
+
+    void main()
+    {
+		
+        vec4 texel = texture2DArray(textureArray, vec3(uv.x + textOffset.x,uv.y + textOffset.y, layer));
+		vec4 fragRGBA = texel.rgba;
+		if(outline != 0){
+			if(outline == 1){ // Outline
+					outColor = texel;
+			}else if(outline == 2){ // Outline
+				outColor = vec4(0.741f, 0.698f, 0.039f, 0.75f);
+			}else if(outline == 3){ // Selected
+				if(texel.a != 0.0f)
+					discard;
+				outColor = texel;
+			}else if(outline == 4){ // Selected
+				if(texel.a == 0.0f)
+					discard;
+				outColor = texel;
+			}else if(outline == 5){ // Selected
+				outColor = vec4(0.741f, 0.698f, 0.039f, 1.f);
+				//outColor = vec4(255.f, 0.f, 0.f, 1.f);
+			}
+		}
+		else{
+			outColor = texel;
+
+			if(GUI == 0){ // Handle lightning
+				vec3 ambient = ambientStrength * vec3(1.0f, 1.0f, 1.0f);
+				vec3 result = ambient * texel.rgb;
+				outColor = vec4(result, texel.a);
+			}
+		}
+    }

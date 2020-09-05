@@ -3,7 +3,7 @@
 
 #include "Global.h"
 #include "ElementCreator.h"
-#include "VertecesHandler.h"
+#include "Vertices.h"
 // Include GLFW
 #include <glfw3.h>
 

@@ -28,9 +28,6 @@
     <Filter Include="Resource Files\Serializer">
       <UniqueIdentifier>{6c325fa4-582a-435d-a5ab-220938ee4936}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\VerticesHandler">
-      <UniqueIdentifier>{4796e5f2-cc10-45a5-852c-ca8a207de60c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\Objects">
       <UniqueIdentifier>{2de63a59-5696-4a0d-af0a-3eb77f8bafb2}</UniqueIdentifier>
     </Filter>
@@ -43,8 +40,17 @@
     <Filter Include="Resource Files\Camera">
       <UniqueIdentifier>{0a1e867e-624b-4e60-9e7c-70d460c6b26b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\GUI">
+    <Filter Include="Resource Files\Vertices">
+      <UniqueIdentifier>{4796e5f2-cc10-45a5-852c-ca8a207de60c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Engine">
+      <UniqueIdentifier>{3db41fb0-94a2-4f25-82ec-01ab56b908c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Engine\GUI">
       <UniqueIdentifier>{4837914f-daf5-46c3-8aea-67a6abd195d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Engine\Renderer">
+      <UniqueIdentifier>{16b2c959-79d8-49a8-a2f6-c8b666cc77b7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -75,12 +81,6 @@
     <ClCompile Include="Global.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VertecesHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Inputs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -93,17 +93,27 @@
     <ClCompile Include="GUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ColorFragmentShader.fragmentshader">
-      <Filter>renders</Filter>
-    </None>
-    <None Include="TransformVertexShader.vertexshader">
-      <Filter>renders</Filter>
-    </None>
-    <None Include="GUIVertexShader.vertexshader">
-      <Filter>renders</Filter>
-    </None>
+    <ClCompile Include="RendToText.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Palette.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectLibrary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertices.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Render.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ElementCreatorFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.hpp">
@@ -133,12 +143,6 @@
     <ClInclude Include="Global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VertecesHandler.h">
-      <Filter>Resource Files\VerticesHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>Resource Files\Objects</Filter>
-    </ClInclude>
     <ClInclude Include="Inputs.h">
       <Filter>Resource Files\Inputs</Filter>
     </ClInclude>
@@ -149,7 +153,45 @@
       <Filter>Resource Files\Camera</Filter>
     </ClInclude>
     <ClInclude Include="GUI.h">
-      <Filter>Resource Files\GUI</Filter>
+      <Filter>Resource Files\Engine\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="DrawObject.h">
+      <Filter>Resource Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectLibrary.h">
+      <Filter>Resource Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertices.h">
+      <Filter>Resource Files\Vertices</Filter>
+    </ClInclude>
+    <ClInclude Include="Render.h">
+      <Filter>Resource Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="RendToText.h">
+      <Filter>Resource Files\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="ElementCreatorFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\Shaders\ColorFragmentShader.fragmentshader">
+      <Filter>renders</Filter>
+    </None>
+    <None Include="resources\Shaders\RendToTextFragmentShader.fragmentshader">
+      <Filter>renders</Filter>
+    </None>
+    <None Include="resources\Shaders\RendToTextVertexShader.vertexshader">
+      <Filter>renders</Filter>
+    </None>
+    <None Include="resources\Shaders\TransformVertexShader.vertexshader">
+      <Filter>renders</Filter>
+    </None>
+    <None Include="resources\Shaders\outlineVertexShader.vertexshader">
+      <Filter>renders</Filter>
+    </None>
+    <None Include="resources\Shaders\outlineFragmentShader.fragmentshader">
+      <Filter>renders</Filter>
+    </None>
   </ItemGroup>
 </Project>
