@@ -22,32 +22,32 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{EE30012B-42FA-4E2E-95C6-3BB458C4CC8F}</ProjectGuid>
     <RootNamespace>OpenGLRender</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -79,12 +79,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\FreeImage\x32;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\common;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\glm-0.9.9-a2;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\glfw-3.2.1\include\GLFW;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\glew-2.1.0\bin\Release\Win32;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\external\FreeImage\x32;$(SolutionDir)\external\common;$(SolutionDir)\external\glm-0.9.9-a2;$(SolutionDir)\external\glfw-3.2.1\include\GLFW;$(SolutionDir)\external\glew-2.1.0\bin\Release\Win32;$(SolutionDir)\external\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\pugixml;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\glfw-3.2.1.bin.WIN32\lib-vc2015;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\FreeImage\x32;D:\Program\C++ SHit\OpenGLRender\OpenGLRender\external\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\external\pugixml;$(SolutionDir)\external\glfw-3.2.1.bin.WIN32\lib-vc2015;$(SolutionDir)\external\FreeImage\x32;$(SolutionDir)\external\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;FreeImagePlus.lib;Pugixml-1.8.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>/msvcrtd.lib;/NODEFAULTLIB:lib;/NODEFAULTLIB:LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>/verbose:lib %(AdditionalOptions)</AdditionalOptions>
@@ -142,40 +142,52 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ElementCreator.cpp" />
     <ClCompile Include="ElementCreator.h" />
+    <ClCompile Include="ElementCreatorFunctions.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="Inputs.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="ItemAtlas.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="DrawObject.cpp" />
+    <ClCompile Include="ObjectLibrary.cpp" />
+    <ClCompile Include="Palette.cpp" />
+    <ClCompile Include="RendToText.cpp" />
     <ClCompile Include="Serialize.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="Global.cpp" />
+    <ClCompile Include="Render.cpp" />
     <ClCompile Include="Tile.cpp" />
-    <ClCompile Include="VertecesHandler.cpp" />
+    <ClCompile Include="Vertices.cpp" />
     <ClCompile Include="World.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ColorFragmentShader.fragmentshader" />
-    <None Include="GUIVertexShader.vertexshader" />
-    <None Include="TransformVertexShader.vertexshader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="floor.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="GUI.h" />
+    <ClInclude Include="ElementCreatorFunctions.h" />
+    <ClInclude Include="Render.h" />
+    <ClInclude Include="ObjectLibrary.h" />
     <ClInclude Include="Inputs.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemAtlas.h" />
     <ClInclude Include="ItemInfo.h" />
-    <ClInclude Include="Object.h" />
+    <ClInclude Include="DrawObject.h" />
     <ClInclude Include="Palette.h" />
+    <ClInclude Include="RendToText.h" />
     <ClInclude Include="Serializer.h" />
     <ClInclude Include="shader.hpp" />
     <ClInclude Include="Tile.h" />
-    <ClInclude Include="VertecesHandler.h" />
+    <ClInclude Include="Vertices.h" />
     <ClInclude Include="World.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\Shaders\ColorFragmentShader.fragmentshader" />
+    <None Include="resources\Shaders\outlineFragmentShader.fragmentshader" />
+    <None Include="resources\Shaders\outlineVertexShader.vertexshader" />
+    <None Include="resources\Shaders\RendToTextFragmentShader.fragmentshader" />
+    <None Include="resources\Shaders\RendToTextVertexShader.vertexshader" />
+    <None Include="resources\Shaders\TransformVertexShader.vertexshader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

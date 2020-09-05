@@ -1,0 +1,16 @@
+#version 330 core
+#extension GL_EXT_texture_array: enable
+#extension GL_ARB_explicit_uniform_location: enable
+#extension GL_ARB_shading_language_420pack: enable
+
+    out vec4 FragColor;
+
+	layout (std140) uniform textStuff
+	{
+		vec2 textOffset;
+	};
+
+    void main()
+    {
+		FragColor = vec4(0.741, 0.698, 0.039, .75);
+    }

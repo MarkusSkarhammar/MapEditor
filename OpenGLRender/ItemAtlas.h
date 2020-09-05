@@ -10,8 +10,11 @@
 #include <algorithm>
 #include "ItemInfo.h"
 #include "Item.h"
-#include "Object.h"
+#include "DrawObject.h"
+#include "ObjectLibrary.h"
+
 using namespace pugi;
+
 
 class AnimationInfo {
 public:
@@ -34,6 +37,9 @@ public:
 	void generateAtlas();
 	std::vector<size_t> getItemTexturePositionForSelectionArea(std::string category);
 	Item* getItem(size_t id);
+	Object* getItemObject(int id);
+	std::pair<Item*, Object*> getItemAndObject(int id);
+	std::vector<std::pair<Item*, Object*>>& getEveryItem() { return items; };
 	std::string& getWeaponType(int& id);
 	std::string& getArmorType(int& id);
 	std::vector<std::pair<std::string, std::string>> getItem(size_t id, std::string category);
@@ -42,9 +48,10 @@ public:
 	AnimationObject* getAnimationObject(float x, float y, int id, int VAO, int texturePos);
 	bool checkIfAnimation(int id);
 	bool checkIfDouleSize(int id);
+	bool checkIfDouleSize(int texturePos, int id);
 private:
 	pugi::xml_document doc;
-	std::vector<Item*> items;
+	std::vector<std::pair<Item*, Object*>> items;
 	std::vector<AnimationInfo> animations;
 };
 #endif
