@@ -2,9 +2,10 @@
 #include "Global.h"
 #include <utility>
 
-void insert_Things_From_ThingsToDraw(World& world)
+void insert_Things_Form_ThingsToDraw()
 {
-	bool current(false), east(false), south(false), southEast(false), change = false;
+	worldTemp.copyWorld(world);
+	bool current(false), east(false), south(false), southEast(false);
 	if ( (cutToggle || copyToggle) && copyBuffer.size() > 0) {
 		thingsToDraw.clear();
 		int smallestX = -1, differenceX = -1, xCopy = 0;
@@ -21,7 +22,7 @@ void insert_Things_From_ThingsToDraw(World& world)
 			i.second->setX(xCopy);
 			i.second->setY(yCopy);
 			i.second->setZ(z);
-			auto& section = world.getFloor(z).getSection((xCopy / 50 + (yCopy / 50) * 40));
+			auto& section = worldTemp.getFloor(z).getSection((xCopy / 50 + (yCopy / 50) * 40));
 			if (i.first.getSection() == currentSection) current = true;
 			if (i.first.getSection() == currentSection + 1) east = true;
 			if (i.first.getSection() == currentSection + 40) south = true;
@@ -48,7 +49,7 @@ void insert_Things_From_ThingsToDraw(World& world)
 			x = element.getX(); y = element.getY(); z = element.getZ();
 			Item* item = nullptr;
 			if (element.getId() >= 0) item = itemAtlas.getItem(element.getId());
-			auto& section = world.getFloor(z).getSection(element.getSection());
+			auto& section = worldTemp.getFloor(z).getSection(element.getSection());
 			auto it = std::find_if(section.begin(), section.end(), [x, y](tile*& t) { return (t->getX() == x && t->getY() == y); });
 			if (it == section.end()) {
 				if (element.getId() / 1024 != 0) {
@@ -58,7 +59,6 @@ void insert_Things_From_ThingsToDraw(World& world)
 					getItemType(temp, element.getId());
 					t->insertItem(temp);
 					section.push_back(t);
-					change = true;
 				}
 				else if (element.getId() >= 0) {
 					tile* t = new tile(x, y, z, element.getId());
@@ -100,7 +100,6 @@ void insert_Things_From_ThingsToDraw(World& world)
 					getItemType(temp, element.getId());
 					(*it)->insertItem(temp);
 					if (temp->getBlockPathfind()) (*it)->setBlockPathfind(true);
-					change = true;
 				}
 				else {
 					(*it)->setID(item->getID());
@@ -108,18 +107,16 @@ void insert_Things_From_ThingsToDraw(World& world)
 					(*it)->setName(item->getName());
 					(*it)->setDescription(item->getDescription());
 					(*it)->setBlockPathfind(item->getBlockPathfind());
-					auto itemObject = itemAtlas.getItemObject(item->getID())->getVertices();
-					(*it)->setObject(new DrawObject((*it)->getX(), (*it)->getY(), (*it)->getID(), itemObject->getVAO(), itemObject->getTextPos()));
 				}
 			}
 
 		}
 	}
 	if (copyToggle || cutToggle) copyBufferLock = false;
-	if (current && change) sortSection(currentSection);
-	//if (east)sortSection(currentSection + 1);
-	//if (south)sortSection(currentSection + 40);
-	//if (southEast)sortSection(currentSection + 41);
+	if (current)sortSection(currentSection);
+	if (east)sortSection(currentSection + 1);
+	if (south)sortSection(currentSection + 40);
+	if (southEast)sortSection(currentSection + 41);
 	
 	printf("done\n");
 	updateMapFloor = false;
@@ -243,15 +240,14 @@ void updateWhatToDrawOnFloor(size_t floor, bool tilesB, bool itemsB) {
 }
 
 void sortSection(size_t currentSection) {
-	auto& section = worldTemp.getFloor(z).getSection(currentSection);
+	auto& section = world.getFloor(z).getSection(currentSection);
 	std::sort(section.begin(), section.end(), [](tile*& lhs, tile*& rhs) {
+		if (lhs->getX() < rhs->getX()) return true;
+		if (rhs->getX() < lhs->getX()) return false;
 
 		// a=b for primary condition, go to secondary
 		if (lhs->getY() < rhs->getY()) return true;
 		if (rhs->getY() < lhs->getY()) return false;
-
-		if (lhs->getX() < rhs->getX()) return true;
-		if (rhs->getX() < lhs->getX()) return false;
 
 		return false;
 	});
@@ -347,18 +343,14 @@ void newFloor() {
 			}
 			if (!skip)
 				for (auto& t : world.getFloor(floorAt).getSection(section)) {
-					auto object = t->getObject();
-					if (object) {
-						object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt));
-						for (auto& i : t->getAllItems()) {
-							auto object = i->getObject();
-							if (object) {
-								if (itemAtlas.checkIfDouleSize(i->getID()))
-									object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt, true));
-								else
-									object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt));
-							}
-						}
+					auto& object = t->getObject();
+					object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt));
+					for (auto& i : t->getAllItems()) {
+						auto& object = i->getObject();
+						if (itemAtlas.checkIfDouleSize(object->getID()))
+							object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt, true));
+						else
+							object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt));
 					}
 				}
 		}

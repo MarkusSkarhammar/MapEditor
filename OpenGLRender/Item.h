@@ -1,8 +1,8 @@
 #ifndef ITEM_H
 #define ITEM_H
 #include <string>
-#include "DrawObject.h"
-#include "Vertices.h"
+#include "Object.h"
+#include "VertecesHandler.h"
 
 using std::string;
 
@@ -10,7 +10,7 @@ class Item {
 public:
 	Item(int id, string article, string name);
 	Item(Item* i);
-	virtual ~Item() { if(ob) delete ob; };
+	virtual ~Item() { delete ob; };
 	int& getID();
 	int& getUID();
 	void setUID(int id);
@@ -30,30 +30,21 @@ public:
 	void setHangeable(bool value);
 	bool getAlwaysOnTop();
 	void setAlwaysOnTop(bool value);
-	void setDoubleSize(bool value);
-	bool isDoubleSize();
 	void setDescription(string value);
-	void setAnimationOnly(bool v) { animationOnly = v; };
-	bool getAnimationOnly() { return animationOnly; };
 	string& getName();
 	string& getDescription();
 	string& getArticle();
 	string& getType();
 	void setType(string value);
 	bool& getAnimationState() { return ob->getAnimationState(); };
-	void setAnimationState(bool value) { if(ob) ob->setAnimationState(value); };
-	void updateObjectPosition(int& x, int& y) { if (ob) { ob->setXPosition(x); ob->setYPosition(y); } };
-	DrawObject* getObject() { return ob; };
-	void setObject(DrawObject* o);
-	void setOutline(bool v) { 
-		if(ob) ob->setOutline(v); 
-	};
-	bool& getOutline() { ob->getOutline(); };
+	void setAnimationState(bool value) { ob->setAnimationState(value); };
+	void updateObjectPosition(int& x, int& y) { ob->setXPosition(x); ob->setYPosition(y); };
+	Object*& getObject() { return ob; };
 private:
 	int id{ 0 }, uID{ 0 };
 	string article{ "" }, name{ "" }, description{ "" }, type{ "" };
-	bool blockProjectile{ false }, blockPathfind{ false }, blockObject{ false }, moveable{ false }, pickupable{ false }, useable{ false }, hangeable{ false }, alwaysOnTop{ false }, animationOnly{ false }, doubleSize{ false };
-	DrawObject* ob{ nullptr };
+	bool blockProjectile{ false }, blockPathfind{ false }, blockObject{ false }, moveable{ false }, pickupable{ false }, useable{ false }, hangeable{ false }, alwaysOnTop{ false };
+	Object* ob{ nullptr };
 };
 
 class NonStaticItem : public Item {

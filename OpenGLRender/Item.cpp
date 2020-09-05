@@ -1,39 +1,33 @@
 #include "Item.h"
-#include "Vertices.h"
+#include "VertecesHandler.h"
 #include "Global.h"
 
 Item::Item(int id, string article, string name) : id(id), article(article), name(name)
 {
+	VertecesHandler* vh = nullptr;
+	getVertecesHandlerFromID(vh, id);
 	if (itemAtlas.checkIfAnimation(id)) {
-		//ob = itemAtlas.getAnimationObject(-1, -1, id, vh->getVAO(), vh->getTextureID());
+		ob = itemAtlas.getAnimationObject(-1, -1, id, vh->getVAO(), vh->getTextureID());
 	}
-	else {
-		auto temp = itemAtlas.getItemObject(id);
-		if (temp) 
-			ob = new DrawObject(x, y, temp->getID(), temp->getLib()->getVAO(), temp->getVertices()->getTextPos());
-	}
+	else
+		ob = new Object(-1, -1, id, vh->getVAO(), vh->getTextureID());
 }
 
 Item::Item(Item * i)
 {
 	*this = *i;
-	if (this->getObject()) {
-		if (itemAtlas.checkIfAnimation(id)) {
-			//ob = itemAtlas.getAnimationObject(i->ob->getXPosition(), i->ob->getYPosition(), id, vh->getVAO(), vh->getTextureID());
-			if (AnimationObject* check1 = dynamic_cast<AnimationObject*>(i->getObject())) {
-				if (AnimationObject* check2 = dynamic_cast<AnimationObject*>(ob))
-					*check2 = *check1;
-			}
+	VertecesHandler* vh = nullptr;
+	getVertecesHandlerFromID(vh, id);
+	if (itemAtlas.checkIfAnimation(id)) {
+		ob = itemAtlas.getAnimationObject(i->ob->getXPosition(), i->ob->getYPosition(), id, vh->getVAO(), vh->getTextureID());
+		if (AnimationObject* check1 = dynamic_cast<AnimationObject*>(i->getObject())) {
+			if (AnimationObject* check2 = dynamic_cast<AnimationObject*>(ob))
+				*check2 = *check1;
 		}
-		else
-			ob = new DrawObject(i->ob->getXPosition(), i->ob->getYPosition(), i->ob->getID(), i->ob->getVAO(), i->ob->getTexturePos());
-		ob->setAnimationState(i->getAnimationState());
 	}
-	else {
-		auto temp = itemAtlas.getItemObject(id);
-		if (temp)
-			ob = new DrawObject(0, 0, temp->getID(), temp->getLib()->getVAO(), temp->getVertices()->getTextPos());
-	}
+	else
+		ob = new Object(i->ob->getXPosition(), i->ob->getYPosition(), id, vh->getVAO(), vh->getTextureID());
+	ob->setAnimationState(i->getAnimationState());
 }
 
 int& Item::getID()
@@ -131,16 +125,6 @@ void Item::setAlwaysOnTop(bool value)
 	alwaysOnTop = value;
 }
 
-void Item::setDoubleSize(bool value)
-{
-	doubleSize = value;
-}
-
-bool Item::isDoubleSize()
-{
-	return doubleSize;
-}
-
 string& Item::getDescription()
 {
 	return description;
@@ -159,12 +143,6 @@ string& Item::getType()
 void Item::setType(string value)
 {
 	type = value;
-}
-
-void Item::setObject(DrawObject* o)
-{
-	delete ob;
-	ob = new DrawObject(o);
 }
 
 void Item::setDescription(string value) {

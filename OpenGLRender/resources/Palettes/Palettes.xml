@@ -19,12 +19,6 @@
     <attribute id="15" doubleSize="false" x="3" y="3" />
     <attribute id="16" doubleSize="false" x="0" y="4" />
     <attribute id="17" doubleSize="false" x="1" y="4" />
-	<attribute id="4" doubleSize="false" x="0" y="15" />
-	<attribute id="0" doubleSize="false" x="0" y="16" />
-	<attribute id="1" doubleSize="false" x="1" y="17" />
-	<attribute id="6" doubleSize="false" x="0" y="31" />
-	<attribute id="7" doubleSize="false" x="0" y="32" />
-	<attribute id="8" doubleSize="false" x="1" y="33" />
   </Palette>
   <Palette id="Doodads">
     <attribute id="2048" doubleSize="true" x="0" y="0" />

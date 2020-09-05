@@ -1,8 +1,6 @@
 #include "Inputs.h"
 #include <thread>
 #include "Serializer.h"
-#include "Palette.h"
-#pragma warning(disable: 4244)
 
 
 
@@ -19,10 +17,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 						itemInfoWindow = true;
 						itemInfoCurrentPage = 0;
 						itemInfoMaxPage = itemInfoTile->getAllItems().size();
-						generate_GUI_Item_Info_Panel();
+						generate_GUI_Item_Info_Panel(getObjectByName(objects, "GUI_Item_Info_Panel_"), VertecesHandler::findByName(verteces, "GUI_1"));
 					}
 				}
-				else if (!itemInfoWindow && (selectedItemId.getIDRef() != -1 || eraseToggle || destroyToggle || destroyTileToggle || copyToggle || cutToggle) && thingsToDraw.size() == 0) {
+				else if (!itemInfoWindow && (selectedItemId.first.first != -1 || eraseToggle || destroyToggle || destroyTileToggle || copyToggle || cutToggle) && thingsToDraw.size() == 0) {
 					if (cutToggle && copyBuffer.size() > 0) {
 						thingsToDraw.clear();
 						thingsToDraw.insert(ToDraw(-1 ,-1, -1, -1, -1));
@@ -40,78 +38,87 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 						else if (copyToggle)
 							tempID = -5;
 						else
-							tempID = selectedItemId.getIDRef();
+							tempID = selectedItemId.first.first;
 						for (int yPos = y - brush; yPos <= y + brush; yPos++) {
 							for (int xPos = x - brush; xPos <= x + brush; xPos++) {
 								thingsToDraw.insert(ToDraw(tempID, xPos, yPos, z, (xPos / 50 + (yPos / 50) * 40)));
 							}
 						}
 					}
-					outlinedItem = nullptr;
 				}
 				else if (itemInfoWindow) {
-					itemInfo->checkClicked(xPos, yPos, 1);
+					itemInfo.checkClicked(getObjectByName(objects, "GUI_Item_Info_Panel_"), xPos, yPos, 1);
 				}
 			}
 			// Handle clicks on the bottom bar
-			if (bottomBar->getShow()) {
-				bottomBar->checkClicked(xPos, yPos, 1);
+			if (bottomBar.getShow()) {
+				bottomBar.checkClicked(getObjectByName(objects, "GUI_BottomBar_"), xPos, yPos, 1);
 			}
 			// Handle clicks on the left panel
-			if (leftPanel->getShow()) {
-				leftPanel->checkClicked(xPos, yPos, 1);
+			if (leftPanel.getShow()) {
+				leftPanel.checkClicked(getObjectByName(objects, "GUI_LeftPanel_"), xPos, yPos, 1);
 			}
 			// Handle clicks on the platte modifier window
-			if (paletteModifier->getShow()) {
-				paletteModifier->checkClicked(xPos, yPos, 1);
+			if (paletteModifier.getShow()) {
+				paletteModifier.checkClicked(getObjectByName(objects, "GUI_Palette_Modifier_"), xPos, yPos, 1);
+				changeElementSizeAndTexture(Vertices::findByName(verticesContainer, "paletteModifierSearchIcon"), 0, 0, 50, 0);
 			}
 
 			lbutton_down = true;
 		}else if (GLFW_RELEASE == action) {
 			lbutton_down = false;
 			if (itemInfoWindow) {
-				itemInfo->checkClicked(xPos, yPos, 0);
+				itemInfo.checkClicked(getObjectByName(objects, "GUI_Item_Info_Panel_"), xPos, yPos, 0);
 				if (updateItemInfo) {
 					updateItemInfo = false;
-					generate_GUI_Item_Info_Panel();
+					generate_GUI_Item_Info_Panel(getObjectByName(objects, "GUI_Item_Info_Panel_"), VertecesHandler::findByName(verteces, "GUI_1"));
 				}
 			}
 
-
-			if (leftPanel->getShow()) {
-				leftPanel->checkClicked(xPos, yPos, 0);
+			if (leftPanel.getShow()) {
+				leftPanel.checkClicked(getObjectByName(objects, "GUI_LeftPanel_"), xPos, yPos, 0);
 			}
 
 			// Handle clicks on the platte modifier window
-			if (paletteModifier->getShow()) {
-				paletteModifier->checkClicked(xPos, yPos, 0);
+			if (paletteModifier.getShow()) {
+				paletteModifier.checkClicked(getObjectByName(objects, "GUI_Palette_Modifier_"), xPos, yPos, 0);
 			}
 		}
 
 	}
 
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		if (selectedItemId.getIDRef() != -1) {
+		if (selectedItemId.first.first != -1) {
 			thingsToDraw.clear();
-			selectedItemId = PaletteItem(-1, false, -1, -1);
+			selectedItemId = std::pair<std::pair<int, bool>, std::pair<int, int>>(std::pair<int, bool>(-1, false), std::pair<int, int>(-1, -1));
 		}
-		if (ToggleButtonGroup* check = dynamic_cast<ToggleButtonGroup*>(bottomBar->getElementByName("toggles"))) {
+		if (ToggleButtonGroup* check = dynamic_cast<ToggleButtonGroup*>(bottomBar.getElementByName("toggles"))) {
 			check->resetAll();
 			thingsToDraw.clear();
-			getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects();
+			getObjectByName(objects, "GUI_Preview_Tiles_").clearObjects();
 		}
 		// Reset left panel
-		if (leftPanel->getShow()) {
-			if (ToggleButtonGroup* tg = dynamic_cast<ToggleButtonGroup*>(leftPanel->getElementByName("paletteToggleGroup"))) {
+		if (leftPanel.getShow()) {
+			if (ToggleButtonGroup* tg = dynamic_cast<ToggleButtonGroup*>(leftPanel.getElementByName("tileSelectionToggles"))) {
 				tg->resetAll();
-				generate_Left_Panel_Rend_To_Text();
 			}
-			if (DropDown * dd = dynamic_cast<DropDown*>(leftPanel->getElementByName("itemsSelection")))
-				if (dd->getShowDropDown())
-					dd->toggleShowDropDown();
+			if (DropDown* d = dynamic_cast<DropDown*>(leftPanel.getElementByName("paletteSelection"))) {
+				if (d->getShow()) {
+					if (ToggleButton* t = dynamic_cast<ToggleButton*>(leftPanel.getElementByName("displayBarToggle"))) {
+						t->resetToggle();
+					}
+				}
+			}
 		}
-		if (paletteModifier->getShow()) {
-			paletteModifier->checkClicked(xPos, yPos, 2);
+		if (paletteModifier.getShow()) {
+			if (paletteModifier.getElementByName("paletteSelection")->getShow()) {
+				if (ToggleButton* tb = dynamic_cast<ToggleButton*>(paletteModifier.getElementByName("paletteToggleButton")))
+					tb->resetToggle();
+			}
+			if (paletteModifier.getElementByName("itemsSelection")->getShow()) {
+				if (ToggleButton* tb = dynamic_cast<ToggleButton*>(paletteModifier.getElementByName("itemsToggleButton")))
+					tb->resetToggle();
+			}
 		}
 		rbutton_down = true;
 	}
@@ -139,7 +146,7 @@ void mouse_scroll_callback(GLFWwindow* window, double xOffset, double yOffset) {
 	
 	
 	if (lControl && yOffset != 0) {
-		zoom -= (yOffset * 0.1);
+		zoom -= (yOffset / 10);
 		if (zoom < 0.2) zoom = 0.2;
 		yCameraPos = yCameraPos;
 		current_state.yGoal = yCameraPos;
@@ -147,38 +154,15 @@ void mouse_scroll_callback(GLFWwindow* window, double xOffset, double yOffset) {
 		current_state.xGoal = xCameraPos;
 		//setCameraZoom(zoom / 90);
 	}
-	else if (!lShift && yOffset != 0) {
-		if (isWithinTileArea) {
-			if (paletteModifier->getShow()) {
-				paletteModifier->checkScroll(xPos, yPos, yOffset);
-			}
-			else {
-				yCameraPos += yOffset * (imgScale / (screenHeightPixels / 2.0));
-				current_state.yGoal = yCameraPos;
-				if (yCameraPos > -1.0f) {
-					yCameraPos = -1.0f;
-					current_state.yGoal = yCameraPos;
-				}
-			}
-
-			/*
-			else {
-				yCameraPos += yOffset * (imgScale / (screenHeightPixels / 2.0));
-				current_state.yGoal = yCameraPos;
-				if (yCameraPos > -1.0f) {
-					yCameraPos = -1.0f;
-					current_state.yGoal = yCameraPos;
-				}
-			}
-			*/
-		}
-		else {
-			if (leftPanel->getShow()) {
-				leftPanel->checkScroll(xPos, yPos, yOffset);
-			}
+	else if (!rbutton_down && !isWithinTileArea && yOffset != 0) {
+		yCameraPos += yOffset * (imgScale / (screenHeightPixels / 2.0));
+		current_state.yGoal = yCameraPos;
+		if (yCameraPos > -1.0f) {
+			yCameraPos = -1.0f;
+			current_state.yGoal = yCameraPos;
 		}
 	}
-	else if (isWithinTileArea && yOffset != 0) {
+	else if (!isWithinTileArea && yOffset != 0) {
 		xCameraPos += yOffset * (imgScale / (screenWidthPixels / 2.0));
 		current_state.xGoal = xCameraPos;
 		if (xCameraPos < 1.0f) {
@@ -197,81 +181,21 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 			lControl = false;
 	}
 
-	if (key == GLFW_KEY_LEFT_SHIFT) {
-		if (action == GLFW_PRESS)
-			lShift = true;
-		else if (GLFW_RELEASE == action)
-			lShift = false;
-	}
-
-	if (key == GLFW_KEY_H) {
-		if (action == GLFW_PRESS) {
-			if (!outlineItemBool) {
-				if (outlineTileBool)
-					outlineTileBool = false;
-				else
-					outlineItemBool = true;
-			}
-			else if (outlineItemBool) {
-				outlineItemBool = false;
-				outlineTileBool = true;
-			}
-		}
-	}
-
 	if (key == GLFW_KEY_Z) {
 		if (lControl && action == GLFW_PRESS) {
-			if (paletteModifier->getShow() && palette_Modifier_Undo.size() > 0) {
-				auto& changes = palette_Modifier_Undo.at(0);
-				if (changes.getAction() == "Deleted") {
-					for (auto& e : changes.getItemsToCreate()) {
-						tempPalette.addItem(e);
-					}
-				} 
-				/// TODO SORT CHANGED PALETTE!
-				palette_Modifier_Redo.push_back(PaletteChange("Created", std::vector<PaletteItem>(), changes.getItemsToCreate()));
-				palette_Modifier_Undo.pop_back();
-
-				//generate_Palette_Modifier_Fill_Palette_Right(tempPalette);
-			}
+			
 		}
 	}
 
 	if (key == GLFW_KEY_Y) {
 		if (lControl && action == GLFW_PRESS) {
-			if (paletteModifier->getShow() && palette_Modifier_Redo.size() > 0) {
-				auto& changes = palette_Modifier_Redo.at(0);
-				std::vector<PaletteItem> changesItem;
-				if (changes.getAction() == "Deleted") {
-					for (auto& e : changes.getItemsToCreate()) {
-						tempPalette.addItem(e);
-					}
-				}else if (changes.getAction() == "Created") {
-					for (auto& e : changes.getItemsToDelete()) {
-						tempPalette.removeItemAtLocation(e.getX(), e.getY(), changesItem);
-					}
-				}
-				/// TODO SORT CHANGED PALETTE!
-				palette_Modifier_Undo.push_back(PaletteChange("Deleted", changesItem, std::vector<PaletteItem>()));
-				palette_Modifier_Redo.pop_back();
-
-				//generate_Palette_Modifier_Fill_Palette_Right(tempPalette);
-			}
+			
 		}
 	}
 
 	if (key == GLFW_KEY_S) {
 		if (lControl && action == GLFW_PRESS) {
-			//serializer.saveWorld(world);
-		}
-		else if (action == GLFW_PRESS) {
-			if (!itemInfoWindow && !paletteModifier->getShow()) {
-				//updateCameraPosition(0, -(imgScale / (1080 / 2)));
-				moveDown = true;
-			}
-		}
-		else if (action == GLFW_RELEASE) {
-			moveDown = false;
+			serializer.saveWorld(world);
 		}
 	}
 
@@ -279,10 +203,9 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 	* Loading map hotkey
 	*/
 	if (key == GLFW_KEY_L && action == GLFW_PRESS) {
-		if (lControl && !loadWorldLock) {
-			loadWorldLock = true;
-			//worldLoadTemp.deleteWorld();
-			std::thread(&Serialize::loadWorld, serializer, std::ref(worldLoadTemp)).detach();
+		if (lControl && !updateWorld) {
+			updateWorld = true;
+			std::thread(&Serialize::loadWorld, serializer, std::ref(world)).detach();
 		}
 		//else
 			//once = false;
@@ -305,9 +228,8 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 		if (lControl) {
-			paletteModifier->toggleShow();
-			paletteModifier->reCreateObjects();
-			generate_Palette_Modifier_Rend_To_Text();
+			paletteModifier.toggleShow();
+			paletteModifier.reCreateObjects(getObjectByName(objects, "GUI_Palette_Modifier_"));
 		}
 	}
 
@@ -323,13 +245,13 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 	if (key == GLFW_KEY_ESCAPE) {
 		if (itemInfoWindow) {
 			itemInfoWindow = false;
-			generate_GUI_Item_Info_Panel();
+			generate_GUI_Item_Info_Panel(getObjectByName(objects, "GUI_Item_Info_Panel_"), VertecesHandler::findByName(verteces, "GUI_1"));
 		}
 	}
 
 	if (key == GLFW_KEY_D) {
 		if (action == GLFW_PRESS) {
-			if (!itemInfoWindow && !paletteModifier->getShow()) {
+			if (!itemInfoWindow) {
 				moveRight = true;
 			}
 		}
@@ -358,7 +280,7 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 
 	if (key == GLFW_KEY_A) {
 		if (action == GLFW_PRESS) {
-			if (!itemInfoWindow && !paletteModifier->getShow()) {
+			if (!itemInfoWindow) {
 				//updateCameraPosition(-(imgScale / (1920 / 2)), 0);
 				moveLeft = true;
 			}
@@ -373,13 +295,25 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 			if (lControl) {
 				drawWalls = !drawWalls;
 			}
-			else if (!itemInfoWindow && !paletteModifier->getShow()) {
+			else if (!itemInfoWindow) {
 				//updateCameraPosition(0, (imgScale / (1080 / 2)));
 				moveUp = true;
 			}
 		}
 		else if (action == GLFW_RELEASE) {
 			moveUp = false;
+		}
+	}
+
+	if (key == GLFW_KEY_S) {
+		if (action == GLFW_PRESS) {
+			if (!itemInfoWindow) {
+				//updateCameraPosition(0, -(imgScale / (1080 / 2)));
+				moveDown = true;
+			}
+		}
+		else if (action == GLFW_RELEASE) {
+			moveDown = false;
 		}
 	}
 
@@ -413,69 +347,23 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 		}
 	}
 
-	for (auto panel : GUIPanels) {
-		if (panel->getShow())
-			panel->checkKeyStroke(key, action, mods);
-	}
-
 }
 
 void handelHover() {
 
-	if ((xPos >= 0.0 && xPos <= screenWidth - 276) && (yPos >= 0.0 && yPos <= screenHeight - 30)) {
-		isWithinTileArea = 1;
+	if ( (xPos >= 0.0 && xPos <= screenWidth - 276) && (yPos >= 0.0 && yPos <= screenHeight - 30) ) {
 		x = /*(xCoord / imgScale)*/ ((xCameraPos - 1.0f) / (imgScale / (screenWidth / 2))) + (xPos / imgScale);
 		y = -((yCameraPos + 1.f) / (imgScale / (screenHeight / 2))) + (yPos / imgScale);
-		auto tile = world.getFloor(z).getTile(currentSection, x, y);
-		/*
-		if (selectedItemId.getIDRef() == -1 && tile != nullptr && tile->getAllItems().size() > 0) {
-			Item* currentHoveredItem = tile->getTopItem();
-			if (currentHoveredItem) {
-				if (outlinedItem != nullptr && outlinedItem->getObject() != nullptr)
-					outlinedItem->setOutline(false);
-				currentHoveredItem->setOutline(true);
-				outlinedItem = currentHoveredItem;
-			}
-			else if (outlinedItem != nullptr && outlinedItem->getObject() != nullptr) {
-				outlinedItem->setOutline(false);
-			}
-		}
-		else {
-			if(outlinedItem) outlinedItem->setOutline(false);
-			outlinedItem = nullptr;
-		}
-		*/
-
-		if (selectedItemId.getIDRef() == -1 && tile != nullptr) {
-			if(outLinedTile) outLinedTile->getObject()->setOutline(false);
-			if (outLinedTile) outLinedTile = tile;
-			Item* currentHoveredItem = tile->getTopItem();
-			if (currentHoveredItem) {
-				if (outlinedItem != nullptr && outlinedItem->getObject() != nullptr)
-					outlinedItem->setOutline(false);
-				currentHoveredItem->setOutline(true);
-				outlinedItem = currentHoveredItem;
-			}
-			else {
-				if (outlinedItem != nullptr && outlinedItem->getObject() != nullptr)
-					outlinedItem->setOutline(false);
-				if (outLinedTile) outLinedTile->getObject()->setOutline(true);
-			}
-		}
-		else {
-			if (outlinedItem) outlinedItem->setOutline(false);
-			outlinedItem = nullptr;
-		}
-
+		xText = std::to_string(x), yText = std::to_string(y), zText = std::to_string(z);
 		if (itemInfoWindow) {
-			itemInfo->checkHover(xPos, yPos);
+			itemInfo.checkHover(getObjectByName(objects, "GUI_Item_Info_Panel_"), xPos, yPos);
 		}
-		else if (paletteModifier->getShow()) {
-			paletteModifier->checkHover(xPos, yPos);
+		else if (paletteModifier.getShow()) {
+			paletteModifier.checkHover(getObjectByName(objects, "GUI_Palette_Modifier_"), xPos, yPos);
 		}
 		else {
-			xText = "x: " + std::to_string(x), yText = "y: " + std::to_string(y), zText = "z: " + std::to_string(z);
-			if (eraseToggle || destroyToggle || destroyTileToggle || copyToggle || cutToggle || selectedItemId.getIDRef() != -1) {
+			//bottomBar.updateLabels(getObjectByName(objects, "GUI_BottomBar_"));
+			if (eraseToggle || destroyToggle || destroyTileToggle || copyToggle || cutToggle || selectedItemId.first.first != -1) {
 				if (lbutton_down) {
 					int tempID(0);
 					if (eraseToggle)
@@ -483,25 +371,23 @@ void handelHover() {
 					else if (destroyToggle)
 						tempID = -2;
 					else
-						tempID = selectedItemId.getIDRef();
+						tempID = selectedItemId.first.first;
 					for (int yPos = y - brush; yPos <= y + brush; yPos++) {
 						for (int xPos = x - brush; xPos <= x + brush; xPos++) {
 							thingsToDraw.insert(ToDraw(tempID, xPos, yPos, z, (xPos / 50 + (yPos / 50) * 40)));
 						}
 					}
 				}
-				generate_GUI_Preview_Tiles();
+				generate_GUI_Preview_Tiles(getObjectByName(objects, "GUI_Preview_Tiles_"));
 			}
 		}
 	}
-	else if (isWithinTileArea)
-		isWithinTileArea = false;
 	// Handle hover over left panel
-	if (leftPanel->getShow()) {
-		leftPanel->checkHover(xPos, yPos);
+	if (leftPanel.getShow()) {
+		leftPanel.checkHover(getObjectByName(objects, "GUI_LeftPanel_"), xPos, yPos);
 	}
 	// Handle hover over bottom bar
-	if (bottomBar->getShow()) {
-		bottomBar->checkHover(xPos, yPos);
+	if (bottomBar.getShow()) {
+		bottomBar.checkHover(getObjectByName(objects, "GUI_BottomBar_"), xPos, yPos);
 	}
 }

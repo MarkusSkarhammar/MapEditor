@@ -13,9 +13,9 @@ void Serialize::loadWorld(World& world)
 
 	getSectionsAtFloor(world, MAX_FLOORS, 0, 1);
 	printf("Done with world load. \n");
-	//updateWhatToDrawOnAllCurrentFloors();
-
-	updateWorld = true;
+	updateWhatToDrawOnAllCurrentFloors();
+	
+	updateWorld = false;
 }
 
 void Serialize::loadSection(vector<tile>& tiles, size_t floor, size_t section)

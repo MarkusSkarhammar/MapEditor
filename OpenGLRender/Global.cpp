@@ -9,53 +9,6 @@ GLuint projection(0);
 GLuint model(0);
 GLuint view(0);
 
-GLuint projection2(0);
-GLuint model2(0);
-GLuint view2(0);
-
-//UBO
-GLuint UBOCamera(0);
-GLuint UBOTextureStuff(0);
-
-// Shader programs
-GLuint program(0);
-GLuint program2(0);
-GLuint outlineShader(0);
-
-// Texture array
-extern GLuint gTileArrayTexture(0);
-
-// Texture array layer
-GLuint gLayer(0);
-
-//Instancing uniform
-GLuint instancing(0);
-
-//Instancing class
-Instancing instanceDraw;
-
-//Outline uniforms
-GLuint outlineUniform(0);
-
-//GUI uniform
-GLuint GUI(0);
-
-//Lightning shader stuff
-GLuint ambientStrength(0);
-float ambientStrengthValue(0.7f);
-
-//Game time stuff
-extern __int64 time_stamp_world_time(0);
-extern int worldTimeHour(120);
-
-// Render to texture stuff here
-GLuint fbo_palette_modifier_left(0);
-GLuint fbo_palette_modifier_left_texture(0);
-GLuint textOffset2(0);
-
-//Renderbuffer
-GLuint rbo(0);
-
 // TextOffset
 glm::vec2 textOffsetValues(0);
 
@@ -63,44 +16,29 @@ glm::vec2 textOffsetValues(0);
 game_state current_state;
 game_state previous_state;
 
-//ObjectLibraries
-std::vector<ObjectLibrary*> objLibraries;
+// Vertices container
+VertecesHandler* tempVH = new VertecesHandler("wrong");
+std::vector<Vertices*> verticesContainer = { new Vertices("wrong", tempVH, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) };
+std::vector<Vertices*> verticesContainer64xTiles = { new Vertices("wrong", tempVH, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) };
+std::vector<Vertices*> verticesContainer128xTiles = { new Vertices("wrong", tempVH, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) };
+std::vector<Vertices*> verticesContainerLetters = { new Vertices("wrong", tempVH, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0) };
 
-//GUIPanels
-std::vector<GUIPanel*> GUIPanels;
-
-//LetterLibrary
-LetterLibrary letterLibrary("Letters");
-
-// Render to texture containers
-std::vector<RendToText*> renderToTextureContainer = {};
-
-// Outlined item
-tile* outLinedTile = nullptr;
-Item* outlinedItem = nullptr;
-bool outlineItemBool(true);
-bool outlineTileBool(false);
+// Store all the verteces
+std::vector<VertecesHandler*> verteces = {tempVH};
 
 // Store all the objects
-std::vector<DrawObjects*> objects;
-
-//Store Text To Rend objects
-RendToTextObjLibrary rendToTextLibrary;
-
-// Offsets for instancing
-unsigned int instanceVBO;
+std::vector<Objects> objects;
 
 // Store all the objects
 // Store temp objects
-std::vector<DrawObjects> tiles;
-std::vector<DrawObjects> items;
-std::vector<std::pair<int, DrawObject*>> itemsToDraw;
+std::vector<Objects> tiles;
+std::vector<Objects> items;
+std::vector<Object*> itemsToDraw;
 
-
-std::vector<std::string> paths = { 
-std::string("Tiles_1"), std::string("Letters_"), std::string("Letters_White_"),  std::string("GUI_1"),
-std::string("Doodads_1"), std::string("Borders_1"), std::string("Monsters_1"),
-std::string("Nature_1"), std::string("Items_1") };
+std::vector<std::pair<std::string, int>> paths = { 
+std::pair<std::string, int>("Tiles_1024", 19), std::pair<std::string, int>("Letters_", 256),  std::pair<std::string, int>("GUI_1", -1),
+std::pair<std::string, int>("Doodads_1024", 28), std::pair<std::string, int>("Borders_1024", 32), std::pair<std::string, int>("Monsters_1024", 0),
+std::pair<std::string, int>("Nature_1024", 4), std::pair<std::string, int>("Items_1024", 10) };
 
 size_t sizeOfPaths = 7;
 size_t letterPath = 0;
@@ -110,16 +48,32 @@ ItemAtals itemAtlas;
 
 // List of palettes
 std::vector<Palette> palettes;
-Palette tempPalette("empty");
-Palette tempPaletteLeft("empty");
 //std::vector<size_t> pappap = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 };
+
+const float OFFSET_PER_CHARACTER[256] = {
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0-15
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 16-31
+	6.0f, 0, 0, 0, 0, 0, 0, 0, 0, 8.0, 0, 0, 0, 16.0f, 0, 0, // 32-47
+	11.0f, 8.0f, 11.0f, 8, 8, 8, 8, 8, 8, 7.5, 6.0f, 0, 0, 0, 0, 0, // 48-63
+	5, 5, 12.0f, 12.0f, 12.0f, 11.0f, 5, 5, 12.0f, 12, 5, 5, 12.0f, 12.0f, 12, 5, // 64-79
+	0, 0, 0, 0, 13.0f, 0, 0.0f, 0.0f, 14.0f, 14.0f, 12.0f, 0, 0, 0, 0, 0, // 80-95
+	0, 9.0f, 7.0f, 7.0f, 9.0f, 8.0f, 8.0f, 0, 0, 5.0f, 10.0f, 12.0f, 5.0f, 14.0f, 9.0f, 9.0f, //96-111
+	10.0f, 10.0f, 7.0f, 9.0f, 6.0f, 10.0f, 0, 14.0f, 0, 7.0f, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 const std::string LEFFT_PANEL_DROP_DOWN_TEXT[] = { "Tiles", "Nature", "Monsters", "Humans", "Doodads", "Equipment", "Borders" };
 const size_t SIZE_DROP_DOWN_TEXT = 7;
 
 
 // The coordinates for a tile depending on where the mouse currently is and where the camera is positioned. 
-int x(0), y(0), z(7);
+size_t x(0), y(0), z(7);
 std::string xText{"0"}, yText{ "0" }, zText{ "7" };
 
 bool changeFloor(false);
@@ -144,7 +98,6 @@ int screenHeightPixels(0);
 //Update map
 std::atomic<bool> updateMap(false);
 std::atomic<bool> updateWorld(false);
-std::atomic<bool> loadWorldLock(false);
 
 // Draw items/tiles
 bool drawWalls(true);
@@ -211,7 +164,7 @@ bool paletteLeftPressed(false);
 bool paletteRightPressed(false);
 
 // Selected item from palette
-PaletteItem selectedItemId(-1, false, -1, -1);
+std::pair<std::pair<int, bool>, std::pair<int, int>> selectedItemId(std::pair<int, int>(-1, false), std::pair<int, int>(-1, -1));
 bool isWithinTileArea(false);
 
 // Hash set for items to be draw
@@ -242,7 +195,6 @@ std::atomic<bool> copyBufferLock(false);
 
 // Tiles to be rendered
 World world("Chunje");
-World worldLoadTemp("Chunje");
 World worldTemp("Temp");
 
 // Render section below
@@ -254,9 +206,6 @@ bool sectionSouthEast(false);
 
 // Left control held
 bool lControl(false);
-
-// Left shift held
-bool lShift(false);
 
 // Brush size
 size_t brush(0);
@@ -270,14 +219,7 @@ Serialize serializer;
 //-----------------------------------
 
 // lefPanel
-GUIPanel* leftPanel = new GUIPanel("leftPanel");
-
-// left_panel tiles
-int left_panel_page;
-int left_panel_maxPage;
-double left_panel_Offset;
-double left_panel_Offset_Max;
-std::string left_panel_Selected_Palette;
+GUIPanel leftPanel("leftPanel");
 
 
 //-----------------------------------
@@ -289,7 +231,7 @@ std::string left_panel_Selected_Palette;
 //-----------------------------------
 
 // GUIPanel
-GUIPanel* bottomBar = new GUIPanel("bottomBar");
+GUIPanel bottomBar("bottomBar");
 
 // Copy buffer
 std::vector<std::pair<ToDraw, tile*>> copyBuffer;
@@ -304,7 +246,7 @@ std::vector<std::pair<ToDraw, tile*>> copyBuffer;
 //-----------------------------------
 
 // GUIPanel
-GUIPanel* itemInfo = new GUIPanel("itemInfo");
+GUIPanel itemInfo("itemInfo");
 
 bool updateItemInfo(false);
 
@@ -329,7 +271,7 @@ bool itemInfoWindow(false);
 //-----------------------------------
 
 // GUIPanel
-GUIPanel* paletteModifier = new GUIPanel("paletteModifier");
+GUIPanel paletteModifier("paletteModifier");
 
 // palette modifier IDs
 int paletteModifierPanel(0);
@@ -342,32 +284,6 @@ int paletteModifierDropDownElement(0);
 int paletteModifierDropDownElementHover(0);
 int paletteModifierEmptyTileMarker(0);
 
-// palette right tiles
-int palette_Modifier_Right_page(0);
-int palette_Modifier_Right_maxPage(0);
-double palette_Modifier_Right_Offset(0);
-double palette_Modifier_Right_Offset_Max(0);
-std::string palette_Modifier_Right_Selected_Palette = "";
-PaletteItem palette_Modifier_Right_Selected_Tile;
-bool palette_Modifier_Right_First{ true };
-int palette_Modifier_Right_Shift_Start(-1);
-bool palette_Modifier_Right_Shift_Bool(0);
-std::unordered_map<int, int> palette_Modifier_Right_Clicked;
-
-// palette left tiles
-int palette_Modifier_Left_page(0);
-int palette_Modifier_Left_maxPage(0);
-double palette_Modifier_Left_Offset(0);
-double palette_Modifier_Left_Offset_Max(0);
-std::string palette_Modifier_Left_Selected_Palette = "";
-int palette_Modifier_Left_Shift_Start(-1);
-bool palette_Modifier_Left_Shift_Bool(0);
-std::unordered_map<int, int> palette_Modifier_Left_Clicked;
-
-// Changes
-std::vector<PaletteChange> palette_Modifier_Undo = {};
-std::vector<PaletteChange> palette_Modifier_Redo = {};
-
 //-----------------------------------
 //			DONE Palette modifier window
 //-----------------------------------
@@ -375,7 +291,7 @@ std::vector<PaletteChange> palette_Modifier_Redo = {};
 size_t size = 0;
 
 // Zoom level
-double zoom = 1.0;
+float zoom = 1;
 bool haveZoomed = false;
 
 float FOV = 90;

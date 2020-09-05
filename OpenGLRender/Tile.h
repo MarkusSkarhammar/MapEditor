@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include "Item.h"
-#include "DrawObject.h"
+#include "Object.h"
 
 using std::string;
 
@@ -11,7 +11,7 @@ class tile {
 public:
 	tile(int x, int y, int z, int id);
 	tile(tile*& t);
-	~tile() { clearItems(); if(ob) delete ob; };
+	~tile() { clearItems(); delete ob; };
 	void setID(int value);
 	void setUID(int value);
 	void setX(int value) { x = value; };
@@ -35,20 +35,20 @@ public:
 	bool getBlockPathfind();
 	void setBlockPathfind(bool value);
 	void insertItem(Item* insert);
-	Item* getTopItem();
+	Item& getTopItem();
 	std::vector<Item*>& getAllItems();
 	void setItems(std::vector<Item*>& otherItems);
 	void clearItems();
 	void destroyItemAt(int pos);
-	DrawObject* getObject() { return ob; };
-	void setObject(DrawObject* o);
+	Object*& getObject() { return ob; };
 private:
 	int x, y, z, zone{ 0 }, speed{ 100 };
 	int id, uid{ 0 };
 	string name, article, description;
 	bool blockPathfind{ false };
 	std::vector<Item*> items;
-	DrawObject* ob { nullptr };
+	Object* ob { nullptr };
+	bool* animationOn = new bool(false);
 };
 
 #endif

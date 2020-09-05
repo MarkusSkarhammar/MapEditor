@@ -29,22 +29,23 @@ using namespace glm;
 #include "Tile.h"
 #include "World.h"
 #include "Global.h"
-#include "Vertices.h"
-#include "DrawObject.h"
+#include "VertecesHandler.h"
+#include "Object.h"
 #include "Inputs.h"
 #include <thread>
 #include <mutex>
-#include "ObjectLibrary.h"
-#include "Render.h"
 
+
+GLuint gTileArrayTexture(0);
 GLuint gGUIArrayTexture(0);
+GLuint gLayer(0), textOffset(0);
 GLuint tilesVAO(0), vao2(0), vao3(0);
 GLuint vbo(0), vbo2(0);
+GLuint program(0);
 
 // Verteces
 std::vector<float> v;
 
-void prepareDraw();
 void init();
 void handlePlayerMovement(game_state* state, GLFWwindow* window);
 void generateVBOs();
@@ -52,7 +53,6 @@ void createThingsToRender();
 void generateTextures();
 void mapUpdate();
 void sortTileVector(std::vector<tile>& tileVector);
-void Setup_Render_To_Texture();
 
 using namespace std::chrono_literals;
 
@@ -62,6 +62,8 @@ constexpr std::chrono::nanoseconds timestep(16ms);
 bool handle_events(GLFWwindow* window);
 
 void update(game_state* state, GLFWwindow* window);
+
+void render(game_state const &, GLFWwindow* window);
 
 game_state interpolate(game_state const & current, game_state const & previous, float alpha) {
 	game_state interpolated_state;
@@ -164,13 +166,12 @@ int main(int argc, wchar_t *argv[])
 
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
+	//glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	//glDepthMask(GL_TRUE);
-	//glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_ALWAYS);
-
+	glDepthFunc(GL_LEQUAL);
 	//glDepthRange(0.0f, 1.0f);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -195,8 +196,8 @@ int main(int argc, wchar_t *argv[])
 		double currentTime = glfwGetTime();
 		nbFrames++;
 		if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
-			// printf and reset timer
-			printf("%f ms/frame, %f fps\n", 1000.0 /double(nbFrames), double(nbFrames));
+											 // printf and reset timer
+			printf("%f ms/frame\n", 1000.0 /double(nbFrames));
 			//printf("%f fps\n", double(nbFrames));
 			FPS = double(nbFrames);
 			nbFrames = 0;
@@ -231,25 +232,129 @@ int main(int argc, wchar_t *argv[])
 	glDeleteProgram(program);
 
 
-	for (auto objLib : objLibraries) {
-		delete objLib;
+	for (auto vert : verteces) {
+		glDeleteBuffers(1, &vert->getVBO());
+		glDeleteVertexArrays(1, &vert->getVAO());
+		delete vert;
 	}
 
 	glDeleteTextures(1, &gTileArrayTexture);
 	glDeleteTextures(1, &gGUIArrayTexture);
-	glDeleteFramebuffers(1, &fbo_palette_modifier_left);
-
-	for (RendToText* rtt : renderToTextureContainer) {
-		delete rtt;
-	}
-
-	for (auto panel : GUIPanels)
-		delete panel;
-
-	glDeleteBuffers(1, &instanceVBO);
 
 	glfwTerminate();
 	return 0;
+}
+
+void render(game_state const &interpolated_state, GLFWwindow* window) {
+
+	// Clear the screen
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearDepth(1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Update camera based on a interpolated state
+	setCameraPosition(interpolated_state.xCameraPos, interpolated_state.yCameraPos);
+
+	bool overTen(false);
+	size_t from = 0, obj = 0;
+	size_t to = z;
+	if (z > 6) {
+		from = 7;
+		to = z;
+	}
+	std::string currentName = "";
+	itemsToDraw.clear();
+	itemsToDraw.shrink_to_fit();
+
+	//----------------------------------------------------------
+	//						Draw game stuff
+	//----------------------------------------------------------
+	// Draw order tiles > Borders > Entities > Doodads
+
+	double x(0), y(0);
+	for (int floorAt = from; floorAt <= to; floorAt++) {
+		for (auto& t : world.getFloor(floorAt).getSection(currentSection)) {
+			auto& object = t->getObject();
+			x = 0.0 + (width * object->getXPosition());
+			y = 0.0 - (height * object->getYPosition());
+			if (x < xCameraPos + 1.0f * zoom && x >= xCameraPos - 1.1f * zoom && y <= yCameraPos + 1.2f * zoom && y > yCameraPos - 1.0f * zoom) { // Check to see if object is within viewport
+				if (object->getDraw()) {
+					Model = glm::mat4(1.0f);
+
+					Model = glm::translate(Model, glm::vec3(x, y, 0.0f));
+
+					glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(Model));
+
+					glUniform1i(gLayer, object->getTexturePos());
+
+					glBindVertexArray(object->getVAO());
+					glDrawArrays(GL_TRIANGLES, 0 + (4 * object->getID() % 1024), 3);
+					glDrawArrays(GL_TRIANGLES, 1 + (4 * object->getID() % 1024), 3);
+				}
+				for (auto& i : t->getAllItems()) {
+					itemsToDraw.push_back(i->getObject());
+				}
+			}
+		}
+
+		for (auto& object : itemsToDraw) {
+			x = 0.0 + (width * object->getXPosition());
+			y = 0.0 - (height * object->getYPosition());
+			if (object->getDraw()) { // Check to see if object is within viewport
+
+				Model = glm::mat4(1.0f);
+
+				Model = glm::translate(Model, glm::vec3(x, y, 0.0f));
+
+				glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(Model));
+
+				glUniform1i(gLayer, object->getTexturePos());
+
+				glBindVertexArray(object->getVAO());
+				glDrawArrays(GL_TRIANGLES, 0 + (4 * object->getID() % 1024), 3);
+				glDrawArrays(GL_TRIANGLES, 1 + (4 * object->getID() % 1024), 3);
+			}
+		}
+		itemsToDraw.clear();
+	}
+
+	//----------------------------------------------------------
+	//						Draw GUI
+	//----------------------------------------------------------
+
+	for (auto& objects : objects) {
+		currentName = objects.getName();
+		if (!((currentName.compare("GUI_LeftPanel_DropDown_") == 0 || currentName.compare("GUI_LeftPanel_DropDown_Text_") == 0) && !clickPaletteDropDown)) {
+			for (auto& object : objects.getObjects()) {
+
+				Model = glm::mat4(1.0f);
+				if (currentName.compare("GUI_Preview_Tiles_") == 0) Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + object->getXPosition(), yCameraPos + 1.0f - object->getYPosition(), 0.0));
+				else Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + object->getXPosition(), yCameraPos + 1.0f - object->getYPosition(), (zoom - 1.0)));
+				
+				// Handle scaling
+				if(object->getScale() != 1.0) 
+					Model = glm::scale(Model, glm::vec3(object->getScale(), object->getScale(), object->getScale()));
+
+				// Handle transformation
+				glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(Model));
+
+				if (object->getTextOffsetX() > 0 || object->getTextOffsetY() > 0) {
+					textOffsetValues = { object->getTextOffsetX(), object->getTextOffsetY() };
+					glUniformMatrix2fv(textOffset, 1, GL_FALSE, glm::value_ptr(textOffsetValues));
+				}
+
+				glUniform1i(gLayer, object->getTexturePos());
+
+				glBindVertexArray(object->getVAO());
+				glDrawArrays(GL_TRIANGLES, 0 + (4 * object->getID() % 1024), 3);
+				glDrawArrays(GL_TRIANGLES, 1 + (4 * object->getID() % 1024), 3);
+
+			}
+		}
+	}
+
+	glfwSwapBuffers(window);
+	glfwPollEvents();
 }
 
 bool handle_events(GLFWwindow* window) {
@@ -282,66 +387,32 @@ void update(game_state* state, GLFWwindow* window) {
 		yCameraPos = state->yGoal;
 	}
 
-	//generate_Palette_Modifier_Left_Texture();
-
-	/*
-	__int64 now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-	if (time_stamp_world_time == 0 || now - time_stamp_world_time > 1 * 2 * 1000) {
-		time_stamp_world_time = now;
-		if ((worldTimeHour += 10) > 240) worldTimeHour = 0;
-		float ambient = 0.0f;
-		if (worldTimeHour > 0 && worldTimeHour < 120)
-			ambientStrengthValue = (worldTimeHour / 120.0);
-		else if (worldTimeHour > 190)
-			ambientStrengthValue = (190.0 / worldTimeHour);
-		else
-			ambientStrengthValue = 1.0;
-	}
-	*/
-	ambientStrengthValue = 1.0;
-
 	//Update animations
 	checkAnimations();
 
 	// Do logic player movement logic here
 	handlePlayerMovement(state, window);
 
-	// Update what to render onto the screen here
-	createThingsToRender();
-
 	// Add/remove tile/item
 	mapUpdate();
+
+	// Update what to render onto the screen here
+	createThingsToRender();
 
 	//glfwPollEvents();
 	glfwGetCursorPos(window, &xPos, &yPos);
 
 	// Check hovering and update
 	handelHover();
-
-	//Prepare to draw
-	prepareDraw();
-
-	//Do GUI stuff
-	for (auto panel : GUIPanels) {
-		panel->checkUpdates();
-	}
 }
 
 void createThingsToRender() {
 
-	if (updateWorld) {
-		world.insertWorld(worldLoadTemp);
-		//worldLoadTemp.deleteWorld();
-		updateWorld = false;
-		loadWorldLock = false;
-		outlinedItem = nullptr;
-	}
 	
 	if (updateMap) {
-		world.insertWorld(worldTemp);
+		world.copyWorld(worldTemp);
 		thingsToDraw.clear();
 		updateMap = false;
-		outlinedItem = nullptr;
 	}
 
 }
@@ -359,23 +430,17 @@ void generateTextures() {
 	//Create storage for the texture. (100 layers of 1x1 texels)
 	glTexStorage3D(GL_TEXTURE_2D_ARRAY,
 		1,                    //No mipmaps as textures are 1x1
-		GL_RGBA16F,              //Internal format
+		GL_RGBA16,              //Internal format
 		2048, 2048,                 //width,height
 		texturesAmount                  //Number of layers
 	);
-
-	//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 4);
-	//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	//Get texture from image to texture through FreeImage API
 	fipWinImage img;
 	std::string path;
 	for (size_t i = 0; i < texturesAmount; ++i) {
-		//verteces.at(i+1)->setTextureID(i);
-		path = "./resources/images/" + paths[i] + ".png";
+		verteces.at(i+1)->setTextureID(i);
+		path = "./resources/images/" + paths[i].first + ".png";
 		bool read(false);
 		read = img.load(&path[0]);
 		printf("Loaded image size: %i \n", img.getImageSize());
@@ -394,12 +459,19 @@ void generateTextures() {
 			(void*)img.accessPixels());                //pointer to data
 		img.clear();
 		//GL_BGRA
+		//glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+		//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 4);
+		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+
 		/*glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);*/
 	}
-	glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 
 	//GLfloat Largest;
 
@@ -416,8 +488,7 @@ void mapUpdate() {
 
 	if (!lbutton_down && !updateMap && thingsToDraw.size() > 0 && !updateMapFloor) {
 		updateMapFloor = true;
-		worldTemp.insertWorld(world);
-		std::thread(insert_Things_From_ThingsToDraw, std::ref(worldTemp)).detach();
+		std::thread(insert_Things_Form_ThingsToDraw).detach();
 	}
 
 	if (newZ != z && !updateMapFloor) {
@@ -445,7 +516,63 @@ void sortTileVector(std::vector<tile>& tileVector) {
 }
 
 void generateVBOs() {
-	setupObjectLibraries();
+
+
+	for (auto path : paths ) {
+		VertecesHandler* temp = new VertecesHandler(path.first);
+		if (path.second > 0) {
+			generateVetecesSquares(temp, path.second);
+
+			glGenVertexArrays(1, &temp->getVAO());
+
+			glGenBuffers(1, &temp->getVBO()); // Generate 1 buffer
+			glGenBuffers(1, &temp->getVBOText()); // Generate 1 buffer
+
+			glBindVertexArray(temp->getVAO());
+			glBindBuffer(GL_ARRAY_BUFFER, temp->getVBO());
+			//glBufferData(GL_ARRAY_BUFFER, temp.getVerteces().size() * sizeof(float), &temp.getVerteces()[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, temp->getVerteces().size() * sizeof(float) + temp->getVertecesText().size() * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, temp->getVerteces().size() * sizeof(float), &temp->getVerteces()[0]);
+
+			//glBindBuffer(GL_ARRAY_BUFFER, temp.getVBOText());
+			//glBufferData(GL_ARRAY_BUFFER, temp.getVertecesText().size() * sizeof(float), &temp.getVertecesText()[0], GL_DYNAMIC_DRAW);
+			glBufferSubData(GL_ARRAY_BUFFER, temp->getVerteces().size() * sizeof(float), temp->getVertecesText().size() * sizeof(float), &temp->getVertecesText()[0]);
+
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(temp->getVerteces().size() * sizeof(float)));
+		}
+		else if (path.second == -1) {
+			
+			generateGUI(temp, path.first);
+
+			glGenVertexArrays(1, &temp->getVAO());
+
+			glGenBuffers(1, &temp->getVBO()); // Generate 1 buffer
+			glGenBuffers(1, &temp->getVBOText()); // Generate 1 buffer
+
+			glBindVertexArray(temp->getVAO());
+			glBindBuffer(GL_ARRAY_BUFFER, temp->getVBO());
+			//glBufferData(GL_ARRAY_BUFFER, temp.getVerteces().size() * sizeof(float), &temp.getVerteces()[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, temp->getVerteces().size() * sizeof(float) + temp->getVertecesText().size() * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, temp->getVerteces().size() * sizeof(float), &temp->getVerteces()[0]);
+
+			//glBindBuffer(GL_ARRAY_BUFFER, temp.getVBOText());
+			//glBufferData(GL_ARRAY_BUFFER, temp.getVertecesText().size() * sizeof(float), &temp.getVertecesText()[0], GL_DYNAMIC_DRAW);
+			glBufferSubData(GL_ARRAY_BUFFER, temp->getVerteces().size() * sizeof(float), temp->getVertecesText().size() * sizeof(float), &temp->getVertecesText()[0]);
+
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(temp->getVerteces().size() * sizeof(float)));
+		}
+
+		verteces.push_back(temp);
+	}
+
+	//printf("%s interpolation X velocity\n", "heehej");
+	//printf("%i <--- is it true? \n",  VertecesHandler::findByName(verteces, "Tiles024").getName() == "Tiles_1024" );
 }
 
 void handlePlayerMovement(game_state* state, GLFWwindow* window) {
@@ -456,7 +583,7 @@ void handlePlayerMovement(game_state* state, GLFWwindow* window) {
 		state->xGoal = xCameraPos + (2 / screenWidth) * 1;
 	}
 	if (moveLeft) {
-		state->xGoal = xCameraPos - (2.f / screenWidth) * 1.f;
+		state->xGoal = xCameraPos - (2 / screenWidth) * 1;
 	}
 	if (moveUp) {
 		state->yGoal = yCameraPos + (2 / screenHeight) * 1;
@@ -466,147 +593,61 @@ void handlePlayerMovement(game_state* state, GLFWwindow* window) {
 	}
 }
 
-void Setup_Render_To_Texture() {
-	renderToTextureContainer.push_back(new RendToText("paletteModifier", 2048, 2048));
-	renderToTextureContainer.push_back(new RendToText("leftPanelTiles", 2048, 2048));
-}
 
 void init() {
-
-	glGenBuffers(1, &instanceVBO);
-
-	// Create and compile the vertex shader and fragment shader
-	program = LoadShaders("./resources/Shaders/TransformVertexShader.vertexshader", "./resources/Shaders/ColorFragmentShader.fragmentshader");
-
-	// Create and compile the vertex shader and fragment shader for rend to text
-	program2 = LoadShaders("./resources/Shaders/RendToTextVertexShader.vertexshader", "./resources/Shaders/RendToTextFragmentShader.fragmentshader");
-
-	// Create and compile the vertex shader and fragment shader for object outline
-	outlineShader = LoadShaders("./resources/Shaders/outlineVertexShader.vertexshader", "./resources/Shaders/outlineFragmentShader.fragmentshader");
-
-	{ // Setup normal shaders
-		// Use our shader
-		glUseProgram(program);
-
-		GLuint uniformBlockIndex1 = glGetUniformBlockIndex(program, "Matrices");
-
-		glUniformBlockBinding(program, uniformBlockIndex1, 0);
-
-		GLuint uniformBlockIndexTextureStuff = glGetUniformBlockIndex(program, "textStuff");
-
-		glUniformBlockBinding(program, uniformBlockIndexTextureStuff, 1);
-
-		// Get a handle for our "cameraPos" uniform
-		gLayer = glGetUniformLocation(program, "layer");
-
-		outlineUniform = glGetUniformLocation(program, "outline");
-
-		GUI = glGetUniformLocation(program, "GUI");
-
-		ambientStrength = glGetUniformLocation(program, "ambientStrength");
-
-		instancing = glGetUniformLocation(program, "instancing");
-	}
-
-	{ // Setup rend to text shaders
-		// Use our shader
-		glUseProgram(program2);
-
-		GLuint uniformBlockIndex2 = glGetUniformBlockIndex(program2, "Matrices");
-
-		glUniformBlockBinding(program2, uniformBlockIndex2, 0);
-
-		GLuint uniformBlockIndexTextureStuff2 = glGetUniformBlockIndex(program2, "textStuff");
-
-		glUniformBlockBinding(program2, uniformBlockIndexTextureStuff2, 1);
-	}
-
-	{ // Setup rend to text shaders
-		// Use our shader
-		glUseProgram(outlineShader);
-
-		GLuint uniformBlockIndex3 = glGetUniformBlockIndex(outlineShader, "Matrices");
-
-		glUniformBlockBinding(outlineShader, uniformBlockIndex3, 0);
-
-		GLuint uniformBlockIndexTextureStuff3 = glGetUniformBlockIndex(outlineShader, "textStuff");
-
-		glUniformBlockBinding(outlineShader, uniformBlockIndexTextureStuff3, 1);
-	}
-
-	{ // Setup Matrices
-		glGenBuffers(1, &UBOCamera);
-		glBindBuffer(GL_UNIFORM_BUFFER, UBOCamera);
-		glBufferData(GL_UNIFORM_BUFFER, 3 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-		glBindBufferRange(GL_UNIFORM_BUFFER, 0, UBOCamera, 0, 3 * sizeof(glm::mat4));
-
-		glViewport(0, 0, screenWidthPixels, screenHeightPixels);
-		float aspect = screenWidth / screenHeight;
-		glm::mat4 projection = //glm::ortho(-1.0f, 1.f, -1.0f, 1.f);
-		glm::perspective(glm::radians(FOV), 1.0f, 0.1f, 100.0f);
-		glBindBuffer(GL_UNIFORM_BUFFER, UBOCamera);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	}
-
-	{ // Setup textStuff
-		glGenBuffers(1, &UBOTextureStuff);
-		glBindBuffer(GL_UNIFORM_BUFFER, UBOTextureStuff);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 1);
-
-		glBindBufferRange(GL_UNIFORM_BUFFER, 1, UBOTextureStuff, 0, sizeof(glm::mat4));
-	}
-
 	// Create Vertex Array Object
 	generateVBOs();
 
-	// Generate itemAtlas
-	itemAtlas.generateAtlas();
+	// Create and compile the vertex shader and fragment shader
 
-	Setup_Render_To_Texture();
+	program = LoadShaders("./TransformVertexShader.vertexshader", "./ColorFragmentShader.fragmentshader");
+	// Use our shader
+	glUseProgram(program);
+
+
+	//glUniform1i(0, 0); //Sampler refers to texture unit 0
 
 	//Generate Textures
 	generateTextures();
 
+	// Generate itemAtlas
+	itemAtlas.generateAtlas();
+
 	// Get a handle for our "MVP" uniform
-	//model = glGetUniformLocation(program, "model");
+	model = glGetUniformLocation(program, "model");
+	view = glGetUniformLocation(program, "view");
+	projection = glGetUniformLocation(program, "projection");
 
-	Palette::fillPalettes(palettes);
+	// Get a handle for our "cameraPos" uniform
+	gLayer = glGetUniformLocation(program, "layer");
 
+	// Get a handle for our "textOffset" uniform
+	textOffset = glGetUniformLocation(program, "textOffset");
 
-	DrawObjects *temp = new DrawObjects("GUI_Preview_Tiles_");
+	fillPalettes(palettes);
 
+	for (size_t i = 0; i < MAX_FLOORS; i++) {
+		objects.push_back(Objects("Floor_Tiles_" + std::to_string(i)));
+		objects.push_back(Objects("Floor_Items_" + std::to_string(i)));
+		tiles.push_back(Objects("Tiles_" + std::to_string(i)));
+		items.push_back(Objects("Items_" + std::to_string(i)));
+	}
+
+	Objects temp = Objects("GUI_Preview_Tiles_");
+	objects.push_back(temp);
+	temp = Objects("GUI_BottomBar_");
+	generate_GUI_Bottom_Bar(temp, VertecesHandler::findByName(verteces, "GUI_1"));
+	objects.push_back(temp);
+	temp = Objects("GUI_LeftPanel_");
+	generate_GUI_Left_Panel(temp, VertecesHandler::findByName(verteces, "GUI_1"), 0);
+	objects.push_back(temp);
+	temp = Objects("GUI_LeftPanel_Text_");
+	generate_GUI_Left_Panel_Text_(temp, VertecesHandler::findByName(verteces, "Letters_"));
+	objects.push_back(temp);
+	temp = Objects("GUI_Item_Info_Panel_");
+	objects.push_back(temp);
+	temp = Objects("GUI_Palette_Modifier_");
+	generate_Palette_Modifier(temp, VertecesHandler::findByName(verteces, "GUI_1"));
 	objects.push_back(temp);
 
-	temp = new DrawObjects("GUI_BottomBar_");
-	bottomBar->setObjects(temp);
-	objects.push_back(temp);
-
-	temp = new DrawObjects("GUI_LeftPanel_");
-	leftPanel->setObjects(temp);
-	objects.push_back(temp);
-
-	temp = new DrawObjects("GUI_LeftPanel_Text_");
-	objects.push_back(temp);
-
-	temp = new DrawObjects("GUI_Item_Info_Panel_");
-	itemInfo->setObjects(temp);
-	objects.push_back(temp);
-
-	temp = new DrawObjects("GUI_Palette_Modifier_");
-	paletteModifier->setObjects(temp);
-	objects.push_back(temp);
-
-	generate_GUI_Bottom_Bar();
-
-	generate_GUI_Left_Panel(0);
-	
-	//generate_GUI_Left_Panel_Text_(temp, VertecesHandler::findByName(verteces, "Letters_"));
-	generate_Palette_Modifier();
-
-
-	worldLoadTemp = World("Chunje");
 }
