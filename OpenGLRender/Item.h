@@ -33,6 +33,8 @@ public:
 	void setDoubleSize(bool value);
 	bool isDoubleSize();
 	void setDescription(string value);
+	void setArticle(string value);
+	void setName(string value);
 	void setAnimationOnly(bool v) { animationOnly = v; };
 	bool getAnimationOnly() { return animationOnly; };
 	string& getName();

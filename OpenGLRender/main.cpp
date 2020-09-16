@@ -306,11 +306,11 @@ void update(game_state* state, GLFWwindow* window) {
 	// Do logic player movement logic here
 	handlePlayerMovement(state, window);
 
-	// Update what to render onto the screen here
-	createThingsToRender();
-
 	// Add/remove tile/item
 	mapUpdate();
+
+	// Update what to render onto the screen here
+	createThingsToRender();
 
 	//glfwPollEvents();
 	glfwGetCursorPos(window, &xPos, &yPos);
@@ -330,18 +330,17 @@ void update(game_state* state, GLFWwindow* window) {
 void createThingsToRender() {
 
 	if (updateWorld) {
-		world.insertWorld(worldLoadTemp);
-		//worldLoadTemp.deleteWorld();
-		updateWorld = false;
-		loadWorldLock = false;
-		outlinedItem = nullptr;
-	}
-	
-	if (updateMap) {
-		world.insertWorld(worldTemp);
+		__int64 then = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		world->clear_World();
+		world->insertWorld(worldLoadTemp);
+		delete worldLoadTemp;
 		thingsToDraw.clear();
-		updateMap = false;
+		worldLoadTemp = nullptr;
+		updateWorld = false;
+		changeWorldLock = false;
 		outlinedItem = nullptr;
+		__int64 now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		printf("The time to swap the world took: %i ms\n", int(now - then));
 	}
 
 }
@@ -414,10 +413,15 @@ void generateTextures() {
 
 void mapUpdate() {
 
-	if (!lbutton_down && !updateMap && thingsToDraw.size() > 0 && !updateMapFloor) {
-		updateMapFloor = true;
-		worldTemp.insertWorld(world);
-		std::thread(insert_Things_From_ThingsToDraw, std::ref(worldTemp)).detach();
+	if (!lbutton_down && thingsToDraw.size() > 0 && !changeWorldLock) {
+		changeWorldLock = true;
+		if (worldLoadTemp)
+			worldLoadTemp->copyWorld(world);
+		else {
+			worldLoadTemp = new World(world->getName(), world->get_Floor_Amount(), world->get_Width_Section(), world->get_Height_Section(), world->get_Width_Section_Tiles());
+			worldLoadTemp->insert_Sections_From_Other(world, z, sectionsActive);
+		}
+		std::thread(insert_Things_From_ThingsToDraw, std::ref(worldLoadTemp)).detach();
 	}
 
 	if (newZ != z && !updateMapFloor) {
@@ -426,9 +430,13 @@ void mapUpdate() {
 		newFloor();
 	}
 
-	if (int((xCameraPos - 1.0) / ((50 * 64) / (float(screenWidthPixels) / 2))) != currentSection) {
-		currentSection = (xCameraPos - 1) / ((50 * 64) / (float(screenWidthPixels) / 2));
+	int section = -int((yCameraPos + 1.0) / ((world->get_Height_Section() * 64) / (float(screenHeightPixels) / 2))) * world->get_Width_Section() + int((xCameraPos - 1.0) / ((world->get_Width_Section_Tiles() * 64) / (float(screenWidthPixels) / 2)));
+	if (section != currentSection) {
+		currentSection = section;
+		sectionsActive = get_Currently_Rendered_Sections();
 	}
+
+	check_If_Load_New_Sections();
 }
 
 void sortTileVector(std::vector<tile>& tileVector) {
@@ -608,5 +616,5 @@ void init() {
 	generate_Palette_Modifier();
 
 
-	worldLoadTemp = World("Chunje");
+	world = new World("Chunje", 14, 50, 50, 50);
 }

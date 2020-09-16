@@ -2,7 +2,6 @@
 #include "Palette.h"
 #pragma warning(disable: 4244)
 
-
 void generate_GUI_Bottom_Bar()
 {
 	GUIPanels.push_back(bottomBar);

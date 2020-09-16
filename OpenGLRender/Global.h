@@ -173,7 +173,7 @@ extern int screenHeightPixels;
 //Update map
 extern std::atomic<bool> updateMap;
 extern std::atomic<bool> updateWorld;
-extern std::atomic<bool> loadWorldLock;
+extern std::atomic<bool> changeWorldLock;
 
 // Draw items/tiles
 extern bool drawWalls;
@@ -303,6 +303,15 @@ extern double xCoord, yCoord;
 
 // Current Map section
 extern int currentSection;
+extern int middleSection;
+extern int northSection;
+extern int southSection;
+extern int westSection;
+extern int eastSection;
+
+// Width of the sections to be loaded(Think of the sections as a square)
+extern int sections_Loaded_Width;
+extern std::unordered_map<int, int> sectionsActive;
 
 // Map section side length
 extern const size_t SECTION_LENGTH;
@@ -322,9 +331,11 @@ extern int updatingFloor;
 extern std::atomic<bool> copyBufferLock;
 
 // Tiles to be rendered
-extern World world;
-extern World worldLoadTemp;
-extern World worldTemp;
+extern World* world;
+extern World* worldLoadTemp;
+extern World* worldTemp;
+extern std::string mapFileName;
+
 //extern std::vector<tile> tiles;
 
 // Render section below

@@ -10,7 +10,7 @@ using std::string;
 class tile {
 public:
 	tile(int x, int y, int z, int id);
-	tile(tile*& t);
+	tile(tile* t);
 	~tile() { clearItems(); if(ob) delete ob; };
 	void setID(int value);
 	void setUID(int value);

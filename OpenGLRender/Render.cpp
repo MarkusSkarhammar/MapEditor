@@ -94,30 +94,40 @@ void prepareDraw() {
 		to = z;
 	}
 
+	Section* sectionPtr = nullptr;
+
+	auto sections = get_Currently_Rendered_Sections();
+
 	double x(0), y(0);
 	for (int floorAt = from; floorAt <= to; floorAt++) {
-		for (auto& t : world.getFloor(floorAt).getSection(currentSection)) {
-			auto object = t->getObject();
-			if (object != nullptr || t->getID() == -1) {
-				test = false;
-				x = 0.0 + (width * t->getX());
-				y = 0.0 - (height * t->getY());
-				if (zoom == 1 && x < xCameraPos + 1.0f && x >= xCameraPos - 1.1f && y <= yCameraPos + 1.3f && y > yCameraPos - 1.1f)
-					test = true;
-				else if (zoom > 1.0 && x < xCameraPos + 1.0f / (1. / zoom) && x >= xCameraPos - 1.2f / (1. / zoom) && y <= yCameraPos + 1.2f / (1. / zoom) && y >(yCameraPos - 1.2f) / (1. / zoom)) // && y <= (yCameraPos + .5f) / (1. / zoom) && y > (yCameraPos - 1.2f) / (1 - 1. / zoom)
-					test = true;
-				else if (zoom < 1.0 && x < xCameraPos + 1.0f / (1. / zoom) && x >= xCameraPos - 1.4f / (1. / zoom) && y <= yCameraPos + 1.8f / (1. / zoom) && y > yCameraPos - 1.8f / (1. / zoom))
-					test = true;
-				if (test) {
+		for (int section = 0; section < 2; section++) {
+			for (auto it = sections.begin(); it != sections.end(); it++) {
+				sectionPtr = world->getFloor(floorAt)->get_Section((*it).first);
+				if (sectionPtr)
+					for (auto& t : sectionPtr->get_Tiles()) {
+						auto object = t->getObject();
+						if (object != nullptr || t->getID() == -1) {
+							test = false;
+							x = 0.0 + (width * t->getX());
+							y = 0.0 - (height * t->getY());
+							if (zoom == 1 && x < xCameraPos + 1.0f && x >= xCameraPos - 1.1f && y <= yCameraPos + 1.3f && y > yCameraPos - 1.1f)
+								test = true;
+							else if (zoom > 1.0 && x < xCameraPos + 1.0f / (1. / zoom) && x >= xCameraPos - 1.2f / (1. / zoom) && y <= yCameraPos + 1.2f / (1. / zoom) && y >(yCameraPos - 1.2f) / (1. / zoom)) // && y <= (yCameraPos + .5f) / (1. / zoom) && y > (yCameraPos - 1.2f) / (1 - 1. / zoom)
+								test = true;
+							else if (zoom < 1.0 && x < xCameraPos + 1.0f / (1. / zoom) && x >= xCameraPos - 1.4f / (1. / zoom) && y <= yCameraPos + 1.8f / (1. / zoom) && y > yCameraPos - 1.8f / (1. / zoom))
+								test = true;
+							if (test) {
 
-					if (object && object->getDraw()) {
-						instanceDraw.insertElement(object->getID(), floorAt, object->getVAO(), object->getTexturePos(), object);
-					}
+								if (object && object->getDraw()) {
+									instanceDraw.insertElement(object->getID(), floorAt, object->getVAO(), object->getTexturePos(), object);
+								}
 
-					for (auto& i : t->getAllItems()) {
-						itemsToDraw.push_back(std::pair<int, DrawObject*>(floorAt, i->getObject()));
+								for (auto& i : t->getAllItems()) {
+									itemsToDraw.push_back(std::pair<int, DrawObject*>(floorAt, i->getObject()));
+								}
+							}
+						}
 					}
-				}
 			}
 		}
 	}

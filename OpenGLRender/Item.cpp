@@ -171,6 +171,16 @@ void Item::setDescription(string value) {
 	description = value;
 }
 
+void Item::setArticle(string value)
+{
+	article = value;
+}
+
+void Item::setName(string value)
+{
+	name = value;
+}
+
 string& Item::getName() {
 	return name;
 }

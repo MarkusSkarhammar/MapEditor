@@ -15,7 +15,7 @@ tile::tile( int x,  int y,  int z, int id) : x(x), y(y), z(z), id(id)
 		//ob = new DrawObject(x, y, id, vh->getVAO(), vh->getTextureID());
 }
 
-tile::tile(tile *& t)
+tile::tile(tile * t)
 {
 	*this = *t;
 	if (t->getObject()) {

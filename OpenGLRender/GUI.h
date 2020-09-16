@@ -157,7 +157,7 @@ public:
 	Vertices* getButton() { return button; };
 	Vertices* getHoverVertices() { return hover; };
 	Vertices* getClickedVertices() { return clicked; };
-	void setHover(Vertices* v) { hover = v; };
+	void setHoverVertices(Vertices* v) { hover = v; };
 	void setClicked(Vertices* v) { clicked = v; };
 	void setClickedOrder(int order) { if(clickedOrder == 0) clickedOrder = order; };
 	int& getClickedOrder() { return clickedOrder; };
