@@ -144,7 +144,7 @@ int screenHeightPixels(0);
 //Update map
 std::atomic<bool> updateMap(false);
 std::atomic<bool> updateWorld(false);
-std::atomic<bool> loadWorldLock(false);
+std::atomic<bool> changeWorldLock(false);
 
 // Draw items/tiles
 bool drawWalls(true);
@@ -221,7 +221,16 @@ std::set<ToDraw, CustomCompare > thingsToDraw;
 double xCoord(0.0), yCoord(0.0);
 
 // Current Map section
-int currentSection(0);
+int currentSection(-1);
+int middleSection(51);
+int northSection(1);
+int southSection(101);
+int westSection(50);
+int eastSection(52);
+
+// Width of the sections to be loaded(Think of the sections as a square)
+int sections_Loaded_Width(1);
+std::unordered_map<int, int> sectionsActive;
 
 // Map section side length
 const size_t SECTION_LENGTH = 50;
@@ -241,9 +250,10 @@ std::atomic<bool> copyBufferLock(false);
 
 
 // Tiles to be rendered
-World world("Chunje");
-World worldLoadTemp("Chunje");
-World worldTemp("Temp");
+World* world;
+World* worldLoadTemp;
+World* worldTemp;
+std::string mapFileName = "Chunje";
 
 // Render section below
 bool sectionBelow(false);

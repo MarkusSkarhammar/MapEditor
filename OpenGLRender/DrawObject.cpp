@@ -98,21 +98,24 @@ void checkAnimations()
 				section = currentSection;
 				break;
 			}
-			if (!skip)
-				for (auto& t : world.getFloor(floorAt).getSection(section)) {
-					auto object = t->getObject();
-					if (object) {
-						x = 0.0 + (width * object->getXPosition());
-						y = 0.0 - (height * object->getYPosition());
-						if (x < xCameraPos + 1.0f * zoom && x >= xCameraPos - 1.1f * zoom && y <= yCameraPos + 1.2f * zoom && y > yCameraPos - 1.0f * zoom && object->getDraw()) {
-							for (auto& i : t->getAllItems()) {
-								if (AnimationObject* check = dynamic_cast<AnimationObject*>(i->getObject())) {
-									check->checkAnimation();
+			if (!skip && !updateWorld) {
+				auto sectionPtr = world->getFloor(floorAt)->get_Section(section);
+				if(sectionPtr)
+					for (auto& t : sectionPtr->get_Tiles()) {
+						auto object = t->getObject();
+						if (object) {
+							x = 0.0 + (width * object->getXPosition());
+							y = 0.0 - (height * object->getYPosition());
+							if (x < xCameraPos + 1.0f * zoom && x >= xCameraPos - 1.1f * zoom && y <= yCameraPos + 1.2f * zoom && y > yCameraPos - 1.0f * zoom && object->getDraw()) {
+								for (auto& i : t->getAllItems()) {
+									if (AnimationObject* check = dynamic_cast<AnimationObject*>(i->getObject())) {
+										check->checkAnimation();
+									}
 								}
 							}
 						}
 					}
-				}
+			}
 		}
 	}
 	/*

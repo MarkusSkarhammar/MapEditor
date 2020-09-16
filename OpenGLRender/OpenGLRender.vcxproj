@@ -82,6 +82,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\external\FreeImage\x32;$(SolutionDir)\external\common;$(SolutionDir)\external\glm-0.9.9-a2;$(SolutionDir)\external\glfw-3.2.1\include\GLFW;$(SolutionDir)\external\glew-2.1.0\bin\Release\Win32;$(SolutionDir)\external\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)\external\pugixml;$(SolutionDir)\external\glfw-3.2.1.bin.WIN32\lib-vc2015;$(SolutionDir)\external\FreeImage\x32;$(SolutionDir)\external\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

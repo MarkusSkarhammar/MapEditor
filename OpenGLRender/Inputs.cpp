@@ -14,7 +14,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 			if ((xPos >= 0.0 && xPos <= screenWidth - 276) && (yPos >= 0.0 && yPos <= screenHeight - 30)) {
 				if (lControl && !itemInfoWindow) {
-					itemInfoTile = world.getFloor(z).getTile((x / 50 + (y / 50) * 40), x, y);
+					//itemInfoTile = world->getFloor(z)->getTile((x / world->get_Width_Section() + (y / world->get_Width_Section()) * world->get_Height_Section()), x, y);
 					if (itemInfoTile != nullptr) {
 						itemInfoWindow = true;
 						itemInfoCurrentPage = 0;
@@ -28,6 +28,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 						thingsToDraw.insert(ToDraw(-1 ,-1, -1, -1, -1));
 					}
 					else {
+						int section = 0;
 						int tempID(0);
 						if (eraseToggle)
 							tempID = -1;
@@ -43,7 +44,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 							tempID = selectedItemId.getIDRef();
 						for (int yPos = y - brush; yPos <= y + brush; yPos++) {
 							for (int xPos = x - brush; xPos <= x + brush; xPos++) {
-								thingsToDraw.insert(ToDraw(tempID, xPos, yPos, z, (xPos / 50 + (yPos / 50) * 40)));
+								section = (xPos / world->get_Width_Section_Tiles() + (yPos / world->get_Width_Section()) * world->get_Height_Section());
+								thingsToDraw.insert(ToDraw(tempID, xPos, yPos, z, section));
 							}
 						}
 					}
@@ -262,7 +264,7 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 
 	if (key == GLFW_KEY_S) {
 		if (lControl && action == GLFW_PRESS) {
-			//serializer.saveWorld(world);
+			serializer.saveWorld(world);
 		}
 		else if (action == GLFW_PRESS) {
 			if (!itemInfoWindow && !paletteModifier->getShow()) {
@@ -279,10 +281,9 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 	* Loading map hotkey
 	*/
 	if (key == GLFW_KEY_L && action == GLFW_PRESS) {
-		if (lControl && !loadWorldLock) {
-			loadWorldLock = true;
-			//worldLoadTemp.deleteWorld();
-			std::thread(&Serialize::loadWorld, serializer, std::ref(worldLoadTemp)).detach();
+		if (lControl && !changeWorldLock) {
+			changeWorldLock = true;
+			std::thread(&Serialize::loadWorld, serializer, std::ref(mapFileName)).detach();
 		}
 		//else
 			//once = false;
@@ -426,7 +427,31 @@ void handelHover() {
 		isWithinTileArea = 1;
 		x = /*(xCoord / imgScale)*/ ((xCameraPos - 1.0f) / (imgScale / (screenWidth / 2))) + (xPos / imgScale);
 		y = -((yCameraPos + 1.f) / (imgScale / (screenHeight / 2))) + (yPos / imgScale);
-		auto tile = world.getFloor(z).getTile(currentSection, x, y);
+		if (!updateWorld) {
+
+			auto tile = world->getFloor(z)->getTile(currentSection, x, y);
+
+			if (selectedItemId.getIDRef() == -1 && tile != nullptr) {
+				if (outLinedTile) outLinedTile->getObject()->setOutline(false);
+				if (outLinedTile) outLinedTile = tile;
+				Item* currentHoveredItem = tile->getTopItem();
+				if (currentHoveredItem) {
+					if (outlinedItem != nullptr && outlinedItem->getObject() != nullptr)
+						outlinedItem->setOutline(false);
+					currentHoveredItem->setOutline(true);
+					outlinedItem = currentHoveredItem;
+				}
+				else {
+					if (outlinedItem != nullptr && outlinedItem->getObject() != nullptr)
+						outlinedItem->setOutline(false);
+					if (outLinedTile) outLinedTile->getObject()->setOutline(true);
+				}
+			}
+			else {
+				if (outlinedItem) outlinedItem->setOutline(false);
+				outlinedItem = nullptr;
+			}
+		}
 		/*
 		if (selectedItemId.getIDRef() == -1 && tile != nullptr && tile->getAllItems().size() > 0) {
 			Item* currentHoveredItem = tile->getTopItem();
@@ -446,27 +471,6 @@ void handelHover() {
 		}
 		*/
 
-		if (selectedItemId.getIDRef() == -1 && tile != nullptr) {
-			if(outLinedTile) outLinedTile->getObject()->setOutline(false);
-			if (outLinedTile) outLinedTile = tile;
-			Item* currentHoveredItem = tile->getTopItem();
-			if (currentHoveredItem) {
-				if (outlinedItem != nullptr && outlinedItem->getObject() != nullptr)
-					outlinedItem->setOutline(false);
-				currentHoveredItem->setOutline(true);
-				outlinedItem = currentHoveredItem;
-			}
-			else {
-				if (outlinedItem != nullptr && outlinedItem->getObject() != nullptr)
-					outlinedItem->setOutline(false);
-				if (outLinedTile) outLinedTile->getObject()->setOutline(true);
-			}
-		}
-		else {
-			if (outlinedItem) outlinedItem->setOutline(false);
-			outlinedItem = nullptr;
-		}
-
 		if (itemInfoWindow) {
 			itemInfo->checkHover(xPos, yPos);
 		}
@@ -477,6 +481,7 @@ void handelHover() {
 			xText = "x: " + std::to_string(x), yText = "y: " + std::to_string(y), zText = "z: " + std::to_string(z);
 			if (eraseToggle || destroyToggle || destroyTileToggle || copyToggle || cutToggle || selectedItemId.getIDRef() != -1) {
 				if (lbutton_down) {
+					int section = 0;
 					int tempID(0);
 					if (eraseToggle)
 						tempID = -1;
@@ -486,7 +491,8 @@ void handelHover() {
 						tempID = selectedItemId.getIDRef();
 					for (int yPos = y - brush; yPos <= y + brush; yPos++) {
 						for (int xPos = x - brush; xPos <= x + brush; xPos++) {
-							thingsToDraw.insert(ToDraw(tempID, xPos, yPos, z, (xPos / 50 + (yPos / 50) * 40)));
+							section = (xPos / world->get_Width_Section_Tiles() + (yPos / world->get_Width_Section()) * world->get_Height_Section());
+							thingsToDraw.insert(ToDraw(tempID, xPos, yPos, z, section));
 						}
 					}
 				}

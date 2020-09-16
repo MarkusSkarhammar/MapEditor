@@ -2,9 +2,9 @@
 #include "Global.h"
 #include <utility>
 
-void insert_Things_From_ThingsToDraw(World& world)
+void insert_Things_From_ThingsToDraw(World* world)
 {
-	bool current(false), east(false), south(false), southEast(false), change = false;
+	bool current(false), east(false), south(false), southEast(false);
 	if ( (cutToggle || copyToggle) && copyBuffer.size() > 0) {
 		thingsToDraw.clear();
 		int smallestX = -1, differenceX = -1, xCopy = 0;
@@ -21,7 +21,7 @@ void insert_Things_From_ThingsToDraw(World& world)
 			i.second->setX(xCopy);
 			i.second->setY(yCopy);
 			i.second->setZ(z);
-			auto& section = world.getFloor(z).getSection((xCopy / 50 + (yCopy / 50) * 40));
+			auto& section = world->getFloor(z)->get_Section((xCopy / 50 + (yCopy / 50) * 40))->get_Tiles();
 			if (i.first.getSection() == currentSection) current = true;
 			if (i.first.getSection() == currentSection + 1) east = true;
 			if (i.first.getSection() == currentSection + 40) south = true;
@@ -48,17 +48,20 @@ void insert_Things_From_ThingsToDraw(World& world)
 			x = element.getX(); y = element.getY(); z = element.getZ();
 			Item* item = nullptr;
 			if (element.getId() >= 0) item = itemAtlas.getItem(element.getId());
-			auto& section = world.getFloor(z).getSection(element.getSection());
-			auto it = std::find_if(section.begin(), section.end(), [x, y](tile*& t) { return (t->getX() == x && t->getY() == y); });
-			if (it == section.end()) {
+			auto section = world->getFloor(z)->get_Section(element.getSection());
+			if (!section)
+				section = world->getFloor(z)->add_Section(new Section(element.getSection(), element.getZ()), element.getZ());
+			section->set_Changed(true);
+			auto& tiles = section->get_Tiles();
+			auto it = std::find_if(tiles.begin(), tiles.end(), [x, y](tile*& t) { return (t->getX() == x && t->getY() == y); });
+			if (it == tiles.end()) {
 				if (element.getId() / 1024 != 0) {
 					tile* t = new tile(x, y, z, -1);
 					t->setBlockPathfind(true);
 					Item* temp = nullptr;
 					getItemType(temp, element.getId());
 					t->insertItem(temp);
-					section.push_back(t);
-					change = true;
+					tiles.push_back(t);
 				}
 				else if (element.getId() >= 0) {
 					tile* t = new tile(x, y, z, element.getId());
@@ -66,14 +69,14 @@ void insert_Things_From_ThingsToDraw(World& world)
 					t->setName(item->getName());
 					t->setDescription(item->getDescription());
 					if (item->getBlockPathfind()) t->setBlockPathfind(true);
-					section.push_back(t);
+					tiles.push_back(t);
 				}
 			}
 			else {
 				if (element.getId() < 0) {
 					if (eraseToggle) {
 						delete (*it);
-						section.erase(it);
+						tiles.erase(it);
 					}
 					else if (destroyToggle) {
 						(*it)->clearItems();
@@ -89,7 +92,7 @@ void insert_Things_From_ThingsToDraw(World& world)
 					else if (cutToggle) {
 						copyBuffer.push_back(std::pair<ToDraw, tile*>(ToDraw((*it)->getID(), element.getX(), element.getY(), element.getZ(), element.getSection()), new tile((*it))));
 						delete (*it);
-						section.erase(it);
+						tiles.erase(it);
 					}
 					else if (copyToggle) {
 						copyBuffer.push_back(std::pair<ToDraw, tile*>(ToDraw((*it)->getID(), element.getX(), element.getY(), element.getZ(), element.getSection()), new tile((*it))));
@@ -100,7 +103,6 @@ void insert_Things_From_ThingsToDraw(World& world)
 					getItemType(temp, element.getId());
 					(*it)->insertItem(temp);
 					if (temp->getBlockPathfind()) (*it)->setBlockPathfind(true);
-					change = true;
 				}
 				else {
 					(*it)->setID(item->getID());
@@ -116,14 +118,13 @@ void insert_Things_From_ThingsToDraw(World& world)
 		}
 	}
 	if (copyToggle || cutToggle) copyBufferLock = false;
-	if (current && change) sortSection(currentSection);
+	if (current) sortSection(world, z, currentSection);
 	//if (east)sortSection(currentSection + 1);
 	//if (south)sortSection(currentSection + 40);
 	//if (southEast)sortSection(currentSection + 41);
 	
 	printf("done\n");
-	updateMapFloor = false;
-	updateMap = true;
+	updateWorld = true;
 }
 
 
@@ -242,16 +243,20 @@ void updateWhatToDrawOnFloor(size_t floor, bool tilesB, bool itemsB) {
 
 }
 
-void sortSection(size_t currentSection) {
-	auto& section = worldTemp.getFloor(z).getSection(currentSection);
-	std::sort(section.begin(), section.end(), [](tile*& lhs, tile*& rhs) {
+void sortSection(World* world, int floor, int section) {
+	auto& sectionRef = world->getFloor(floor)->get_Section(section)->get_Tiles();
+	std::sort(sectionRef.begin(), sectionRef.end(), [](tile* lhs, tile* rhs) {
+
+		if (lhs->getX() < rhs->getX()) 
+			return true;
+		if (rhs->getX() < lhs->getX()) 
+			return false;
 
 		// a=b for primary condition, go to secondary
-		if (lhs->getY() < rhs->getY()) return true;
-		if (rhs->getY() < lhs->getY()) return false;
-
-		if (lhs->getX() < rhs->getX()) return true;
-		if (rhs->getX() < lhs->getX()) return false;
+		if (lhs->getY() < rhs->getY()) 
+			return true;
+		if (rhs->getY() < lhs->getY()) 
+			return false;
 
 		return false;
 	});
@@ -261,10 +266,13 @@ bool checkAbove(int xCheck, int yCheck, int section, int zCheck) {
 	int from = zCheck, to = z;
 	if ((from != z) && ((from < 7 && z == 6) || (from >= 7 && z >= 7))) {
 		for (int floor = from + 1; floor <= to; floor++) {
-			auto& tiles = world.getFloor(floor).getSection(section);
-			auto it = std::find_if(tiles.begin(), tiles.end(), [xCheck, yCheck](tile*& t) { return (t->getX() == xCheck && t->getY() == yCheck && t->getID() != -1); });
-			if (it != tiles.end()) {
+			auto sectionPtr = world->getFloor(floor)->get_Section(section);
+			if (sectionPtr) {
+				auto& tiles = sectionPtr->get_Tiles();
+				auto it = std::find_if(tiles.begin(), tiles.end(), [xCheck, yCheck](tile*& t) { return (t->getX() == xCheck && t->getY() == yCheck && t->getID() != -1); });
+				if (it != tiles.end()) {
 					return true;
+				}
 			}
 		}
 	}
@@ -274,24 +282,33 @@ bool checkAbove(int xCheck, int yCheck, int section, int zCheck) {
 bool checkAbove(int xCheck, int yCheck, int section, int zCheck, bool bigItem) {
 	int tempX(0), tempY(0);
 	int from = zCheck, to = z;
+	Section* sectionPtr = nullptr;
 	if ((from != z) && ((from < 7 && z == 6) || (from >= 7 && z >= 7))) {
 		for (int floor = from + 1; floor <= to; floor++) {
-			auto& tiles = world.getFloor(floor).getSection((xCheck / 50 + (yCheck / 50) * 40));
-			auto it = std::find_if(tiles.begin(), tiles.end(), [xCheck, yCheck](tile*& t) { return (t->getX() == xCheck && t->getY() == yCheck && t->getID() != -1); });
-			if (it != tiles.end()) {
-				tempX = xCheck - 1; tempY = yCheck;
-				auto& tiles = world.getFloor(floor).getSection(currentSection);
-				auto it = std::find_if(tiles.begin(), tiles.end(), [tempX, tempY](tile*& t) { return (t->getX() == tempX && t->getY() == tempY && t->getID() != -1); });
+			if (sectionPtr = world->getFloor(floor)->get_Section((xCheck / 50 + (yCheck / 50) * 40))) {
+				auto& tiles = sectionPtr->get_Tiles();
+				auto it = std::find_if(tiles.begin(), tiles.end(), [xCheck, yCheck](tile*& t) { return (t->getX() == xCheck && t->getY() == yCheck && t->getID() != -1); });
 				if (it != tiles.end()) {
-					tempX = xCheck - 1; tempY = yCheck - 1;
-					auto& tiles = world.getFloor(floor).getSection(currentSection);
-					auto it = std::find_if(tiles.begin(), tiles.end(), [tempX, tempY](tile*& t) { return (t->getX() == tempX && t->getY() == tempY && t->getID() != -1); });
-					if (it != tiles.end()) {
-						tempX = xCheck; tempY = yCheck - 1;
-						auto& tiles = world.getFloor(floor).getSection(currentSection);
+					tempX = xCheck - 1; tempY = yCheck;
+					if (sectionPtr = world->getFloor(floor)->get_Section(currentSection)) {
+						auto& tiles = sectionPtr->get_Tiles();
 						auto it = std::find_if(tiles.begin(), tiles.end(), [tempX, tempY](tile*& t) { return (t->getX() == tempX && t->getY() == tempY && t->getID() != -1); });
 						if (it != tiles.end()) {
-							return true;
+							tempX = xCheck - 1; tempY = yCheck - 1;
+							if (sectionPtr = world->getFloor(floor)->get_Section(currentSection)) {
+								auto& tiles = sectionPtr->get_Tiles();
+								auto it = std::find_if(tiles.begin(), tiles.end(), [tempX, tempY](tile*& t) { return (t->getX() == tempX && t->getY() == tempY && t->getID() != -1); });
+								if (it != tiles.end()) {
+									tempX = xCheck; tempY = yCheck - 1;
+									if (sectionPtr = world->getFloor(floor)->get_Section(currentSection)) {
+										auto& tiles = sectionPtr->get_Tiles();
+										auto it = std::find_if(tiles.begin(), tiles.end(), [tempX, tempY](tile*& t) { return (t->getX() == tempX && t->getY() == tempY && t->getID() != -1); });
+										if (it != tiles.end()) {
+											return true;
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -345,22 +362,25 @@ void newFloor() {
 				section = currentSection;
 				break;
 			}
-			if (!skip)
-				for (auto& t : world.getFloor(floorAt).getSection(section)) {
-					auto object = t->getObject();
-					if (object) {
-						object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt));
-						for (auto& i : t->getAllItems()) {
-							auto object = i->getObject();
-							if (object) {
-								if (itemAtlas.checkIfDouleSize(i->getID()))
-									object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt, true));
-								else
-									object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt));
+			if (!skip) {
+				auto sectionPtr = world->getFloor(floorAt)->get_Section(section);
+				if (sectionPtr)
+					for (auto& t : sectionPtr->get_Tiles()) {
+						auto object = t->getObject();
+						if (object) {
+							object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt));
+							for (auto& i : t->getAllItems()) {
+								auto object = i->getObject();
+								if (object) {
+									if (itemAtlas.checkIfDouleSize(i->getID()))
+										object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt, true));
+									else
+										object->setDraw(!checkAbove(object->getXPosition(), object->getYPosition(), section, floorAt));
+								}
 							}
 						}
 					}
-				}
+			}
 		}
 	}
 	/*
@@ -382,4 +402,112 @@ void newFloor() {
 	}
 	*/
 	updateMapFloor = false;
+}
+
+std::unordered_map<int, int> get_Currently_Rendered_Sections()
+{
+	std::unordered_map<int, int> sections;
+
+	int startPos = currentSection, value = 0;
+	for (int y = 0; y < sections_Loaded_Width + 1; y++) {
+		for (int x = 0; x < sections_Loaded_Width + 1; x++) {
+			sections[value = ((int)((y * world->get_Height_Section() + startPos) / world->get_Height_Section()) * world->get_Width_Section()) + ((startPos + x) % world->get_Width_Section())] = value;
+		}
+	}
+
+	return sections;
+}
+
+std::unordered_map<int, int> get_Currently_Loaded_Sections()
+{
+	std::unordered_map<int, int> sections;
+
+	int startPos = currentSection - world->get_Width_Section() - 1, value = 0;
+
+	while (startPos < 0) {
+		if (startPos == -1)
+			startPos = 0;
+		else {
+			startPos += world->get_Width_Section();
+			if (startPos < 0)
+				startPos += -startPos % 50;
+		}
+	}
+
+	if ((double)startPos / world->get_Width_Section() == 0.98)
+		startPos++;
+
+	for (int y = 0; y < 3; y++) {
+		for (int x = 0; x < 3; x++) {
+			sections[value =  startPos + y * world->get_Width_Section() + x] = value;
+		}
+	}
+
+	return sections;
+}
+
+void check_If_Load_New_Sections()
+{
+	bool change = false;
+	int x = ((xCameraPos - 1.0f) / (imgScale / (screenWidth / 2)));
+	int y = -((yCameraPos + 1.f) / (imgScale / (screenHeight / 2)));
+	int xFrom = 0, xTo = 0, yFrom = 0, yTo = 0, width = world->get_Width_Section(), widthSection = world->get_Width_Section_Tiles();
+
+	xFrom = westSection % width * widthSection + (int)(widthSection * 0.5); xTo = eastSection % width * widthSection + (int)(widthSection * 0.5);
+	yFrom = northSection / width * widthSection + (int)(widthSection * 0.5); yTo = southSection / width * widthSection + (int)(widthSection * 0.5);
+
+	if (westSection % width != 0 && x <= xFrom)
+		change = true;
+	else if (eastSection % width != width - 1 && x >= xTo)
+		change = true;
+	else if (northSection / width != 0 && y <= yFrom)
+		change = true;
+	else if (southSection / width != width && y >= yTo)
+		change = true;
+
+	if (change && !updateWorld) {
+		changeWorldLock = true;
+		__int64 then = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		serializer.saveWorld(world);
+		std::thread(&Serialize::loadWorld, serializer, std::ref(world->getName())).detach();
+		//serializer.loadWorld(world->getName());
+
+		int pos = 0;
+		std::vector<int> sections;
+		auto sectionsMap = get_Currently_Loaded_Sections();
+		for (auto& i : sectionsMap) {
+			sections.push_back(i.first);
+		}
+		std::sort(sections.begin(), sections.end());
+		middleSection = sections[4]; northSection = sections[1]; westSection = sections[3]; eastSection = sections[5]; southSection = sections[7];
+
+		__int64 now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		printf("The time: %i ms\n", int(now - then));
+	}
+}
+
+void World::insert_Sections_From_Other(World* other, int floor, std::unordered_map<int, int>& list)
+{
+	auto floorPtr = getFloor(z);
+	auto floorPtrOther = other->getFloor(z);
+	for (auto it = list.begin(); it != list.end(); it++) {
+		auto sectionOther = floorPtrOther->get_Section((*it).first);
+		if (sectionOther)
+			floorPtr->set_Section(sectionOther, (*it).first);
+	}
+}
+
+int World::get_Tiles_Amount()
+{
+	return 0;
+}
+
+std::unordered_map<int, int> World::check_If_Updated_Sections(int floor)
+{
+	std::unordered_map<int, int> map;
+	for (auto section : floors[floor]->get_Sections()) {
+		if (section->get_Changed())
+			map[section->get_ID()] = section->get_ID();
+	}
+	return map;
 }
