@@ -10,16 +10,17 @@
 	uniform int outline;
 	uniform int GUI;
 	uniform float ambientStrength;
+	precision mediump float;
 
 	layout (std140) uniform textStuff
 	{
 		vec2 textOffset;
 	};
 
+
     void main()
     {
-		
-        vec4 texel = texture2DArray(textureArray, vec3(uv.x + textOffset.x,uv.y + textOffset.y, layer));
+        vec4 texel = texture2DArray(textureArray, vec3(uv.x + textOffset.x, uv.y + textOffset.y, layer));
 		vec4 fragRGBA = texel.rgba;
 		if(outline != 0){
 			if(outline == 1){ // Outline
@@ -49,3 +50,4 @@
 			}
 		}
     }
+

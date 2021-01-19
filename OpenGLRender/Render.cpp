@@ -67,15 +67,13 @@ void render(game_state const& interpolated_state, GLFWwindow* window) {
 	glUseProgram(program);
 	//glBindTexture(GL_TEXTURE_2D, fbo_palette_modifier_left_texture);
 
-	for (auto& objects : objects) {
-		currentName = objects->getName();
-		if (!((currentName.compare("GUI_LeftPanel_DropDown_") == 0 || currentName.compare("GUI_LeftPanel_DropDown_Text_") == 0) && !clickPaletteDropDown)) {
-			for (auto& object : objects->getObjects()) {
-				object->renderGUI(currentName);
-			}
-		}
-	}
 
+	for (auto& panel : GUIPanels) {
+		if(panel->getShow())
+			for (auto& obj : panel->get_Draw_Objects()->getObjects()) {
+				obj->renderGUI(panel->get_Name());
+			}
+	}
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();
@@ -110,11 +108,11 @@ void prepareDraw() {
 							test = false;
 							x = 0.0 + (width * t->getX());
 							y = 0.0 - (height * t->getY());
-							if (zoom == 1 && x < xCameraPos + 1.0f && x >= xCameraPos - 1.1f && y <= yCameraPos + 1.3f && y > yCameraPos - 1.1f)
+							if (zoomWorld == 1 && x < xCameraPos + 1.0f && x >= xCameraPos - 1.1f && y <= yCameraPos + 1.3f && y > yCameraPos - 1.1f)
 								test = true;
-							else if (zoom > 1.0 && x < xCameraPos + 1.0f / (1. / zoom) && x >= xCameraPos - 1.2f / (1. / zoom) && y <= yCameraPos + 1.2f / (1. / zoom) && y >(yCameraPos - 1.2f) / (1. / zoom)) // && y <= (yCameraPos + .5f) / (1. / zoom) && y > (yCameraPos - 1.2f) / (1 - 1. / zoom)
+							else if (zoomWorld > 1.0 && x < xCameraPos + 1.0f / (1. / zoomWorld) && x >= xCameraPos - 1.2f / (1. / zoomWorld) && y <= yCameraPos + 1.2f / (1. / zoomWorld) && y >(yCameraPos - 1.2f) / (1. / zoomWorld)) // && y <= (yCameraPos + .5f) / (1. / zoom) && y > (yCameraPos - 1.2f) / (1 - 1. / zoom)
 								test = true;
-							else if (zoom < 1.0 && x < xCameraPos + 1.0f / (1. / zoom) && x >= xCameraPos - 1.4f / (1. / zoom) && y <= yCameraPos + 1.8f / (1. / zoom) && y > yCameraPos - 1.8f / (1. / zoom))
+							else if (zoomWorld < 1.0 && x < xCameraPos + 1.0f / (1. / zoomWorld) && x >= xCameraPos - 1.4f / (1. / zoomWorld) && y <= yCameraPos + 1.8f / (1. / zoomWorld) && y > yCameraPos - 1.8f / (1. / zoomWorld))
 								test = true;
 							if (test) {
 
@@ -166,6 +164,7 @@ void Instancing::clearElements()
 
 void Instancing::drawInstancing(int floor)
 {
+	
 	glUniform1i(instancing, 1);
 	float x = 0.0;
 	float y = 0.0;
@@ -181,7 +180,7 @@ void Instancing::drawInstancing(int floor)
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
 			glVertexAttribDivisor(2, 1);
 			
-
+			
 			x = 0.0;
 			y = 0.0;
 			Model = glm::mat4(1.0f);
@@ -190,12 +189,17 @@ void Instancing::drawInstancing(int floor)
 
 			// Handle scaling
 			Model = glm::scale(Model, glm::vec3(1.0, 1.0, 1.0));
-
+			
 			//glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(Model));
 			glBindBuffer(GL_UNIFORM_BUFFER, UBOCamera);
 			glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(Model));
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 			glUniform1i(gLayer, e->getTextPos());
+
+			glm::vec2 offset = glm::vec2(0, 0);
+			glBindBuffer(GL_UNIFORM_BUFFER, UBOTextureStuff);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(offset));
+			glBindBuffer(GL_UNIFORM_BUFFER, 1);
 
 			glBindVertexArray(e->getVAO());
 			glDrawArraysInstanced(GL_TRIANGLES, 0 + (4 * e->getID() % 1024), 3, ob.size());
@@ -204,6 +208,7 @@ void Instancing::drawInstancing(int floor)
 
 	}
 	glUniform1i(instancing, 0);
+	
 }
 
 bool Instancing::doInstanceDrawing(int floor)

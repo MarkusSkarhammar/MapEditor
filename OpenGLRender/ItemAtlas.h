@@ -53,5 +53,7 @@ private:
 	pugi::xml_document doc;
 	std::vector<std::pair<Item*, Object*>> items;
 	std::vector<AnimationInfo> animations;
+
+	void clear();
 };
 #endif

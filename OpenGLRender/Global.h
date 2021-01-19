@@ -28,7 +28,8 @@ using namespace glm;
 //#include <utility>
 
 //STATIC VALUES
-static int MOUSE_RIGHT_CLICK = 2, MOUSE_LEFT_CLICK = 1;
+static int MOUSE_RIGHT_CLICK = 1, MOUSE_LEFT_CLICK = 0;
+static int MOUSE_RELEASE = 0, MOUSE_PRESS = 1;
 
 // MVP
 extern glm::mat4 Projection;
@@ -119,14 +120,14 @@ struct game_state {
 extern game_state current_state;
 extern game_state previous_state;
 
+// close game
+extern bool quit_game;
+
 struct SPosition
 {
 	float x, y;  //Position
 	float u, v;  //Uv
 };
-
-// Store all the objects
-extern std::vector<DrawObjects*> objects;
 
 //Store Text To Rend objects
 extern RendToTextObjLibrary rendToTextLibrary;
@@ -157,16 +158,16 @@ extern const size_t SIZE_DROP_DOWN_TEXT;
 // For drawing
 extern float widthStart;
 extern float heightStart;
-extern float width;
-extern float height;
+extern double width;
+extern double height;
 extern float textWidth;
 extern float textHeight;
 extern float textHeightStart;
 extern float textWidthStart;
 
 // Window size
-extern float screenWidth;
-extern float screenHeight;
+extern double screenWidth;
+extern double screenHeight;
 extern int screenWidthPixels;
 extern int screenHeightPixels;
 
@@ -370,6 +371,7 @@ extern Serialize serializer;
 extern GUIPanel* leftPanel;
 
 // left_panel tiles
+extern bool leftPanelUpdate;
 extern int left_panel_page;
 extern int left_panel_maxPage;
 extern double left_panel_Offset;
@@ -467,10 +469,36 @@ extern std::vector<PaletteChange> palette_Modifier_Redo;
 //			DONE Palette modifier window
 //-----------------------------------
 
+//-----------------------------------
+//			Vertices creation window
+//-----------------------------------
+
+// GUIPanel
+extern GUIPanel* verticesCreation;
+
+
+// Update bool
+extern bool verticesCreationUpdateSelectionArea;
+extern double verticesCreationSelectionAreaOffset;
+extern double verticesCreationSelectionAreaOffsetMax;
+extern int verticesCreationSelectionAreaPage;
+extern double verticesCreationSelectionAreaPageSize;
+extern bool verticesCreationSelectionAreaPageChange;
+extern bool verticesCreationFirstShow;
+
+extern Object* selectedObject;
+extern double verticesCreationPreviewZoom;
+extern double verticesCreationPreviewClickX;
+extern double verticesCreationPreviewClickY;
+
+//-----------------------------------
+//			DONE Palette modifier window
+//-----------------------------------
+
 extern size_t size;
 
 // Zoom level
-extern double zoom;
+extern double zoomWorld;
 extern bool haveZoomed;
 
 extern float FOV;
@@ -622,5 +650,31 @@ static int Get_Text_Size(std::string text, std::string textType) {
 	}
 	return size;
 }
+
+static int Get_Text_Pos_Until_Length(std::string text, std::string textType, int length) {
+	char character = 0;
+	int size = 0;
+	int pos = 0;
+	while (size < length) {
+		character = text[pos];
+		auto& letterInformation = letterLibrary.getLetterInformation(std::string(1, character) + textType);
+		if (letterInformation.size() > 0) {
+			size += letterInformation[4] - letterInformation[3] + 1;
+		}
+		pos++;
+	}
+	return pos-3;
+}
+
+static ObjectLibrary* Get_Object_Library(int VAO, int VBO) {
+	auto it = std::find_if(objLibraries.begin(), objLibraries.end(), [VAO, VBO](ObjectLibrary*& lib) {
+		return (lib->getVAO() == VAO && lib->getVBO() == VBO);
+		});
+	if (it != objLibraries.end())
+		return (*it);
+	else {
+		return rendToTextLibrary.get_Specific_Library(VAO, VBO);
+	}
+};
 
 #endif // !GLOBAL_VARIABLES_H

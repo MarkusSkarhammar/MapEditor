@@ -13,7 +13,7 @@ public:
 	Vertices(std::string name, float xStartText, float yStartText, float widthText, float heightText, float width, float height, std::vector<float>& v, std::vector<float>& vt, int textPos, GLuint VAO, GLuint VBO, int ID, bool doubleSize = false);
 	Vertices(Vertices* other, std::vector<float>& v, std::vector<float>& vt, int VAO, int VBO);
 	Vertices(Vertices* other, float textureSizeWidth, float textureSizeHeight, std::vector<float>& v, std::vector<float>& vt, int VAO, int VBO);
-	Vertices(std::string name, float width, float height, Vertices* other);
+	Vertices(std::string name, float width, float height, Vertices* other, bool rtt = false);
 	Vertices(Vertices* other);
 	std::string getName() { return name; };
 	int getID() { return ID; };
@@ -43,6 +43,7 @@ public:
 	std::vector<float>& getVT() { return vt; };
 	void copyAnotherVerticesText(Vertices* other);
 	void changeSize(int width, int height);
+	void change_All(float xStartText, float yStartText, float widthText, float heightText, float width, float height);
 private:
 	std::string name;
 	int ID{ 0 }, textPos{ 0 };

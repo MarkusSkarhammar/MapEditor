@@ -86,14 +86,14 @@ void palette_Modifier_Check_Clicked_Buttons(Palette& p, std::unordered_map<int, 
 * The lambda that is to be triggered on a mouseclick on the left palette modifier.
 *
 */
-std::function<void(int& mouseState)> get_Palette_Modifier_Left_Mouse_Lambda()
+std::function<void(int& mousebutton, int& mouseState)> get_Palette_Modifier_Left_Mouse_Lambda()
 {
-	auto lambda = [](int& mouseState) { // Lambda for when the ToggleButtonGroup is clicked.
-		if (mouseState == MOUSE_RIGHT_CLICK) { // Handle right clicks
+	auto lambda = [](int& mousebutton, int& mouseState) { // Lambda for when the ToggleButtonGroup is clicked.
+		if (mousebutton == MOUSE_RIGHT_CLICK && mouseState == MOUSE_RELEASE) { // Handle right clicks
 			reset_Left_Palette_Modifier_RTT();
 			reset_Right_Palette_Modifier_RTT();
 		}
-		else if (mouseState == MOUSE_LEFT_CLICK && palette_Modifier_Left_Selected_Palette.size() != 0) { // Handle left clicks
+		else if (mousebutton == MOUSE_LEFT_CLICK && mouseState == MOUSE_PRESS && palette_Modifier_Left_Selected_Palette.size() != 0) { // Handle left clicks
 			auto preview = dynamic_cast<GUIGroup*>(paletteModifier->getElementByName("rightSidePreview")); // Grab the preview element.
 			auto previewHover = dynamic_cast<GUIGroup*>(paletteModifier->getElementByName("rightSidePreviewHover")); // Grab the previewHover element.
 			if (ToggleButtonGroup* tbg = dynamic_cast<ToggleButtonGroup*>(paletteModifier->getElementByName("paletteToggleGroupLeft"))) {
@@ -117,7 +117,7 @@ std::function<void(int& mouseState)> get_Palette_Modifier_Left_Mouse_Lambda()
 
 					if (palette_Modifier_Left_Shift_Bool) {
 						if (tb && !tb->getClicked())
-							tb->doToggle(MOUSE_LEFT_CLICK);
+							tb->doToggle(MOUSE_LEFT_CLICK, MOUSE_RELEASE);
 						else if (tb && !tb->getToggle() && tb->getClicked()) {
 							tb->setPressed(true);
 						}
@@ -188,7 +188,7 @@ std::function<void(int& mouseState)> get_Palette_Modifier_Left_Mouse_Lambda()
 						auto itemObj = itemAtlas.getItemObject(tb.second);
 						if (itemObj) {
 							auto v = rtt->getVerticesByName(itemObj->getName());
-							std::vector<GUIElement*> previewTemp = { new GUIElement("", 0, 0, 0, 0, 63, 63), new GUIElement("", 0, 0, 0, 0, 63, 63) };
+							std::vector<GUIElement*> previewTemp = { new GUIElement("", 0, 0, 63, 63), new GUIElement("", 0, 0, 63, 63) };
 							previewTemp.at(0)->addMiscellaneousID("itemID", tb.second);
 							previewTemp.at(0)->setV(v);
 							if (v->isDoubleSize()) {
@@ -215,14 +215,14 @@ std::function<void(int& mouseState)> get_Palette_Modifier_Left_Mouse_Lambda()
 *
 *@return the generated lambda function.
 */
-std::function<void(int& mouseState)> get_Palette_Modifier_Right_Mouse_Lambda()
+std::function<void(int& mousebutton, int& mouseState)> get_Palette_Modifier_Right_Mouse_Lambda()
 {
-	auto lamda = [](int& mouseState) {
-		if (mouseState == MOUSE_RIGHT_CLICK) {
+	auto lamda = [](int& mousebutton, int& mouseState) {
+		if (mousebutton == MOUSE_RIGHT_CLICK && mouseState == MOUSE_RELEASE) {
 			reset_Left_Palette_Modifier_RTT();
 			reset_Right_Palette_Modifier_RTT();
 		}
-		else if (mouseState == MOUSE_LEFT_CLICK && !lControl) {
+		else if (mousebutton == MOUSE_LEFT_CLICK && mouseState == MOUSE_PRESS && !lControl) {
 			auto preview = dynamic_cast<GUIGroup*>(paletteModifier->getElementByName("rightSidePreview"));
 			auto previewHover = dynamic_cast<GUIGroup*>(paletteModifier->getElementByName("rightSidePreviewHover"));
 			if (preview->getAmount() > 0) {
@@ -445,7 +445,7 @@ std::function<void(int& mouseState)> get_Palette_Modifier_Right_Mouse_Lambda()
 							if (palette_Modifier_Right_Shift_Bool) {
 								auto tb = tbg->getCurrentlyPressed();
 								if (tb && !tb->getClicked())
-									tb->doToggle(MOUSE_LEFT_CLICK);
+									tb->doToggle(MOUSE_LEFT_CLICK, MOUSE_RELEASE);
 								else if (tb && !tb->getToggle() && tb->getClicked()) {
 									tb->setPressed(true);
 								}
@@ -588,14 +588,14 @@ std::function<void(double& xPos, double& yPos)> get_Hover_Lambda_Palette_Modifie
 		bool change = false;
 		auto preview = dynamic_cast<GUIGroup*>(paletteModifier->getElementByName("rightSidePreview"));
 		auto previewHover = dynamic_cast<GUIGroup*>(paletteModifier->getElementByName("rightSidePreviewHover"));
-		int xStart = (int)((x / 64)) * 64, yStart = (int)(y / 64) * 64;
+		int xStart = (int)((x / 64)) * 64 - (4 * 64), yStart = (int)(y / 64) * 64;
 		double xNormal = xPos + tbg->getXStart() - tbg->getRendToTextOffsetX(), yNormal = yPos + tbg->getYStart() - tbg->getRendToTextOffsetY();
 		bool testBounds = (xPos >= tbg->getXStart() && xPos < (tbg->getXStart() + tbg->getWidth())) && (yPos >= tbg->getYStart() && yPos < (tbg->getYStart() + tbg->getHeight()));
 		if (testBounds) {
-			if ((lControl || lShift) && !tbg->getDoNotResetAfterToggle())
-				tbg->setDoNotResetAfterToggle(true);
-			else if (!(lControl || lShift) && tbg->getDoNotResetAfterToggle())
-				tbg->setDoNotResetAfterToggle(false);
+			if ((lControl || lShift) && !tbg->getResetAfterToggle())
+				tbg->setResetAfterToggle(true);
+			else if (!(lControl || lShift) && tbg->getResetAfterToggle())
+				tbg->setResetAfterToggle(false);
 		}
 		if (preview->getAmount() > 0 && palette_Modifier_Right_Selected_Palette != "") { // Make sure that atleast one item has been selected from the left side and make sure that a palette for the right side has benn selected.
 			if (testBounds) { // Make sure that the cursor is within the bounds of the area
@@ -604,12 +604,16 @@ std::function<void(double& xPos, double& yPos)> get_Hover_Lambda_Palette_Modifie
 					auto previewHoverItem = previewHover->getElements().at(0);
 					if ((!xStart >= 192 && !previewItem->getV()->isDoubleSize()) || (xStart < 192 && previewItem->getV()->isDoubleSize()) || !previewItem->getV()->isDoubleSize()) { // Check to make sure that a doubleSized item won't be drawn outside of area
 						int xTile = xStart / 64, yTile = yStart / 64;
-						previewItem->setXStartText(64 * 4 + xStart);
-						previewItem->setYStartText(yStart);
+						//previewItem->setXStartText(64 * 4 + xStart);
+						//previewItem->setYStartText(yStart);
+						previewItem->setStartX(64 * 4 + xStart);
+						previewItem->setStartY(yStart);
 						previewItem->addMiscellaneousID("position", (yTile - 1 + palette_Modifier_Right_page * (palette_Modifier_Right_Offset_Max / 64) - palette_Modifier_Right_page) * 4 + xTile, 1);
-						previewHoverItem->setXStartText(64 * 4 + xStart);
-						previewHoverItem->setYStartText(yStart);
-						tbg->resetAll();
+						//previewHoverItem->setXStartText(64 * 4 + xStart);
+						//previewHoverItem->setYStartText(yStart);
+						previewHoverItem->setStartX(64 * 4 + xStart);
+						previewHoverItem->setStartY(yStart);
+						//tbg->resetAll();
 						change = true;
 						if (!preview->getShow()) {
 							preview->toggleShow();
@@ -670,11 +674,15 @@ std::function<void(double& xPos, double& yPos)> get_Hover_Lambda_Palette_Modifie
 								else if (xTile != 0 && xTile < tempStartX2 && yTile == tempY)
 									xTile = tempStartX2;
 							}
-							previewItem->setXStartText(64 * 4 + xTile * 64);
-							previewItem->setYStartText(yTile * 64);
+							//previewItem->setXStartText(64 * 4 + xTile * 64);
+							//previewItem->setYStartText(yTile * 64);
+							previewItem->setStartX(64 * 4 + xTile * 64);
+							previewItem->setStartY(yTile * 64);
 							previewItem->addMiscellaneousID("position", (yTile - 1 + palette_Modifier_Right_page * (palette_Modifier_Right_Offset_Max / 64) - palette_Modifier_Right_page) * 4 + xTile, 1);
-							previewHoverItem->setXStartText(64 * 4 + xTile * 64);
-							previewHoverItem->setYStartText(yTile * 64);
+							//previewHoverItem->setXStartText(64 * 4 + xTile * 64);
+							//previewHoverItem->setYStartText(yTile * 64);
+							previewHoverItem->setStartX(64 * 4 + xTile * 64);
+							previewHoverItem->setStartY(yTile * 64);
 							if (++xTile > 3) {
 								xTile = 0;
 								yTile++;
@@ -727,11 +735,15 @@ std::function<void(double& xPos, double& yPos)> get_Hover_Lambda_Palette_Modifie
 								}
 							}
 							tempY = yTile + 1;
-							previewItem->setXStartText(64 * 4 + xTile * 64);
-							previewItem->setYStartText(yTile * 64);
+							//previewItem->setXStartText(64 * 4 + xTile * 64);
+							//previewItem->setYStartText(yTile * 64);
+							previewItem->setStartX(64 * 4 + xTile * 64);
+							previewItem->setStartY(yTile * 64);
 							previewItem->addMiscellaneousID("position", (yTile - 1 + palette_Modifier_Right_page * (palette_Modifier_Right_Offset_Max / 64) - palette_Modifier_Right_page) * 4 + xTile, 1);
-							previewHoverItem->setXStartText(64 * 4 + xTile * 64);
-							previewHoverItem->setYStartText(yTile * 64);
+							//previewHoverItem->setXStartText(64 * 4 + xTile * 64);
+							//previewHoverItem->setYStartText(yTile * 64);
+							previewHoverItem->setStartX(64 * 4 + xTile * 64);
+							previewHoverItem->setStartY(yTile * 64);
 							if ((xTile += 2) > 3) {
 								xTile = 0;
 								yTile += 2;
@@ -866,7 +878,7 @@ void prepare_Palette_Modifier_Rend_To_Text(GUIPanel* panel, RendToText* rtt, GUI
 			for (int x = 0; x < 4; x++) {
 				ToggleButton* tb;
 				if (tbgE->getName() == "paletteToggleGroupRight") {
-					tb = new ToggleButton("toggle_" + std::to_string(count), nullptr, yellowSmallSquare, redSmallSquare, (x + 4) * 64, (y) * 64, x * 64, y * 64, 63, 63, [](int& mouseState) {
+					tb = new ToggleButton("toggle_" + std::to_string(count), nullptr, yellowSmallSquare, redSmallSquare, (x + 4) * 64, (y) * 64, 63, 63, [](int& mousebutton, int& mouseState) {
 						generate_Palette_Modifier_Rend_To_Text();
 						},
 						[](double& x, double& y) {
@@ -874,7 +886,7 @@ void prepare_Palette_Modifier_Rend_To_Text(GUIPanel* panel, RendToText* rtt, GUI
 						});
 				}
 				else {
-					tb = new ToggleButton("toggle_" + std::to_string(count), nullptr, yellowSmallSquare, redSmallSquare, x * 64, (y) * 64, x * 64, y * 64, 63, 63, [](int& mouseState) {
+					tb = new ToggleButton("toggle_" + std::to_string(count), nullptr, yellowSmallSquare, redSmallSquare, x * 64, y * 64, 63, 63, [](int& mousebutton, int& mouseState) {
 						generate_Palette_Modifier_Rend_To_Text();
 						},
 						[](double& x, double& y) {
@@ -910,8 +922,8 @@ void prepare_Palette_Modifier_Rend_To_Text(GUIPanel* panel, RendToText* rtt, GUI
 					auto obj = itemAtlas.getItemObject(i.getIDRef());
 					if (obj) {
 						toggle->setButton(rtt->getVerticesByName(obj->getName()));
-						toggle->setHover(rtt->getVerticesByName("yellowSquareBig"));
-						toggle->setClicked(rtt->getVerticesByName("redSquareBig"));
+						toggle->setHoverVertices(rtt->getVerticesByName("yellowSquareBig"));
+						toggle->set_Clicked_Vertices(rtt->getVerticesByName("redSquareBig"));
 						toggle->setWidth(127);
 						toggle->setHeight(127);
 						//toggle->addToStartXText(64);
@@ -952,24 +964,338 @@ void generate_Palette_Modifier_Rend_To_Text() {
 
 	DrawObjects* temp = new DrawObjects("temp");
 	auto preview = paletteModifier->getElementByName("rightSidePreview");
-	paletteModifier->getElementByName("emptyTiles_right_group")->createObjectNoRestriction(temp);
-	paletteModifier->getElementByName("emptyTiles_left_group")->createObjectNoRestriction(temp);
+	paletteModifier->getElementByName("emptyTiles_right_group")->get_Draw_Object(temp);
+	paletteModifier->getElementByName("emptyTiles_left_group")->get_Draw_Object(temp);
 	if (palette_Modifier_Right_Selected_Palette != "") {
-		paletteModifier->getElementByName("paletteToggleGroupRight")->createObjectNoRestriction(temp);
+		paletteModifier->getElementByName("paletteToggleGroupRight")->get_Draw_Object(temp);
 		if (preview->getShow()) {
-			preview->createObjectNoRestriction(temp);
-			paletteModifier->getElementByName("rightSidePreviewHover")->createObjectNoRestriction(temp);
+			preview->get_Draw_Object(temp);
+			paletteModifier->getElementByName("rightSidePreviewHover")->get_Draw_Object(temp);
 		}
 	}
-	if (palette_Modifier_Left_Selected_Palette != "") paletteModifier->getElementByName("paletteToggleGroupLeft")->createObjectNoRestriction(temp);
+	if (palette_Modifier_Left_Selected_Palette != "") paletteModifier->getElementByName("paletteToggleGroupLeft")->get_Draw_Object(temp);
 	double yPos = 0.0;
 	for (auto& o : temp->getObjects()) {
 		o->renderGUI("");
 	}
 
-	temp->clearObjects();
+	delete temp;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
 	glViewport(0, 0, screenWidth, screenHeight);
 	glDisable(GL_DEPTH_TEST);
+}
+void generate_Vertices_Creation_Rend_To_Text()
+{
+	
+	// first pass
+	RendToText* rtt = findByName(renderToTextureContainer, "verticesCreation");
+	glBindFramebuffer(GL_FRAMEBUFFER, rtt->getFboID());
+	glViewport(0, 0, rtt->getWidth(), rtt->getHeight());
+	glClearColor(122 / 255.f, 113 / 255.f, 113 / 255.f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
+	glEnable(GL_DEPTH_TEST);
+
+
+	DrawObjects* temp = new DrawObjects("temp");
+	verticesCreation->getElementByName("selectionAreaGroup")->get_Draw_Object(temp, false);
+	verticesCreation->getElementByName("selectionAreaGroup")->get_Draw_Object_Text(temp, false);
+	for (auto& o : temp->getObjects()) {
+		o->renderGUI("");
+	}
+
+	delete temp;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
+	glViewport(0, 0, screenWidth, screenHeight);
+	glDisable(GL_DEPTH_TEST);
+	
+}
+void setup_Vertices_Generation_Selection_Area()
+{
+	auto groupPtr = verticesCreation->getElementByName("selectionAreaGroup");
+	
+	if(groupPtr)
+		if (GUIGroup* group = dynamic_cast<GUIGroup*>(groupPtr)) {
+			group->clear();
+			int xStart = 0, yStart = 0, height = 0;
+			auto rtt = findByName(renderToTextureContainer, "verticesCreation");
+			auto verticesCreatiobSelectionDropDown = rtt->getVerticesByName("verticesCreationVerticesSelectionDropdown"),
+				verticesCreatiobSelectionDropDownHover = rtt->getVerticesByName("verticesCreationVerticesSelectionDropdownHover"),
+				verticesCreatiobSelectionDropDownClicked = rtt->getVerticesByName("verticesCreationVerticesSelectionDropdownClicked"),
+				verticesCreationVerticesSelectionDropdownChildMiddle = rtt->getVerticesByName("verticesCreationVerticesSelectionDropdownChildMiddle"),
+				verticesCreationVerticesSelectionDropdownChildMiddleHover = rtt->getVerticesByName("verticesCreationVerticesSelectionDropdownChildMiddleHover"),
+				verticesCreationVerticesSelectionDropdownChildMiddleClicked = rtt->getVerticesByName("verticesCreationVerticesSelectionDropdownChildMiddleClicked"),
+				verticesCreationVerticesSelectionDropdownChildBottom = rtt->getVerticesByName("verticesCreationVerticesSelectionDropdownChildBottom"),
+				verticesCreationVerticesSelectionDropdownChildBottomHover = rtt->getVerticesByName("verticesCreationVerticesSelectionDropdownChildBottomHover"),
+				verticesCreationVerticesSelectionDropdownChildBottomClicked = rtt->getVerticesByName("verticesCreationVerticesSelectionDropdownChildBottomClicked");
+
+
+			for (auto obL : objLibraries) {
+				height = 17;
+				auto dd = new DropDown(obL->getName(),
+					verticesCreatiobSelectionDropDown, verticesCreatiobSelectionDropDownHover, verticesCreatiobSelectionDropDownClicked,
+					verticesCreationVerticesSelectionDropdownChildMiddle, verticesCreationVerticesSelectionDropdownChildMiddleHover, verticesCreationVerticesSelectionDropdownChildMiddleClicked,
+					verticesCreationVerticesSelectionDropdownChildBottom, verticesCreationVerticesSelectionDropdownChildBottomHover, verticesCreationVerticesSelectionDropdownChildBottomClicked,
+					xStart, yStart, 200, height);
+				dd->setRenderToText(rtt, true);
+				dd->set_Child_X_Offset(10);
+				dd->set_Ellipsis(true);
+				dd->setCenteredText(false);
+				dd->set_Child_Text_Offset_X(25);
+				dd->set_Close_After_Select(false);
+				dd->set_Size_Based_On_Text(true);
+				group->addElement(dd);
+
+				for (auto ob : obL->getObjects()) {
+					dd->add(ob->getName(), [](double& x, double& y) {
+						verticesCreationUpdateSelectionArea = true;
+						},
+						[groupPtr, dd, ob](int& mousebutton, int& mouseState) {
+							update_Vertices_Creation_Info(ob);
+
+							auto previewRTT = verticesCreation->getElementByName("previewRTT");
+							previewRTT->setOffsetX(2048 / 2 - previewRTT->getWidth() / 2);
+							previewRTT->setOffsetY(2048 / 2 - previewRTT->getHeight() / 2);
+							previewRTT->setUpdate(true);
+							verticesCreationPreviewZoom = 1.0;
+							generate_Vertices_Creation_Preview_Rend_To_Text();
+
+							for (auto& e : groupPtr->getElements()) {
+								if (DropDown* dd = dynamic_cast<DropDown*>(e))
+									for (auto& dde : dd->get_Drop_Down_Elements())
+										if (dde->getV() == dde->get_Clicked_Vertices() && dde->getName() != ob->getName()) {
+											dde->setV(dde->get_Section_Vertices());
+											dde->set_Clicked(false);
+											dde->get_Draw_Object()->setDraw(false);
+										}
+							}
+
+							verticesCreationUpdateSelectionArea = true;
+						}, true);
+				}
+
+				auto tb = dd->getButton();
+				tb->setHoverLambda([](double& x, double& y) {
+					verticesCreationUpdateSelectionArea = true;
+					});
+				tb->setClickLambda([dd, groupPtr](int& mousebutton, int& mouseState) {
+					if(dd->get_Drop_Down_Elements().size() > 0)
+						dd->toggleShowDropDown();
+					update_Vertices_Generation_Selection_Area("none");
+					});
+				tb->setText(obL->getName());
+				tb->setRenderToText(rtt, true);
+				yStart += height + 1;
+			}
+		}
+		
+}
+
+void update_Vertices_Generation_Selection_Area(std::string state = "none")
+{
+	
+	auto groupPtr = verticesCreation->getElementByName("selectionAreaGroup");
+	if (groupPtr)
+		if (GUIGroup* group = dynamic_cast<GUIGroup*>(groupPtr)) {
+			double offsetMax = 0;
+			DropDown* previous = nullptr;
+			int yStart = 0, rowHeight = 0;
+			bool start = true, doUpdate = false, direction = false;
+			if (state != "none")
+				doUpdate = true;
+			if (state == "up")
+				direction = true;
+			for (auto e : group->getElements()) {
+				if (DropDown* dde = dynamic_cast<DropDown*>(e)) {
+					if (doUpdate && start) {
+						if (direction) {
+							if(verticesCreationSelectionAreaPage != 0)
+								yStart = dde->getYStart() + (verticesCreationSelectionAreaPageSize - group->getHeight());
+						}
+						else
+							yStart = dde->getYStart() - (verticesCreationSelectionAreaPageSize - group->getHeight());
+						start = false;
+					}
+					if(rowHeight == 0)
+						rowHeight = dde->getHeight();
+					offsetMax += dde->getHeight();
+					if (dde->getShowDropDown())
+						offsetMax += dde->get_Drop_Down_Elements().size() * dde->getHeight();
+					if (previous && previous->getShowDropDown()) {
+						yStart = previous->get_Highest_Child_Y_Position() + 1;
+						if(yStart == 0)
+							yStart = previous->getYStart() + previous->getHeight();
+					}
+					else if (previous) {
+						yStart = previous->getYStart() + previous->getHeight() + 1;
+					}
+					dde->change_Position(dde->getXStart(), yStart);
+					previous = dde;
+				}
+			}
+
+			if (GUIElement* rtt = dynamic_cast<GUIElement*>(verticesCreation->getElementByName("selectionAreaRTT"))) {
+				auto rttTemp = findByName(renderToTextureContainer, "VerticesCreation");
+				if (ScrollbarVertical* sb = dynamic_cast<ScrollbarVertical*>(verticesCreation->getElementByName("selectionAreaScrollBar"))) {
+
+					double position = verticesCreationSelectionAreaPage * (verticesCreationSelectionAreaPageSize - group->getHeight()) + verticesCreationSelectionAreaOffset;
+					//if (verticesCreationSelectionAreaPageChange)
+						//position -= group->getHeight();
+
+					if (offsetMax != verticesCreationSelectionAreaOffsetMax) {
+						verticesCreationSelectionAreaOffsetMax = offsetMax;
+						sb->reset();
+						if (offsetMax > rtt->getHeight()) {
+							double scrollbarLength = sb->getScrollbarMaxLength() * (((rtt->getHeight() / rowHeight) * rowHeight) / offsetMax);
+							//sb->updateScrollbarPosition(((page * offset_Max) + offset - (page * 64)) / sb->getIncrementSize(), false);
+							sb->updateScrollbarLengthAndPositionAndIncrementSize(scrollbarLength,
+								position,
+								offsetMax - group->getHeight() + rowHeight*3);
+						}
+						else {
+							sb->updateScrollbarLengthAndPosition(10000, 0);
+						}
+					}
+				}
+			}
+			groupPtr->createObjectNoRestriction();
+			verticesCreationUpdateSelectionArea = true;
+		}
 };
+
+/**
+* The lambda function that is to be triggered on a scrollbar scroll event.
+*
+*@param sb, the scrollbar.
+*
+*@return the generated lambda function.
+*/
+std::function<void()> get_Vertices_Creation_Selection_Area_Scrollbar_Scroll_Lambda(ScrollbarVertical* sb, GUIElement* rttElement, GUIElement* elementforRTT, GUIPanel* panel, RendToText* rtt, double& offset)
+{
+	return [&, sb, rttElement, panel, rtt, elementforRTT]()
+	{
+		
+		std::string direction = "none";
+		bool change = false;
+		double texturePositionChange = sb->getChange() * sb->getIncrementSize();
+
+		if (texturePositionChange != 0) {
+			offset += texturePositionChange;
+
+			if (offset <= 0 && verticesCreationSelectionAreaPage > 0) {
+				offset += verticesCreationSelectionAreaPageSize - rttElement->getHeight();
+				verticesCreationSelectionAreaPage--;
+				change = true;
+				verticesCreationSelectionAreaPageChange = false;
+				direction = "up";
+			}
+			else if (offset + rttElement->getHeight() >= verticesCreationSelectionAreaPageSize) {
+				offset -= (verticesCreationSelectionAreaPageSize - rttElement->getHeight());
+				verticesCreationSelectionAreaPage++;
+				change = true;
+				verticesCreationSelectionAreaPageChange = true;
+				direction = "down";
+			}
+
+		} else if (sb->getScrollbarPosition() == 0) {
+			offset = 0;
+			verticesCreationSelectionAreaPage = 0;
+		}
+		else if (sb->isScrollbarAtMaxPosition()) {
+			//offset = verticesCreationSelectionAreaOffsetMax - rttElement->getHeight() - verticesCreationSelectionAreaPage * (verticesCreationSelectionAreaPageSize - rttElement->getHeight()) + 17 * (verticesCreationSelectionAreaPage + 1);
+			//verticesCreationSelectionAreaPage = verticesCreationSelectionAreaOffsetMax / (verticesCreationSelectionAreaPageSize - rttElement->getHeight());
+		}
+		
+		//leftPanel->getElementByName("tilesRTT")->setOffsetY(offset);
+		rttElement->setOffsetY(offset);
+		elementforRTT->setRendToTextOffsetY(offset);
+		
+		rttElement->setUpdate(true);
+
+		if (change)
+			update_Vertices_Generation_Selection_Area(direction);
+	};
+}
+
+void generate_Vertices_Creation_Preview_Rend_To_Text()
+{
+	RendToText* rtt = findByName(renderToTextureContainer, "verticesCreationPreview");
+	glBindFramebuffer(GL_FRAMEBUFFER, rtt->getFboID());
+	glViewport(0, 0, rtt->getWidth(), rtt->getHeight());
+	glClearColor(122 / 255.f, 113 / 255.f, 113 / 255.f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
+	glEnable(GL_DEPTH_TEST);
+
+	if (selectedObject) {
+		Object* tempObj = getObjectFromLibrary(rendToTextLibrary.getLibrary(2048, 2048), selectedObject->getLib()->getName(), selectedObject->getID());
+		if (tempObj) {
+			DrawObjects* temp = new DrawObjects("temp");
+			double x = (1024 - (tempObj->getVertices()->getWidth() * verticesCreationPreviewZoom) / 2) / (double(rtt->getWidth()) / 2),
+				y = (1024 - (tempObj->getVertices()->getHeight() * verticesCreationPreviewZoom) / 2) / (double(rtt->getHeight()) / 2);
+			x = round(x * 1000) / 1000.;
+			y = round(y * 1000) / 1000.;
+			auto o = new DrawObject(x, y, tempObj->getVertices()->getID(), tempObj->getVertices()->getVAO(), tempObj->getVertices()->getTextPos());
+
+			o->setScale(verticesCreationPreviewZoom);
+			temp->addObject(o);
+
+			for (auto& o : temp->getObjects()) {
+				o->renderGUI("");
+			}
+
+			delete temp;
+			delete o;
+		}
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
+	glViewport(0, 0, screenWidth, screenHeight);
+	glDisable(GL_DEPTH_TEST);
+}
+
+void update_Vertices_Creation_Info(Object* ob)
+{
+	std::string name = "", xStart = "", yStart = "", width = "", height = "", textureName = "";
+	if (!selectedObject || selectedObject != ob) {
+		selectedObject = ob;
+		name = selectedObject->getName();
+		xStart = std::to_string(selectedObject->getVertices()->getXStartText());
+		yStart = std::to_string(selectedObject->getVertices()->getYStartText());
+		width = std::to_string(selectedObject->getVertices()->getWidthText());
+		height = std::to_string(selectedObject->getVertices()->getHeightText());
+		textureName = paths[selectedObject->getVertices()->getTextPos()];
+	}
+	else if (selectedObject = ob) {
+		selectedObject = nullptr;
+	}
+
+	TextField* tempElement = dynamic_cast<TextField*>(verticesCreation->getElementByName("verticesPreviewTextFieldName"));
+	tempElement->setText(name);
+	//tempElement->change_Width(Get_Text_Size(tempElement->getText(), tempElement->get_Text_Type()) + tempElement->getTextStartXOffset() + 3);
+	tempElement->setUpdate(true);
+
+
+	tempElement = dynamic_cast<TextField*>(verticesCreation->getElementByName("verticesPreviewTextFieldXStart"));
+	tempElement->setText(xStart);
+	tempElement->setUpdate(true);
+
+	tempElement = dynamic_cast<TextField*>(verticesCreation->getElementByName("verticesPreviewTextFieldYStart"));
+	tempElement->setText(yStart);
+	tempElement->setUpdate(true);
+
+	tempElement = dynamic_cast<TextField*>(verticesCreation->getElementByName("verticesPreviewTextFieldWidth"));
+	tempElement->setText(width);
+	tempElement->setUpdate(true);
+
+	tempElement = dynamic_cast<TextField*>(verticesCreation->getElementByName("verticesPreviewTextFieldHeight"));
+	tempElement->setText(height);
+	tempElement->setUpdate(true);
+
+	DropDown* tempElement2 = dynamic_cast<DropDown*>(verticesCreation->getElementByName("verticesPreviewDropDownTextureName"));
+	tempElement2->getButton()->setText(textureName);
+	tempElement2->getButton()->resetToggle();
+	if (tempElement2->getShowDropDown())
+		tempElement2->toggleShowDropDown();
+
+}

@@ -16,6 +16,8 @@ ItemAtals::~ItemAtals() {
 
 void ItemAtals::generateAtlas()
 {
+	if (items.size() > 0)
+		clear();
 	items.push_back(std::pair<Item*, Object*>(new Item(-1, "", ""), nullptr));
 	pugi::xml_parse_result result = doc.load_file("./resources/Items/Items.xml");
 	std::vector<string> types;
@@ -310,6 +312,15 @@ bool ItemAtals::checkIfDouleSize(int texturePos, int id)
 		return false;
 	else
 		return it->first->isDoubleSize();
+}
+
+void ItemAtals::clear()
+{
+	for (auto& item : items) {
+		delete item.first;
+	}
+	items.clear();
+	items.shrink_to_fit();
 }
 
 /*std::vector<ItemInfo> ItemAtals::getTiles()

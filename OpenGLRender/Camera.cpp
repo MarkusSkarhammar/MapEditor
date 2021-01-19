@@ -5,7 +5,7 @@ void updateCameraPosition(double xPos, double yPos) {
 	yCameraPos += yPos;
 
 	// Projection matrix : 45° Field of View, 4 : 3 ratio, display range : 0.1 unit <-> 100 units
-	Projection = glm::perspective(glm::radians((float)zoom), float(1920 / 1080), 0.1f, 100.0f);
+	Projection = glm::perspective(glm::radians((float)zoomWorld), float(1920 / 1080), 0.1f, 100.0f);
 	//= glm::ortho((-1.0f + float(xCameraPos)), (1.0f + float(xCameraPos)), (-1.0f + float(yCameraPos)), (1.0f + float(yCameraPos)), .1f , 100.f);
 
 	// Camera matrix
@@ -22,7 +22,7 @@ void updateCameraPosition(double xPos, double yPos) {
 }
 
 void setCameraPosition(double xPos, double yPos) {
-	xCameraPos = xPos;
+	xCameraPos = xPos; 
 	yCameraPos = yPos;
 
 	// Projection matrix : 45° Field of View, 4 : 3 ratio, display range : 0.1 unit <-> 100 units
@@ -32,7 +32,7 @@ void setCameraPosition(double xPos, double yPos) {
 	// Camera matrix
 	//glLoadIdentity();
 	View = glm::lookAt(
-		glm::vec3(xCameraPos, yCameraPos, zoom), // Camera is at (4,3,-3), in World Space
+		glm::vec3(xCameraPos, yCameraPos, zoomWorld), // Camera is at (4,3,-3), in World Space
 		glm::vec3(xCameraPos, yCameraPos, 0.0), // and looks at the origin
 		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 	);
@@ -49,7 +49,7 @@ void setCameraPosition(double xPos, double yPos) {
 void setCameraZoom(float scale) {
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	Projection = glm::perspective(glm::radians((float)zoom), 1.0f, 0.1f, 10.0f);
+	Projection = glm::perspective(glm::radians((float)zoomWorld), 1.0f, 0.1f, 10.0f);
 	// Camera matrix
 	View = glm::lookAt(
 		glm::vec3(0, 0, 1.0f), // Camera is at (4,3,-3), in World Space

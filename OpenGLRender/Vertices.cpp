@@ -4,37 +4,24 @@
 
 void removeVertices(Vertices * v)
 {
-	/*
+	
 	if (!v)
 		return;
 	int pos = 0;
-	bool found = false;
-	auto& list = v->getList();
-	for (auto& e : list) {
-		if (e->getID() == v->getID()) {
-			found = true;
-			auto vh = v->getVertecesHandler();
-			auto& verticesPos = vh->getVerteces();
-			auto& verticesText = vh->getVertecesText();
-			verticesPos.erase(verticesPos.begin() + v->getID() * 8, verticesPos.begin() + v->getID() * 8 + 8);
-			verticesText.erase(verticesText.begin() + v->getID() * 8, verticesText.begin() + v->getID() * 8 + 8);
-			list.erase(list.begin() + pos);
-			vh->getAmount()--;
-			delete v;
-		}
-		else if (found) {
-			e->decrementID();
-		}
-		pos++;
-	}
-	*/
+
+	auto& verticesPos = v->getV();
+	auto& verticesText = v->getVT();
+
+	verticesPos.erase(verticesPos.begin() + 8 * v->getID(), verticesPos.begin() + 8 * v->getID() + 8);
+	verticesText.erase(verticesText.begin() + 8 * v->getID(), verticesText.begin() + 8 * v->getID() + 8);
+
 }
 
 Vertices::Vertices(std::string name, float xStartText, float yStartText, float widthText, float heightText, float width, float height, std::vector<float>& v, std::vector<float>& vt, int textPos, GLuint VAO, GLuint VBO, int ID, bool doubleSize) : name(name), xStartText(xStartText), yStartText(yStartText),
 width(width), height(height), widthText(widthText), heightText(heightText), v(v), vt(vt), textPos(textPos), VAO(VAO), VBO(VBO), ID(ID), doubleSize(doubleSize)
 {
 
-	float widthStart = 0.0f;
+	float widthStart = 0.0f ;
 	float heightStart = 0.0f;
 	if (doubleSize) {
 		widthStart = 0.0f - (64.0 / (double(screenWidthPixels) / 2));
@@ -42,12 +29,12 @@ width(width), height(height), widthText(widthText), heightText(heightText), v(v)
 	}
 
 	float widthPos = ((this->width) / (double(screenWidthPixels) / 2));
-	float heightPos = (this->height / (double(screenHeightPixels) / 2));
+	float heightPos = ((this->height) / (double(screenHeightPixels) / 2));
 
-	float textWidthStart = ((xStartText) / textureSizeWidth);
-	float textHeightStart = ((yStartText) / textureSizeHeight);
-	float textWidthEnd = textWidthStart + ((widthText) / textureSizeWidth);
-	float textHeightEnd = textHeightStart + ((heightText) / textureSizeHeight);
+	float textWidthStart = ((xStartText+.5f) / textureSizeWidth);
+	float textHeightStart = ((yStartText+.5f) / textureSizeHeight);
+	float textWidthEnd = ((xStartText+widthText-.5f) / textureSizeWidth);
+	float textHeightEnd = ((yStartText+heightText-0.5f) / textureSizeHeight);
 
 	v.push_back(widthStart); v.push_back(heightStart); vt.push_back(textWidthStart); vt.push_back(textHeightStart); // Top-left
 	v.push_back(widthStart + widthPos); v.push_back(heightStart); vt.push_back(textWidthEnd); vt.push_back(textHeightStart); // Top-right
@@ -129,7 +116,7 @@ Vertices::Vertices(Vertices* other, float textureSizeWidth, float textureSizeHei
 
 	glBufferSubData(GL_ARRAY_BUFFER, v.size() * sizeof(float), vt.size() * sizeof(float), &vt[0]);
 }
-Vertices::Vertices(std::string name, float width, float height, Vertices* other) : name(name), width(width), height(height), v(other->getV()), vt(other->getVT())
+Vertices::Vertices(std::string name, float width, float height, Vertices* other, bool rtt) : name(name), width(width), height(height), v(other->getV()), vt(other->getVT())
 {
 	xStartText = other->getXStartText();
 	yStartText = other->getYStartText();
@@ -148,6 +135,11 @@ Vertices::Vertices(std::string name, float width, float height, Vertices* other)
 
 	float widthPos = (this->width / (double(screenWidthPixels) / 2));
 	float heightPos = (this->height / (double(screenHeightPixels) / 2));
+
+	if (rtt) {
+		widthPos = (this->width / (double(textureSizeWidth) / 2));
+		heightPos = (this->height / (double(textureSizeHeight) / 2));
+	}
 
 	float textWidthStart = (xStartText / textureSizeWidth);
 	float textHeightStart = (yStartText / textureSizeHeight);
@@ -261,6 +253,51 @@ void Vertices::changeSize(int width, int height)
 
 	//Second triangle
 	v.at(++vPos) = (widthStart + widthPos); v.at(++vPos) = (heightStart - heightPos); // Bottom-right
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(float) + vt.size() * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, v.size() * sizeof(float), &v[0]);
+
+	glBufferSubData(GL_ARRAY_BUFFER, v.size() * sizeof(float), vt.size() * sizeof(float), &vt[0]);
+}
+
+void Vertices::change_All(float xStartText, float yStartText, float widthText, float heightText, float width, float height)
+{
+	this->xStartText = xStartText;
+	this->yStartText = yStartText;
+	this->widthText = widthText;
+	this->heightText = heightText;
+	this->width = width;
+	this->height = height;
+
+	float widthStart = 0.0f;
+	float heightStart = 0.0f;
+
+	float widthPos = (this->width / (double(screenWidthPixels) / 2));
+	float heightPos = (this->height / (double(screenHeightPixels) / 2));
+
+	float textWidthStart = (xStartText / textureSizeWidth);
+	float textHeightStart = (yStartText / textureSizeHeight);
+	float textWidthEnd = textWidthStart + (widthText / textureSizeWidth);
+	float textHeightEnd = textHeightStart + (heightText / textureSizeHeight);
+
+	auto vPos = (ID * 8);
+	//first triangle
+	v.at(vPos) = (widthStart); v.at(++vPos) = (heightStart); // Top-left
+	v.at(++vPos) = (widthStart + widthPos); v.at(++vPos) = (heightStart); // Top-right
+	v.at(++vPos) = (widthStart); v.at(++vPos) = (heightStart - heightPos); // Bottom-left
+
+	//Second triangle
+	v.at(++vPos) = (widthStart + widthPos); v.at(++vPos) = (heightStart - heightPos); // Bottom-right
+
+	auto tPos = (ID * 8);
+	//first triangle
+	vt.at(tPos) = (textWidthStart); vt.at(++tPos) = (textHeightStart); // Top-left
+	vt.at(++tPos) = (textWidthEnd); vt.at(++tPos) = (textHeightStart); // Top-right
+	vt.at(++tPos) = (textWidthStart); vt.at(++tPos) = (textHeightEnd); // Bottom-left
+
+	//Second triangle
+	vt.at(++tPos) = (textWidthEnd); vt.at(++tPos) = (textHeightEnd); // Bottom-right
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(float) + vt.size() * sizeof(float), NULL, GL_DYNAMIC_DRAW);

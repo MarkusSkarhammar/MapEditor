@@ -46,7 +46,7 @@ std::vector<float> v;
 
 void prepareDraw();
 void init();
-void handlePlayerMovement(game_state* state, GLFWwindow* window);
+void handlePlayerMovement(game_state& state, GLFWwindow* window);
 void generateVBOs();
 void createThingsToRender();
 void generateTextures();
@@ -61,50 +61,23 @@ constexpr std::chrono::nanoseconds timestep(16ms);
 
 bool handle_events(GLFWwindow* window);
 
-void update(game_state* state, GLFWwindow* window);
+void update(game_state& state, GLFWwindow* window);
 
-game_state interpolate(game_state const & current, game_state const & previous, float alpha) {
+game_state interpolate(game_state& current, game_state& previous, double alpha) {
 	game_state interpolated_state;
 	interpolated_state.xCameraPos = xCameraPos;
 	interpolated_state.yCameraPos = yCameraPos;
 
 	// interpolate between previous and current by alpha here
 	if (current.xGoal != xCameraPos) {
-		interpolated_state.velocity = (current.xGoal - previous.xCameraPos) * alpha;
-		double newPos = interpolated_state.velocity + xCameraPos;
-		if (interpolated_state.velocity > 0.0  && newPos <= current.xGoal) {
-			//printf("0. A Pixel: %f \n", double((2 / screenWidth)));
-			//printf("1. Rest of a pixel %f \n", double(std::fmod(newPos, (2 / screenWidth))));
-			//printf("2.Before: %f \n", double(newPos));
-			if (std::fmod(newPos, (2 / screenWidth)) != 0) newPos -= std::fmod(newPos, (2 / screenWidth));
-			//printf("3.After: %f \n", double(newPos));
-			interpolated_state.xCameraPos = newPos;
-			//current.xCameraPos = newPos;
-		}
-		else if (interpolated_state.velocity > 0.0  && newPos >= current.xGoal) {
-			interpolated_state.xCameraPos = current.xGoal;
-			//printf("0. A Pixel: %f \n", double((2 / screenWidth)));
-			//printf("1. Rest of a pixel %f \n", double(std::fmod(interpolated_state.xCameraPos, (2 / screenWidth))));
-			//printf("2.Before: %f \n", double(interpolated_state.xCameraPos));
-			if (std::fmod(newPos, (2 / screenWidth)) != 0) interpolated_state.xCameraPos -= std::fmod(interpolated_state.xCameraPos, (2 / screenWidth));
-			//printf("3.After: %f \n", double(interpolated_state.xCameraPos));
-		}
+		interpolated_state.xCameraPos = (current.xCameraPos + (current.xGoal - current.xCameraPos) * alpha);
+		interpolated_state.xCameraPos = round(interpolated_state.xCameraPos * 960) / 960.;
 	}
 	if (current.yGoal != yCameraPos) {
-		interpolated_state.velocity = (current.yGoal + previous.yCameraPos) * alpha;
-
-		float newPos = interpolated_state.velocity + yCameraPos;
-		if (interpolated_state.velocity < 0.0  && newPos >= current.yGoal) {
-			//printf("%f interpolation Y velocity\n", float(interpolated_state.velocity));
-			if (std::fmod(newPos, (2 / float(screenHeightPixels))) != 0) newPos -= std::fmod(newPos, (2.0 / float(screenHeightPixels)));
-			//printf("3.After: %f \n", double(newPos));
-			interpolated_state.yCameraPos = newPos;
-		}
-		else if (interpolated_state.velocity < 0.0  && newPos <= current.yGoal) {
-			//printf("%f interpolation Y velocity\n", float(interpolated_state.velocity));
-			interpolated_state.yCameraPos = current.yGoal;
-			if (std::fmod(newPos, (2.0 / float(screenHeightPixels))) != 0) interpolated_state.yCameraPos -= std::fmod(interpolated_state.yCameraPos, (2.0 / float(screenHeightPixels)));
-		}
+		interpolated_state.yCameraPos = current.yCameraPos + (current.yGoal - current.yCameraPos) * alpha;
+		interpolated_state.yCameraPos = round(interpolated_state.yCameraPos * 540) / 540.;
+		//interpolated_state.yCameraPos = round(interpolated_state.yCameraPos * 10000) / 10000.;
+		//interpolated_state.yCameraPos = int((current.yCameraPos + (current.yGoal - current.yCameraPos) * alpha) * 540.) / 540.;
 	}
 
 	return interpolated_state;
@@ -123,7 +96,7 @@ int main(int argc, wchar_t *argv[])
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
+	//glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 	//glfwWindowHint(GLFW_REFRESH_RATE, 60);
 	//glfwWindowHint(GLFW_SAMPLES, 3);
 
@@ -146,7 +119,7 @@ int main(int argc, wchar_t *argv[])
 
 	// Set width depending on the pixels
 	width = (imgScale / (screenWidthPixels / 2));
-	height = (imgScale / (screenHeightPixels / 2));
+	height = (imgScale / (screenHeightPixels / 2.));
 
 
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -182,14 +155,13 @@ int main(int argc, wchar_t *argv[])
 
 	std::chrono::nanoseconds lag(0ns);
 	auto time_start = clock::now();
-	bool quit_game = false;
 
 	double lastTime = glfwGetTime();
 	int nbFrames = 0;
 
 	long int times(0);
 
-	while (!quit_game || !glfwWindowShouldClose(window)) {
+	while (!quit_game) {
 		
 		// Measure speed
 		double currentTime = glfwGetTime();
@@ -207,7 +179,6 @@ int main(int argc, wchar_t *argv[])
 		time_start = clock::now();
 		lag += std::chrono::duration_cast<std::chrono::nanoseconds>(delta_time);
 
-		quit_game = handle_events(window);
 		times = 0;
 		// update game logic as lag permits
 		while (lag >= timestep) {
@@ -215,7 +186,7 @@ int main(int argc, wchar_t *argv[])
 			times++;
 			if (times == 1) {
 				previous_state = current_state;
-				update(&current_state, window); // update at a fixed rate each time
+				update(current_state, window); // update at a fixed rate each time
 			}
 		}
 		//if(times > 1)
@@ -226,14 +197,21 @@ int main(int argc, wchar_t *argv[])
 		auto interpolated_state = interpolate(current_state, previous_state, alpha);
 
 		render(interpolated_state, window);
+
 	}
 
 	glDeleteProgram(program);
 
-
+	
+	// Delete GUI elements
+	for (auto panel : GUIPanels)
+		delete panel;
+	
+	// Delete Objects
 	for (auto objLib : objLibraries) {
 		delete objLib;
 	}
+
 
 	glDeleteTextures(1, &gTileArrayTexture);
 	glDeleteTextures(1, &gGUIArrayTexture);
@@ -242,9 +220,6 @@ int main(int argc, wchar_t *argv[])
 	for (RendToText* rtt : renderToTextureContainer) {
 		delete rtt;
 	}
-
-	for (auto panel : GUIPanels)
-		delete panel;
 
 	glDeleteBuffers(1, &instanceVBO);
 
@@ -263,9 +238,10 @@ bool handle_events(GLFWwindow* window) {
 	return false; // true if the user wants to quit the game
 }
 
-void update(game_state* state, GLFWwindow* window) {
+void update(game_state& state, GLFWwindow* window) {
 
-	if (state->xGoal <= 1.0f) {
+	
+	/*if (state->xGoal <= 1.0f) {
 		state->xGoal = 1.0f;
 		xCameraPos = 1.0f;
 	}
@@ -280,7 +256,11 @@ void update(game_state* state, GLFWwindow* window) {
 	else if (yCameraPos != state->yGoal) {
 
 		yCameraPos = state->yGoal;
-	}
+	}*/
+	xCameraPos = state.xGoal;
+	//yCameraPos = state.yGoal;
+	//state.yGoal = round((int)((state.yGoal * 5400))) / 10. / 540.;
+	yCameraPos = state.yGoal;
 
 	//generate_Palette_Modifier_Left_Texture();
 
@@ -323,7 +303,8 @@ void update(game_state* state, GLFWwindow* window) {
 
 	//Do GUI stuff
 	for (auto panel : GUIPanels) {
-		panel->checkUpdates();
+		if(panel->getShow())
+			panel->checkUpdates();
 	}
 }
 
@@ -392,6 +373,11 @@ void generateTextures() {
 			GL_UNSIGNED_BYTE,      //type
 			(void*)img.accessPixels());                //pointer to data
 		img.clear();
+		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 7);
 		//GL_BGRA
 		/*glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -408,7 +394,7 @@ void generateTextures() {
 	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	//glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
-
+	glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 }
 
 void mapUpdate() {
@@ -456,27 +442,35 @@ void generateVBOs() {
 	setupObjectLibraries();
 }
 
-void handlePlayerMovement(game_state* state, GLFWwindow* window) {
-	int width, height;
-	glfwGetWindowSize(window, &width, &height);
+void handlePlayerMovement(game_state& state, GLFWwindow* window) {
 
 	if (moveRight) {
-		state->xGoal = xCameraPos + (2 / screenWidth) * 1;
+		state.xGoal = xCameraPos + (1 / (screenWidth / 2.)) * 3.;
+		state.xGoal = round(state.xGoal * 960) / 960.;
+		state.xCameraPos = xCameraPos;
 	}
 	if (moveLeft) {
-		state->xGoal = xCameraPos - (2.f / screenWidth) * 1.f;
+		state.xGoal = xCameraPos - (1 / (screenWidth / 2.)) * 3.;
+		state.xGoal = round(state.xGoal * 960) / 960.;
+		state.xCameraPos = xCameraPos;
 	}
 	if (moveUp) {
-		state->yGoal = yCameraPos + (2 / screenHeight) * 1;
+		state.yGoal = yCameraPos + (1 / (screenHeight / 2.)) * 3.;
+		state.yGoal = round(state.yGoal * 540) / 540.;
+		state.yCameraPos = yCameraPos;
 	}
 	if (moveDown) {
-		state->yGoal = yCameraPos - (2 / screenHeight) * 1;
+		state.yGoal = yCameraPos - (1 / (screenHeight/2.)) * 3.;
+		state.yGoal = round(state.yGoal * 540) / 540.;
+		state.yCameraPos = yCameraPos;
 	}
 }
 
 void Setup_Render_To_Texture() {
 	renderToTextureContainer.push_back(new RendToText("paletteModifier", 2048, 2048));
 	renderToTextureContainer.push_back(new RendToText("leftPanelTiles", 2048, 2048));
+	renderToTextureContainer.push_back(new RendToText("verticesCreation", 2048, 2048));
+	renderToTextureContainer.push_back(new RendToText("verticesCreationPreview", 2048, 2048));
 }
 
 void init() {
@@ -553,7 +547,7 @@ void init() {
 		glViewport(0, 0, screenWidthPixels, screenHeightPixels);
 		float aspect = screenWidth / screenHeight;
 		glm::mat4 projection = //glm::ortho(-1.0f, 1.f, -1.0f, 1.f);
-		glm::perspective(glm::radians(FOV), 1.0f, 0.1f, 100.0f);
+		glm::perspective(glm::radians(FOV), 1.0f, 0.001f, 100.0f);
 		glBindBuffer(GL_UNIFORM_BUFFER, UBOCamera);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -584,36 +578,13 @@ void init() {
 
 	Palette::fillPalettes(palettes);
 
-
-	DrawObjects *temp = new DrawObjects("GUI_Preview_Tiles_");
-
-	objects.push_back(temp);
-
-	temp = new DrawObjects("GUI_BottomBar_");
-	bottomBar->setObjects(temp);
-	objects.push_back(temp);
-
-	temp = new DrawObjects("GUI_LeftPanel_");
-	leftPanel->setObjects(temp);
-	objects.push_back(temp);
-
-	temp = new DrawObjects("GUI_LeftPanel_Text_");
-	objects.push_back(temp);
-
-	temp = new DrawObjects("GUI_Item_Info_Panel_");
-	itemInfo->setObjects(temp);
-	objects.push_back(temp);
-
-	temp = new DrawObjects("GUI_Palette_Modifier_");
-	paletteModifier->setObjects(temp);
-	objects.push_back(temp);
-
 	generate_GUI_Bottom_Bar();
 
 	generate_GUI_Left_Panel(0);
 	
-	//generate_GUI_Left_Panel_Text_(temp, VertecesHandler::findByName(verteces, "Letters_"));
-	generate_Palette_Modifier();
+	//generate_Palette_Modifier();
+
+	generate_Vertices_Creation_Panel();
 
 
 	world = new World("Chunje", 14, 50, 50, 50);

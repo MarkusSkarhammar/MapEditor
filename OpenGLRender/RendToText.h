@@ -31,19 +31,27 @@ public:
 	RendToTextObjLibrary() {};
 	~RendToTextObjLibrary();
 	std::vector<ObjectLibrary*>& setupNewLibrary(int width, int height);
-	std::vector<ObjectLibrary*>& getLibrary(int width, int height);
+	std::vector<ObjectLibrary*> getLibrary(int width, int height);
+	std::vector<ObjectLibrary*>& get_Library_Ref(int width, int height);
+	ObjectLibrary* get_Specific_Library(int VAO, int VBO);
+	LetterLibrary* get_Letter_Library(int width, int height);
 
 	class RendToTextObjLibraryElement {
 	public:
 		RendToTextObjLibraryElement(int width, int height);
 		~RendToTextObjLibraryElement();
-		std::vector<ObjectLibrary*>& getLibrary() { return library; };
+		std::vector<ObjectLibrary*> getLibrary() { return library; };
+		std::vector<ObjectLibrary*>& get_Library_Ref() { return library; };
+		LetterLibrary* get_Letter_Library() { return letterLib; };
 		int getWidth() { return width; };
 		int getHeight() { return height; };
 	private:
 		int width{ 0 }, height{ 0 };
 		std::vector<ObjectLibrary*> library;
+		LetterLibrary* letterLib;
 	};
+
+	std::vector<RendToTextObjLibraryElement*>& getLibraries() { return libraries; };
 
 private:
 	std::vector<RendToTextObjLibraryElement*> libraries;

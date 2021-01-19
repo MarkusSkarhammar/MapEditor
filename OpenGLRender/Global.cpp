@@ -23,7 +23,7 @@ GLuint program2(0);
 GLuint outlineShader(0);
 
 // Texture array
-extern GLuint gTileArrayTexture(0);
+GLuint gTileArrayTexture(0);
 
 // Texture array layer
 GLuint gLayer(0);
@@ -63,6 +63,9 @@ glm::vec2 textOffsetValues(0);
 game_state current_state;
 game_state previous_state;
 
+// close game
+bool quit_game{ 0 };
+
 //ObjectLibraries
 std::vector<ObjectLibrary*> objLibraries;
 
@@ -81,9 +84,6 @@ Item* outlinedItem = nullptr;
 bool outlineItemBool(true);
 bool outlineTileBool(false);
 
-// Store all the objects
-std::vector<DrawObjects*> objects;
-
 //Store Text To Rend objects
 RendToTextObjLibrary rendToTextLibrary;
 
@@ -98,7 +98,7 @@ std::vector<std::pair<int, DrawObject*>> itemsToDraw;
 
 
 std::vector<std::string> paths = { 
-std::string("Tiles_1"), std::string("Letters_"), std::string("Letters_White_"),  std::string("GUI_1"),
+std::string("Tiles_1"), std::string("Letters_"), std::string("Letters_White_"),  std::string("GUI_1"), std::string("GUI_2"),
 std::string("Doodads_1"), std::string("Borders_1"), std::string("Monsters_1"),
 std::string("Nature_1"), std::string("Items_1") };
 
@@ -128,16 +128,16 @@ int newZ(7);
 // For drawing
 float widthStart(0.0f);
 float heightStart(0.0f);
-float width(0.0f);
-float height(0.0f);
+double width(0.0);
+double height(0.0);
 float textWidth(0.0f);
 float textHeight(0.0f);
 float textHeightStart(0.0f);
 float textWidthStart(0.0f);
 
 // Window size
-float screenWidth(0);
-float screenHeight(0);
+double screenWidth(0);
+double screenHeight(0);
 int screenWidthPixels(0);
 int screenHeightPixels(0);
 
@@ -283,6 +283,7 @@ Serialize serializer;
 GUIPanel* leftPanel = new GUIPanel("leftPanel");
 
 // left_panel tiles
+bool leftPanelUpdate(false);
 int left_panel_page;
 int left_panel_maxPage;
 double left_panel_Offset;
@@ -382,10 +383,37 @@ std::vector<PaletteChange> palette_Modifier_Redo = {};
 //			DONE Palette modifier window
 //-----------------------------------
 
+//-----------------------------------
+//			Vertices creation window
+//-----------------------------------
+
+// GUIPanel
+GUIPanel* verticesCreation = new GUIPanel("verticesCreation");
+
+
+
+// Update bool
+bool verticesCreationUpdateSelectionArea{0};
+double verticesCreationSelectionAreaOffset{0};
+double verticesCreationSelectionAreaOffsetMax{0};
+int verticesCreationSelectionAreaPage{0};
+double verticesCreationSelectionAreaPageSize{2000};
+bool verticesCreationSelectionAreaPageChange{0};
+bool verticesCreationFirstShow{1};
+
+Object* selectedObject = nullptr;
+double verticesCreationPreviewZoom{1.0};
+double verticesCreationPreviewClickX{ 0. };
+double verticesCreationPreviewClickY{ 0. };
+
+//-----------------------------------
+//			DONE Palette modifier window
+//-----------------------------------
+
 size_t size = 0;
 
 // Zoom level
-double zoom = 1.0;
+double zoomWorld = 1.0;
 bool haveZoomed = false;
 
 float FOV = 90;

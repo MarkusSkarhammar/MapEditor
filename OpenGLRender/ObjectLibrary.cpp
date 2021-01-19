@@ -14,6 +14,7 @@ ObjectLibrary::ObjectLibrary(std::string name): name(name)
 
 ObjectLibrary::ObjectLibrary(ObjectLibrary* other, float textureSizeWidth, float textureSizeHeight)
 {
+	rtt = true;
 	name = other->getName();
 	VBO = GLuint(0); VAO = GLuint(0);
 	glGenVertexArrays(1, &VAO);
@@ -69,13 +70,61 @@ Object* ObjectLibrary::addObject(int ID, std::string name, Vertices* v)
 	return obj;
 }
 
+Object* ObjectLibrary::addObject(std::string name, Vertices* v)
+{
+	auto obj = new Object(objects.size(), name, v, this);
+	objects.push_back(obj);
+	updateVBO();
+	return obj;
+}
+
+void ObjectLibrary::delete_Verteces(std::string name)
+{
+	bool found = false;
+	for (auto it = objects.begin(); it != objects.end(); it++) {
+		if ((*it)->getName() == name) {
+			(*it)->delete_Verteces();
+			delete (*it);
+			it = objects.erase(it);
+			found = true;
+			if (it != objects.end())
+				(*it)->decrement_ID_And_Verteces_ID();
+			else
+				break;
+		}
+		else if (found) {
+			(*it)->decrement_ID_And_Verteces_ID();
+		}
+	}
+	updateVBO();
+}
+
 Object::Object(int ID, std::string name, Vertices* v, ObjectLibrary* lib): ID(ID), name(name), v(v), lib(lib)
 {
 }
 
 Object::~Object()
 {
-	delete v;
+	if(v)
+		delete v;
+}
+
+void Object::delete_Verteces()
+{
+	removeVertices(v);
+}
+
+void Object::decrement_ID_And_Verteces_ID()
+{
+	ID--;
+	v->decrementID();
+}
+
+void Object::set_Update(bool b)
+{
+	update = b; 
+	if (b)
+		lib->set_Update(b);
 }
 
 void setupObjectLibraries()
@@ -93,7 +142,7 @@ void setupObjectLibraries()
 			ID = library.attribute("id").as_string();
 			name = library.attribute("name").as_string();
 
-			int xStartText = 0, yStartText = 0, widthText = 0, heightText = 0, width = 0, height = 0, letterPixelsBefore = 0, letterPixelsSize = 0;
+			int xStartText = 0, yStartText = 0, widthText = 0, heightText = 0, width = 0, height = 0, letterPixelsBefore = 0, letterPixelsSize = 0, letterYDifference = 0;
 			bool doubleSize = false;
 			std::string textureName;
 
@@ -129,11 +178,14 @@ void setupObjectLibraries()
 				else if (attribute.attribute("doubleSize")) {
 					doubleSize = attribute.attribute("doubleSize").as_int();
 				}
+				else if (attribute.attribute("letterYDifference")) {
+					letterYDifference = attribute.attribute("letterYDifference").as_int();
+				}
 			}
 
 			auto obj = objLib->addObject(std::stoi(ID), name, new Vertices(name, xStartText, yStartText, widthText, heightText, width, height, objLib->getVertecesPos(), objLib->getVertecesPosText(), findByName(paths, textureName), objLib->getVAO(), objLib->getVBO(), objLib->getObjects().size(), doubleSize));
 			if (type == "Letters") {
-				letterLibrary.insertLetter(obj->getName(), objLib->getVAO(), obj->getVertices()->getTextPos(), obj->getVertices()->getID(), letterPixelsBefore, letterPixelsSize, width);
+				letterLibrary.insertLetter(obj->getName(), objLib->getVAO(), obj->getVertices()->getTextPos(), obj->getVertices()->getID(), letterPixelsBefore, letterPixelsSize, width, letterYDifference);
 			}
 		}
 		objLibraries.push_back(objLib);
@@ -161,6 +213,27 @@ Object* getObjectFromLibrary(std::string category, int ID)
 		return nullptr;
 }
 
+Object* getObjectFromLibrary(std::vector<ObjectLibrary*> list, std::string category, int ID)
+{
+
+	typename std::vector<ObjectLibrary*>::iterator it = std::find_if(list.begin(), list.end(), [&category](ObjectLibrary* element) {
+		return (element->getName() == category);
+		});
+	if (it != list.end()) {
+		auto& list = (*it)->getObjects();
+		typename std::vector<Object*>::iterator it2 = std::find_if(list.begin(), list.end(), [&ID](Object* element) {
+			return (element->getID() == ID);
+			});
+		if (it2 != list.end()) {
+			return *it2;
+		}
+		else
+			return nullptr;
+	}
+	else
+		return nullptr;
+}
+
 Object* getObjectFromLibrary(std::string NAME)
 {
 	for (auto l : objLibraries) {
@@ -170,6 +243,17 @@ Object* getObjectFromLibrary(std::string NAME)
 		}
 	}
 	return nullptr;
+}
+
+Object* getObjectFromLibrary(std::vector<Object*> list, std::string NAME)
+{
+	auto it = std::find_if(list.begin(), list.end(), [&NAME](Object* element) {
+		return (element->getName() == NAME);
+		});
+	if (it != list.end())
+		return *it;
+	else
+		return nullptr;
 }
 
 Object* getGUIObjectFromLibrary(std::string name)
@@ -183,6 +267,34 @@ Object* getGUIObjectFromLibrary(std::string name)
 		}
 	}
 	return nullptr;
+}
+
+void update_All_Libraries(std::vector<ObjectLibrary*> updatedList)
+{
+	for (auto& lib : updatedList) {
+		std::vector<Object*> objectsToUpdate;
+		if (lib->get_Update()) {
+			for (auto& obj : lib->getObjects()) {
+				if (obj->get_Update()) {
+					obj->set_Update(false);
+					objectsToUpdate.push_back(obj);
+				}
+			}
+			lib->set_Update(false);
+			for (auto& libRTTElement : rendToTextLibrary.getLibraries()) {
+				for (auto& libRTT : libRTTElement->get_Library_Ref()) {
+					if (libRTT->getName() == lib->getName()) {
+						for (auto& obj : objectsToUpdate) {
+							auto search = getObjectFromLibrary(libRTT->getObjects(), obj->getName());
+							if (search) {
+								search->getVertices()->setTextPos(obj->getVertices()->getTextPos());
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 int LetterLibrary::getWidthInPixels(std::string s, std::string textType)

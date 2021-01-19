@@ -675,6 +675,7 @@
 			<attribute textureName="Letters_" />
 			<attribute letterPixelsBefore="3" />
 			<attribute letterPixelsSize="11" />
+			<attribute letterYDifference="1" />
 		</Object>
 		<Object id="7" name="hBlack">
 			<attribute xStartText="128" />
@@ -1125,7 +1126,7 @@
 			<attribute height="16" />
 			<attribute textureName="Letters_" />
 			<attribute letterPixelsBefore="3" />
-			<attribute letterPixelsSize="5" />
+			<attribute letterPixelsSize="6" />
 		</Object>
 		<Object id="48" name="KBlack">
 			<attribute xStartText="176" />
@@ -1249,7 +1250,7 @@
 			<attribute letterPixelsSize="13" />
 		</Object>
 		<Object id="59" name="VBlack">
-			<attribute xStartText="86" />
+			<attribute xStartText="96" />
 			<attribute yStartText="80" />
 			<attribute widthText="16" />
 			<attribute heightText="16" />
@@ -1302,6 +1303,17 @@
 			<attribute textureName="Letters_" />
 			<attribute letterPixelsBefore="3" />
 			<attribute letterPixelsSize="13" />
+		</Object>
+		<Object id="64" name=".Black">
+			<attribute xStartText="224" />
+			<attribute yStartText="32" />
+			<attribute widthText="16" />
+			<attribute heightText="16" />
+			<attribute width="16" />
+			<attribute height="16" />
+			<attribute textureName="Letters_" />
+			<attribute letterPixelsBefore="1" />
+			<attribute letterPixelsSize="3" />
 		</Object>
 		
   </Library>
@@ -1498,10 +1510,10 @@
 		<Object id="21" name="leftPanelRendToText">
 			<attribute xStartText="0" />
 			<attribute yStartText="0" />
-			<attribute widthText="0" />
-			<attribute heightText="0" />
-			<attribute width="0" />
-			<attribute height="0" />
+			<attribute widthText="256" />
+			<attribute heightText="960" />
+			<attribute width="256" />
+			<attribute height="960" />
 			<attribute textureName="GUI_1" />
 		</Object>
 		<Object id="22" name="leftPanelTileArea">
@@ -1667,8 +1679,8 @@
 			<attribute textureName="GUI_1" />
 		</Object>
 		<Object id="40" name="paletteModifierRendToTextLeft">
-			<attribute xStartText="0" />
-			<attribute yStartText="0" />
+			<attribute xStartText="500" />
+			<attribute yStartText="500" />
 			<attribute widthText="0" />
 			<attribute heightText="0" />
 			<attribute width="0" />
@@ -1745,6 +1757,150 @@
 			<attribute heightText="22" />
 			<attribute width="148" />
 			<attribute height="22" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="49" name="verticesCreationPanel">
+			<attribute xStartText="1" />
+			<attribute yStartText="1" />
+			<attribute widthText="901" />
+			<attribute heightText="1001" />
+			<attribute width="901" />
+			<attribute height="1001" />
+			<attribute textureName="GUI_2" />
+		</Object>
+		<Object id="50" name="verticesCreationVerticesSelection">
+			<attribute xStartText="903" />
+			<attribute yStartText="1" />
+			<attribute widthText="201" />
+			<attribute heightText="1001" />
+			<attribute width="201" />
+			<attribute height="1001" />
+			<attribute textureName="GUI_2" />
+		</Object>
+		<Object id="51" name="verticesCreationVerticesSelectionRTT">
+			<attribute xStartText="0" />
+			<attribute yStartText="0" />
+			<attribute widthText="0" />
+			<attribute heightText="0" />
+			<attribute width="0" />
+			<attribute height="0" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="52" name="verticesCreationVerticesSelectionDropdown">
+			<attribute xStartText="1105" />
+			<attribute yStartText="1" />
+			<attribute widthText="201" />
+			<attribute heightText="17" />
+			<attribute width="201" />
+			<attribute height="17" />
+			<attribute textureName="GUI_2" />
+		</Object>
+		<Object id="53" name="verticesCreationVerticesSelectionDropdownHover">
+			<attribute xStartText="1105" />
+			<attribute yStartText="19" />
+			<attribute widthText="201" />
+			<attribute heightText="17" />
+			<attribute width="201" />
+			<attribute height="17" />
+			<attribute textureName="GUI_2" />
+		</Object>
+		<Object id="54" name="verticesCreationVerticesSelectionDropdownClicked">
+			<attribute xStartText="1105" />
+			<attribute yStartText="37" />
+			<attribute widthText="201" />
+			<attribute heightText="17" />
+			<attribute width="201" />
+			<attribute height="17" />
+			<attribute textureName="GUI_2" />
+		</Object>
+		<Object id="55" name="verticesCreationVerticesSelectionDropdownChildMiddle">
+			<attribute xStartText="1105" />
+			<attribute yStartText="55" />
+			<attribute widthText="17" />
+			<attribute heightText="17" />
+			<attribute width="17" />
+			<attribute height="17" />
+			<attribute textureName="GUI_2" />
+		</Object>
+		<Object id="56" name="verticesCreationVerticesSelectionDropdownChildMiddleHover">
+			<attribute xStartText="1105" />
+			<attribute yStartText="91" />
+			<attribute widthText="201" />
+			<attribute heightText="17" />
+			<attribute width="201" />
+			<attribute height="17" />
+			<attribute textureName="GUI_2" />
+		</Object>
+		<Object id="57" name="verticesCreationVerticesSelectionDropdownChildMiddleClicked">
+			<attribute xStartText="1105" />
+			<attribute yStartText="109" />
+			<attribute widthText="201" />
+			<attribute heightText="17" />
+			<attribute width="201" />
+			<attribute height="17" />
+			<attribute textureName="GUI_2" />
+		</Object>
+		<Object id="58" name="verticesCreationVerticesSelectionDropdownChildBottom">
+			<attribute xStartText="1105" />
+			<attribute yStartText="73" />
+			<attribute widthText="17" />
+			<attribute heightText="17" />
+			<attribute width="17" />
+			<attribute height="17" />
+			<attribute textureName="GUI_2" />
+		</Object>
+		<Object id="59" name="verticesCreationVerticesSelectionDropdownChildBottomHover">
+			<attribute xStartText="1105" />
+			<attribute yStartText="127" />
+			<attribute widthText="201" />
+			<attribute heightText="17" />
+			<attribute width="201" />
+			<attribute height="17" />
+			<attribute textureName="GUI_2" />
+		</Object>
+		<Object id="60" name="verticesCreationVerticesSelectionDropdownChildBottomClicked">
+			<attribute xStartText="1105" />
+			<attribute yStartText="145" />
+			<attribute widthText="201" />
+			<attribute heightText="17" />
+			<attribute width="201" />
+			<attribute height="17" />
+			<attribute textureName="GUI_2" />
+		</Object>
+		<Object id="61" name="verticesCreationVerticesPreviewRTT">
+			<attribute xStartText="0" />
+			<attribute yStartText="0" />
+			<attribute widthText="0" />
+			<attribute heightText="0" />
+			<attribute width="0" />
+			<attribute height="0" />
+			<attribute textureName="GUI_2" />
+		</Object>
+		<Object id="62" name="Button1">
+			<attribute xStartText="897" />
+			<attribute yStartText="197" />
+			<attribute widthText="150" />
+			<attribute heightText="26" />
+			<attribute width="150" />
+			<attribute height="26" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="63" name="Button1Hover">
+			<attribute xStartText="897" />
+			<attribute yStartText="224" />
+			<attribute widthText="150" />
+			<attribute heightText="26" />
+			<attribute width="150" />
+			<attribute height="26" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="64" name="Button1Pressed">
+			<attribute xStartText="897" />
+			<attribute yStartText="251" />
+			<attribute widthText="150" />
+			<attribute heightText="26" />
+			<attribute width="150" />
+			<attribute height="26" />
 			<attribute textureName="GUI_1" />
 		</Object>
   </Library>

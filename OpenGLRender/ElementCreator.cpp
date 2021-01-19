@@ -2,6 +2,7 @@
 #include "Palette.h"
 #pragma warning(disable: 4244)
 
+
 void generate_GUI_Bottom_Bar()
 {
 	GUIPanels.push_back(bottomBar);
@@ -15,7 +16,7 @@ void generate_GUI_Bottom_Bar()
 	bottomBar->addElement(new GUIElement("leftCorner", v, 0, screenHeightPixels - 30, screenWidth, 30, ""));
 
 	GUIGroup* labelGroup = new GUIGroup("labelGroup", 64, screenHeightPixels - 30, 64 * 3, 30 * 3);
-	bottomBar->addElement(labelGroup);
+
 	//X
 	auto label = new GUILabel("x", getGUIObjectFromLibrary("bottomBarLabel")->getVertices(), 64, screenHeightPixels - 30, 64, 30, xText);
 	label->setTextStartOffset(6);
@@ -29,88 +30,202 @@ void generate_GUI_Bottom_Bar()
 	label->setTextStartOffset(6);
 	labelGroup->addElement(label);
 
-	ToggleButtonGroup* group = new ToggleButtonGroup("toggles", 64 * 5, screenHeightPixels - 30, screenWidthPixels, 30);
-	bottomBar->addElement(group);
+	bottomBar->addElement(labelGroup);
 
-	ToggleButton* tb = new ToggleButton("eraser", getGUIObjectFromLibrary("bottomBarEraser")->getVertices(), getGUIObjectFromLibrary("bottomBarEraserHover")->getVertices(), getGUIObjectFromLibrary("bottomBarEraserPressed")->getVertices(), 64 * 5, screenHeightPixels - 30, 30, 30, [&](int& mouseState) { eraseToggle = !eraseToggle; if (!eraseToggle) getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); });
+	ToggleButtonGroup* group = new ToggleButtonGroup("toggles", 64 * 5, screenHeightPixels - 30, screenWidthPixels, 30);
+	group->setResetAfterToggle(true);
+
+	ToggleButton* tb = new ToggleButton("eraser", getGUIObjectFromLibrary("bottomBarEraser")->getVertices(), getGUIObjectFromLibrary("bottomBarEraserHover")->getVertices(), getGUIObjectFromLibrary("bottomBarEraserPressed")->getVertices(), 64 * 5, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) { 
+		eraseToggle = !eraseToggle; 
+		/*if (!eraseToggle) 
+			getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); */
+		});
 	tb->toggleCleanReset();
 	group->addElement(tb);
-	tb = new ToggleButton("destroyer", getGUIObjectFromLibrary("bottomBarDestroyer")->getVertices(), getGUIObjectFromLibrary("bottomBarDestroyerHover")->getVertices(), getGUIObjectFromLibrary("bottomBarDestroyerPressed")->getVertices(), 64 * 5 + 40, screenHeightPixels - 30, 30, 30, [&](int& mouseState) { destroyToggle = !destroyToggle; if (!destroyToggle) getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); });
+	tb = new ToggleButton("destroyer", getGUIObjectFromLibrary("bottomBarDestroyer")->getVertices(), getGUIObjectFromLibrary("bottomBarDestroyerHover")->getVertices(), getGUIObjectFromLibrary("bottomBarDestroyerPressed")->getVertices(), 64 * 5 + 40, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) { 
+		destroyToggle = !destroyToggle; 
+		/*if (!destroyToggle) 
+			getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); */
+		});
 	tb->toggleCleanReset();
 	group->addElement(tb);
-	tb = new ToggleButton("tileDestroyer", getGUIObjectFromLibrary("bottomBarTileDestroyer")->getVertices(), getGUIObjectFromLibrary("bottomBarTileDestroyerHover")->getVertices(), getGUIObjectFromLibrary("bottomBarTileDestroyerPressed")->getVertices(), 64 * 5 + 80, screenHeightPixels - 30, 30, 30, [&](int& mouseState) {destroyTileToggle = !destroyTileToggle; if (!destroyTileToggle) getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); });
+	tb = new ToggleButton("tileDestroyer", getGUIObjectFromLibrary("bottomBarTileDestroyer")->getVertices(), getGUIObjectFromLibrary("bottomBarTileDestroyerHover")->getVertices(), getGUIObjectFromLibrary("bottomBarTileDestroyerPressed")->getVertices(), 64 * 5 + 80, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) {
+		destroyTileToggle = !destroyTileToggle; 
+		/*if (!destroyTileToggle) 
+			getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); */
+		});
 	tb->toggleCleanReset();
 	group->addElement(tb);
-	tb = new ToggleButton("cut", getGUIObjectFromLibrary("bottomBarCut")->getVertices(), getGUIObjectFromLibrary("bottomBarCutHover")->getVertices(), getGUIObjectFromLibrary("bottomBarCutPressed")->getVertices(), 64 * 5 + 120, screenHeightPixels - 30, 30, 30, [&](int& mouseState) {cutToggle = !cutToggle; if (!cutToggle) getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); });
+	tb = new ToggleButton("cut", getGUIObjectFromLibrary("bottomBarCut")->getVertices(), getGUIObjectFromLibrary("bottomBarCutHover")->getVertices(), getGUIObjectFromLibrary("bottomBarCutPressed")->getVertices(), 64 * 5 + 120, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) {
+		cutToggle = !cutToggle; 
+		/*if (!cutToggle) 
+			getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); */
+			});
 	tb->toggleCleanReset();
 	group->addElement(tb);
-	tb = new ToggleButton("copy", getGUIObjectFromLibrary("bottomBarCopy")->getVertices(), getGUIObjectFromLibrary("bottomBarCopyHover")->getVertices(), getGUIObjectFromLibrary("bottomBarCopyPressed")->getVertices(), 64 * 5 + 160, screenHeightPixels - 30, 30, 30, [&](int& mouseState) {copyToggle = !copyToggle; if (!copyToggle) getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); });
+	tb = new ToggleButton("copy", getGUIObjectFromLibrary("bottomBarCopy")->getVertices(), getGUIObjectFromLibrary("bottomBarCopyHover")->getVertices(), getGUIObjectFromLibrary("bottomBarCopyPressed")->getVertices(), 64 * 5 + 160, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) {
+		copyToggle = !copyToggle; 
+		/*if (!copyToggle) 
+			getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); */
+		});
 	tb->toggleCleanReset();
 	group->addElement(tb);
 	
-
-	bottomBar->createObjects();
+	bottomBar->addElement(group);
 }
 
-void generate_GUI_Bottom_Bar_text(DrawObjects *ob, std::string xText, std::string yText, std::string zText)
-{
-	ob->clearObjects();
-	// X
-	double x = xCameraPos + ((64 * 2 + 16) / (double(screenWidthPixels) / 2)), y = ((30 + 11) / (double(screenHeightPixels) / 2));
-	generate_GUI_Text(ob, x, y, xText);
-	// Y
-	x = ((64 * 3 + 16) / (double(screenWidthPixels) / 2)), y = 2.0 + ((30 + 11) / (double(screenHeightPixels) / 2));
-	generate_GUI_Text(ob, x, y, yText);
-	// Z
-	x = ((64 * 4 + 16) / (double(screenWidthPixels) / 2)), y = 2.0 + ((30 + 11) / (double(screenHeightPixels) / 2));
-	generate_GUI_Text(ob, x, y, zText);
-}
 
-void generate_GUI_Text(DrawObjects *ob, double x, double y, std::string text)
+/**
+* Generate Text on the GUI.
+*
+* @param ob
+* @param x, the start location in pixels.
+* @param y, the start location in pixels.
+* @param textStartOffset, the offset in pixels from the start x position.
+* @param rowLength, the maximum length of a row of text.
+* @param height, the height of the text area.
+* @param text, the text to be drawn.
+* @param textType, the type of text to be drawn.
+* @param ellipsis, whether Ellipsis should be applied to the text or not.
+* @param centerdText, center the text to the middle of the area. 1 == center based on both width and height, 2 == center based on width, 3 == center based on height.
+* @param rtt, if the text should be treated as if drawn to a texture.
+*
+*/
+void generate_GUI_Text(TextDrawObject* ob, double x, double y, int textStartOffset, int rowLength, int height, std::string text, string textType, bool ellipsis, int centeredText, RendToText* rtt)
 {
-	/*int character = 0;
-	float offset = 0.0f;
-	for (auto& letter : text) {
-		character = letter;
-		auto& letterInformation = letterLibrary.getLetterInformation(std::string(1, letter) + "Black");
-		if (letterInformation.size() == 3)
-			ob->addObject(new DrawObject(x + offset, y, letterInformation[2], letterInformation[0], letterInformation[1]));
-		offset += ((OFFSET_PER_CHARACTER[character]) / (double(screenWidthPixels) / 2));
-	}*/
-}
+	auto& list = ob->get_Objects();
+	if (ob->get_Text() != text || list.size() == 0) {
+		ob->set_Text(text);
+		if (list.size() > 0)
+			ob->clear();
 
-void generate_GUI_Text(std::vector<DrawObject*>& vec, double x, double y, std::string text)
-{
-	int character = 0;
-	float offset = 0.0f;
-	for (auto& letter : text) {
-		character = letter;
-		//vec.push_back(new DrawObject(x + offset, y, character, vh->getVAO(), vh->getTextureID()));
-		//offset += ((OFFSET_PER_CHARACTER[character]) / (double(screenWidthPixels) / 2));
+		LetterLibrary* letterLibraryRTT = nullptr;
+		if (rtt)
+			letterLibraryRTT = rendToTextLibrary.get_Letter_Library(rtt->getWidth(), rtt->getWidth());
+
+
+		int character = 0, width = 0, textWidth = 0;
+		float offset = 0.0f, maxOffset = (rowLength / (double(screenWidthPixels) / 2)), offsetY = .0f;
+
+		if (rtt)
+			textWidth = letterLibraryRTT->getLetterInformation(std::string(1, '1') + textType)[5];
+		else
+			textWidth = letterLibrary.getLetterInformation(std::string(1, '1') + textType)[5];
+
+		auto textSize = Get_Text_Size(text, textType);
+		if (textSize > rowLength - textStartOffset && ellipsis) {
+			text.erase(Get_Text_Pos_Until_Length(text, textType, rowLength - textStartOffset));
+			text += "...";
+			textSize = Get_Text_Size(text, textType);
+			if (textSize > rowLength - textStartOffset) {
+				text.erase(text.size() - 4);
+				text += "...";
+				textSize = Get_Text_Size(text, textType);
+			}
+		}
+		if (centeredText == 1) {
+			x += (rowLength / 2) - (textSize / 2);
+			y += (height - textWidth) / 2.;
+		}
+		else {
+			if (centeredText == 2)
+				x += (rowLength / 2.) - (textSize / 2.);
+			else {
+				x += textStartOffset;
+				rowLength -= textStartOffset;
+			}
+			if (centeredText == 3)
+				y += (height - textWidth) / 2.;
+		}
+		if (rtt) {
+			x /= (double(rtt->getWidth()) / 2); y /= (double(rtt->getHeight()) / 2);
+		}
+		else {
+			x /= (double(screenWidthPixels) / 2); y /= (double(screenHeightPixels) / 2);
+		}
+
+		for (auto& letter : text) {
+			character = letter;
+			std::vector<int> letterInformation;
+			if (rtt)
+				letterInformation = letterLibraryRTT->getLetterInformation(std::string(1, letter) + textType);
+			else
+				letterInformation = letterLibrary.getLetterInformation(std::string(1, letter) + textType);
+
+			if (letterInformation.size() >= 7) {
+				if (width == 0)
+					width = letterInformation[5];
+				if (letterInformation[6] != 0) {
+					if (rtt)
+						offsetY = ((letterInformation[6]) / (double(rtt->getHeight()) / 2));
+					else
+						offsetY = ((letterInformation[6]) / (double(screenHeightPixels) / 2));
+				}
+				if (rtt)
+					offset -= ((letterInformation[3]) / (double(rtt->getWidth()) / 2));
+				else
+					offset -= ((letterInformation[3]) / (double(screenWidthPixels) / 2));
+
+				// Draw the letter
+				list.push_back(new DrawObject(x + offset, y + offsetY, letterInformation[2], letterInformation[0], letterInformation[1]));
+
+				if (rtt)
+					offset += ((letterInformation[4] + 1) / (double(rtt->getWidth()) / 2));
+				else
+					offset += ((letterInformation[4] + 1) / (double(screenWidthPixels) / 2));
+
+				if (letterInformation[6] != 0)
+					offsetY = 0;
+			}
+			if (!ellipsis && offset >= maxOffset) {
+				offset = 0.0f;
+				if (rtt)
+					y += ((width + 10) / (double(rtt->getWidth()) / 2));
+				else
+					y += ((width + 10) / (double(screenWidthPixels) / 2));
+			}
+		}
 	}
 }
 
-void generate_GUI_Text(DrawObjects* ob, double x, double y, int textStartOffset, int rowLength, std::string text, string textType)
+/*
+void generate_GUI_Text_RTT(DrawObjects* ob, double x, double y, int textStartOffset, int rowLength, std::string text, string textType, RendToText* rtt, bool ellipsis, bool centeredText)
 {
-	x += (textStartOffset / (double(screenWidthPixels) / 2));
-	int character = 0, width = 0;
-	float offset = 0.0f, maxOffset = (rowLength / (double(screenWidthPixels) / 2));
+	auto letterLibrary = rendToTextLibrary.get_Letter_Library(rtt->getWidth(), rtt->getWidth());
+	int character = 0, width = 0, textWidth = letterLibrary->getLetterInformation(std::string(1, '1') + textType)[5];
+	float offset = 0.0f, maxOffset = (rowLength / (double(rtt->getWidth()) / 2));
+
+	auto textSize = Get_Text_Size(text, textType);
+	if (ellipsis && textSize >= rowLength - textStartOffset) {
+		text.erase(Get_Text_Pos_Until_Length(text, textType, rowLength - textStartOffset));
+		text += "...";
+	}
+
+	if (centeredText)
+		x += (rowLength / 2.) - (textSize / 2.);
+	else {
+		x += textStartOffset;
+		rowLength -= textStartOffset;
+	}
+	x /= (double(rtt->getWidth()) / 2); y /= (double(rtt->getHeight()) / 2);
+
 	for (auto& letter : text) {
 		character = letter;
-		auto& letterInformation = letterLibrary.getLetterInformation(std::string(1, letter) + textType);
-		if (letterInformation.size() == 6) {
+		auto& letterInformation = letterLibrary->getLetterInformation(std::string(1, letter) + textType);
+		if (letterInformation.size() >= 7) {
 			if (width == 0)
 				width = letterInformation[5];
-			offset -= ((letterInformation[3]) / (double(screenWidthPixels) / 2));
+			offset -= ((letterInformation[3]) / (double(rtt->getWidth()) / 2));
 			ob->addObject(new DrawObject(x + offset, y, letterInformation[2], letterInformation[0], letterInformation[1]));
-			offset += ((letterInformation[4] + 1) / (double(screenWidthPixels) / 2));
+			offset += ((letterInformation[4] + 1) / (double(rtt->getWidth()) / 2));
 		}
-		if (offset > maxOffset) {
+		if (!ellipsis && offset >= maxOffset) {
 			offset = 0.0f;
-			y += ((width + 10) / (double(screenWidthPixels) / 2));
+			y += ((width + 10) / (double(rtt->getWidth()) / 2));
 		}
 	}
 }
+*/
 
 void generate_GUI_Left_Panel(size_t displayState)
 {
@@ -134,19 +249,22 @@ void generate_GUI_Left_Panel(size_t displayState)
 
 	auto rtt = findByName(renderToTextureContainer, "leftPanelTiles");
 
+	
 	GUIGroup* groupLeft = new GUIGroup("emptyTiles_group", 0, 0, 64 * 4, 64 * 10);
-	leftPanel->addElement(groupLeft);
 	groupLeft->setRenderToText(rtt, true);
+	groupLeft->set_Skip_Hover(true);
 	// Empty tiles left
 	for (int i = 0; i < (rtt->getHeight() / 64); i++) {
 		for (int j = 0; j < 4; j++) {
 			groupLeft->addElement(new GUIElement("emptyTile_" + std::to_string(i * 4 + j), rtt->getVerticesByName("emptyTileMarker"), 64 * j, 64 * i, 64, 64, ""));
 		}
 	}
+	leftPanel->addElement(groupLeft);
 	
 	
 	// Left items selection render to texture
 	auto text = getGUIObjectFromLibrary("leftPanelRendToText")->getVertices();
+	/*
 	text->setWidthText(64*4);
 	text->setHeightText(((height - 54) / 64) * 64);
 	float s = (std::fmod(screenHeight / 64.0f, 1) * 64) / 2;
@@ -155,11 +273,11 @@ void generate_GUI_Left_Panel(size_t displayState)
 	text->setTextureSizeHeight(rtt->getHeight());
 	text->setWidth(rtt->getWidth());
 	text->setHeight(rtt->getHeight());
+	*/
 	ScaleableElement* tilesRTT = new ScaleableElement("tilesRTT", xStart + 10, yStart + 54, 64 * 4, ((height - 54) / 64) * 64, text);
 	tilesRTT->setRenderToText(findByName(renderToTextureContainer, "leftPanelTiles"));
 	tilesRTT->setOffsetY(left_panel_Offset);
 	leftPanel->addElement(tilesRTT);
-	removeVertices(text);
 	
 
 	
@@ -206,6 +324,7 @@ void generate_GUI_Left_Panel(size_t displayState)
 						RendToText* rttTemp = findByName(renderToTextureContainer, "leftPanelTiles");
 
 						rtt->setOffsetY(left_panel_Offset - rtt->getV()->getYStartText());
+						rtt->setUpdate(true);
 
 						if (ToggleButtonGroup * tgb = dynamic_cast<ToggleButtonGroup*>(leftPanel->getElementByName("paletteToggleGroup")))
 							tgb->setRendToTextOffsetY(left_panel_Offset);
@@ -217,20 +336,20 @@ void generate_GUI_Left_Panel(size_t displayState)
 			//leftPanel->reCreateObjects(getObjectByName(objects, "GUI_LeftPanel_"));
 		}
 		});
-	tbg->setClickLambda([](int& mouseState) {
-		if (mouseState == 2) {
+	tbg->setClickLambda([](int& mousebutton, int& mouseState) {
+		if (mousebutton == MOUSE_RIGHT_CLICK) {
 			if (ToggleButtonGroup * tgb = dynamic_cast<ToggleButtonGroup*>(leftPanel->getElementByName("paletteToggleGroup")))
 				tgb->resetAll();
 			generate_Left_Panel_Rend_To_Text();
 		}
-		else if (mouseState == 1) {
+		else if (mousebutton == MOUSE_LEFT_CLICK && mouseState == MOUSE_RELEASE) {
 			std::vector<ToggleButton*> tb = {};
 			if (ToggleButtonGroup * tbg = dynamic_cast<ToggleButtonGroup*>(leftPanel->getElementByName("paletteToggleGroup"))) {
 				tb = tbg->getElementsByClicked(true);
 				if (tb.size() == 0) {
 					thingsToDraw.clear();
 					selectedItemId = PaletteItem(-1, false, -1, -1);
-					getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects();
+					//getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects();
 				}
 				else
 					for (auto& tb : tb) {
@@ -246,34 +365,47 @@ void generate_GUI_Left_Panel(size_t displayState)
 	tbg->setHoverLambda([tbg](double& x, double& y) {
 		int xStart = (int)((x / 64)) * 64, yStart = (int)(y / 64) * 64;
 		if ((xStart >= 0 && xStart < 256) && (yStart >= 0 && yStart < 1024)) {
-			if ((lControl || lShift) && !tbg->getDoNotResetAfterToggle())
-				tbg->setDoNotResetAfterToggle(true);
-			else if (!(lControl || lShift) && tbg->getDoNotResetAfterToggle())
-				tbg->setDoNotResetAfterToggle(false);
+			/*if ((lControl || lShift) && !tbg->getResetAfterToggle())
+				tbg->setResetAfterToggle(true);
+			else if (!(lControl || lShift) && tbg->getResetAfterToggle())
+				tbg->setResetAfterToggle(false);*/
 		}
+		});
+	tbg->setAnimationLambda([](bool& update) {
+			if (leftPanelUpdate) {
+				generate_Left_Panel_Rend_To_Text();
+				leftPanelUpdate = false;
+			}
 		});
 	tbg->setCheckOutside();
 	tbg->setRenderToText(findByName(renderToTextureContainer, "leftPanelTiles"), true);
+	tbg->setResetAfterToggle(true);
 	leftPanel->addElement(tbg);
 
-	DropDown* d = new DropDown("itemsSelection", getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), nullptr, nullptr, getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), xStart + 10, yStart + 30, 102, 24);
+	DropDown* d = new DropDown("itemsSelection",
+		getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(),
+		getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), nullptr,
+		nullptr, nullptr, nullptr,
+		xStart + 10, yStart + 30, 102, 24);
 	d->setPadding(1);
+	d->setCenteredText(true);
 	for (auto& i : palettes) {
-		d->add(i.getName(), [&, d]() {
+		d->add(i.getName(), nullptr, [&, d, tbg](int& mousebutton, int& mouseState) {
 			left_panel_Selected_Palette = i.getName();
 			left_panel_Offset = 64;
 			left_panel_page = 0;
 
 			auto tb = d->getButton();
+			auto tempText = tb->getText();
 			tb->setText(i.getName());
 			tb->resetToggle();
-
-			generate_Left_Panel_Tiles(i);
 			
+			tbg->set_Skip_Hover(false);
 
 			RendToText* rttTemp = findByName(renderToTextureContainer, "leftPanelTiles");
 			if (GUIElement * rtt = dynamic_cast<GUIElement*>(leftPanel->getElementByName("tilesRTT"))) {
 				rtt->setOffsetY(left_panel_Offset);
+				rtt->setUpdate(true);
 
 				if (ToggleButtonGroup* tgb = dynamic_cast<ToggleButtonGroup*>(leftPanel->getElementByName("paletteToggleGroup"))) {
 					tgb->setRendToTextOffsetY(left_panel_Offset);
@@ -294,8 +426,14 @@ void generate_GUI_Left_Panel(size_t displayState)
 
 				}
 			}
+			generate_Left_Panel_Tiles(i);
 			});
 	}
+	d->getButton()->setClickLambda([d, tbg](int &mouseButton, int &mouseState) {
+			d->toggleShowDropDown();
+			d->setUpdate(true);
+			tbg->set_Skip_Hover(true);
+		});
 	leftPanel->addElement(d);
 
 	
@@ -306,12 +444,12 @@ void generate_GUI_Left_Panel(size_t displayState)
 			getGUIObjectFromLibrary("scrollbar1ButtonUp")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonUpHover")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonUpClicked")->getVertices(),
-			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mouseState) {});
+			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {});
 		auto buttonDown = new Button("down",
 			getGUIObjectFromLibrary("scrollbar1ButtonDown")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonDownHover")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonDownClicked")->getVertices(),
-			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mouseState) {});
+			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {});
 		auto scrollbar = new ScrollbarVertical("scrollbar", scrollbarXStart, scrollbarYStart, 19, tilesRTT->getHeight(), buttonUp, buttonDown,
 			getGUIObjectFromLibrary("scrollbar1Background")->getVertices(),
 			nullptr,
@@ -381,20 +519,12 @@ void generate_GUI_Left_Panel(size_t displayState)
 	}
 	
 
-	leftPanel->createObjects();	
-}
 
-void generate_GUI_Left_Panel_Text_(DrawObjects *ob) {
-	// Create the text for tile palette selection area
-	if (paletteID != -1) {
-		ob->clearObjects();
-		double x = ((screenWidthPixels - 125) / (double(screenWidthPixels) / 2)), y = 0.0 + ((startDropDown + 75 + 36 * -1) / (double(screenHeightPixels) / 2));
-		generate_GUI_Text(ob, x, y, palettes.at(paletteID).getName());
-	}
 }
 
 void generate_GUI_Preview_Tiles()
 {
+	/*
 	auto ob = getObjectByName(objects, "GUI_Preview_Tiles_");
 	ob->clearObjects();
 	int increment = 64;
@@ -441,11 +571,10 @@ void generate_GUI_Preview_Tiles()
 			}
 		}
 	}
-
+	*/
 }
 
 void generate_GUI_Item_Info_Panel() {
-	itemInfo->clearObjects();
 	/*
 	if (itemInfoWindow) {
 		int startX = ((screenWidth - 1000 - 267) / 2), startY = ((screenHeight - 30 - 700) / 2);
@@ -479,7 +608,7 @@ void generate_GUI_Item_Info_Panel() {
 
 		// Right arrow
 		if (itemInfoCurrentPage != itemInfoMaxPage) {
-			auto lambda = ([&](int& mouseState) {
+			auto lambda = ([&](int& mousebutton, int& mouseState) {
 				if (itemInfoCurrentPage < itemInfoMaxPage) {
 					itemInfoSubPage = 0;
 					itemInfoCurrentPage++;
@@ -491,7 +620,7 @@ void generate_GUI_Item_Info_Panel() {
 
 		// Left arrow
 		if (itemInfoCurrentPage != 0) {
-			auto lambda = ([&](int& mouseState) {
+			auto lambda = ([&](int& mousebutton, int& mouseState) {
 				if (itemInfoCurrentPage > 0) {
 					itemInfoSubPage = 0;
 					itemInfoCurrentPage--;
@@ -515,13 +644,13 @@ void generate_GUI_Item_Info_Panel() {
 				itemInfo->addElement(new GUIElement("FirstRowTextInput_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + 240), 150, 40, ""));
 
 				if (i == 1) {
-					itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 280), 150, 26, "", [](int& mouseState) {}));
+					itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 280), 150, 26, "", [](int& mousebutton, int& mouseState) {}));
 				}
 				else if (i == 2) {
-					itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 280), 150, 26, "", [](int& mouseState) {}));
+					itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 280), 150, 26, "", [](int& mousebutton, int& mouseState) {}));
 				}
 				else if (i == 3) {
-					itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 280), 150, 26, "", [](int& mouseState) {}));
+					itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 280), 150, 26, "", [](int& mousebutton, int& mouseState) {}));
 				}
 
 			}
@@ -543,18 +672,18 @@ void generate_GUI_Item_Info_Panel() {
 
 				if (i == 0) {
 					itemInfo->addElement(new GUIElement("SecondRowTextInput_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + 510), 150, 40, ""));
-					itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 550), 150, 26, "", [](int& mouseState) {}));
+					itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 550), 150, 26, "", [](int& mousebutton, int& mouseState) {}));
 				}
 				else if (i == 1) {
 					itemInfo->addElement(new GUIElement("SecondRowTextInput_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + 440), 150, 40, ""));
-					itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 480), 150, 26, "", [](int& mouseState) {}));
+					itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 480), 150, 26, "", [](int& mousebutton, int& mouseState) {}));
 				}
 				else if (i == 2) {
 					itemInfo->addElement(new GUIElement("SecondRowTextInput_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + 510), 150, 40, ""));
-					itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 550), 150, 26, "", [](int& mouseState) {}));
+					itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 550), 150, 26, "", [](int& mousebutton, int& mouseState) {}));
 				}
 				else if (i == 3) {
-					itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 510), 150, 26, "", [&](int& mouseState) { itemInfoTile->setBlockPathfind(!itemInfoTile->getBlockPathfind()); itemInfo->getElementByName("SecondRowText_3")->setText("blockPathfinding: " + std::to_string(itemInfoTile->getBlockPathfind())); }));
+					itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + 510), 150, 26, "", [&](int& mousebutton, int& mouseState) { itemInfoTile->setBlockPathfind(!itemInfoTile->getBlockPathfind()); itemInfo->getElementByName("SecondRowText_3")->setText("blockPathfinding: " + std::to_string(itemInfoTile->getBlockPathfind())); }));
 				}
 				// Text
 				//generate_GUI_Text(ob, vhText, ((startX + 125 + 250 * i) / (double(screenWidthPixels) / 2)), 0.0 + ((startY + 475) / (double(screenHeightPixels) / 2)), text, 114);
@@ -576,7 +705,7 @@ void generate_GUI_Item_Info_Panel() {
 
 					if (i == 1) {
 						itemInfo->addElement(new GUIElement("FirstRowText_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
-						itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mouseState) {}));
+						itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mousebutton, int& mouseState) {}));
 					}
 
 				}
@@ -593,15 +722,15 @@ void generate_GUI_Item_Info_Panel() {
 
 					if (i == 0) {
 						itemInfo->addElement(new GUIElement("FirstRowText_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2.75), 150, 40, ">"));
-						itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 3.75), 150, 26, "", [&](int& mouseState) {item->setBlockProjectile(!item->getBlockProjectile()); itemInfo->getElementByName("ThirdRowText_0")->setText("blockProjectile: " + std::to_string(item->getBlockProjectile())); }));
+						itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 3.75), 150, 26, "", [&](int& mousebutton, int& mouseState) {item->setBlockProjectile(!item->getBlockProjectile()); itemInfo->getElementByName("ThirdRowText_0")->setText("blockProjectile: " + std::to_string(item->getBlockProjectile())); }));
 					}
 					else if (i == 1) {
 						itemInfo->addElement(new GUIElement("FirstRowText_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2.75), 150, 40, ">"));
-						itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 3.75), 150, 26, "", [&](int& mouseState) {item->setBlockPathfind(!item->getBlockPathfind()); itemInfo->getElementByName("ThirdRowText_1")->setText("blockPathfind: " + std::to_string(item->getBlockPathfind())); }));
+						itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 3.75), 150, 26, "", [&](int& mousebutton, int& mouseState) {item->setBlockPathfind(!item->getBlockPathfind()); itemInfo->getElementByName("ThirdRowText_1")->setText("blockPathfind: " + std::to_string(item->getBlockPathfind())); }));
 					}
 					else if (i == 2) {
 						itemInfo->addElement(new GUIElement("FirstRowText_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2.75), 150, 40, ">"));
-						itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 3.75), 150, 26, "", [&](int& mouseState) {item->setBlockObject(!item->getBlockObject()); itemInfo->getElementByName("ThirdRowText_2")->setText("blockObject: " + std::to_string(item->getBlockObject())); }));
+						itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 3.75), 150, 26, "", [&](int& mousebutton, int& mouseState) {item->setBlockObject(!item->getBlockObject()); itemInfo->getElementByName("ThirdRowText_2")->setText("blockObject: " + std::to_string(item->getBlockObject())); }));
 					}
 
 				}
@@ -616,16 +745,16 @@ void generate_GUI_Item_Info_Panel() {
 					itemInfo->addElement(new GUIElement("ThirdRowText_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst), 150, 40, text));
 
 					if (i == 0) {
-						itemInfo->addElement(new Button("ThirdRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mouseState) {item->setBlockProjectile(!item->getBlockProjectile()); itemInfo->getElementByName("ThirdRowText_0")->setText("blockProjectile: " + std::to_string(item->getBlockProjectile())); }));
+						itemInfo->addElement(new Button("ThirdRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mousebutton, int& mouseState) {item->setBlockProjectile(!item->getBlockProjectile()); itemInfo->getElementByName("ThirdRowText_0")->setText("blockProjectile: " + std::to_string(item->getBlockProjectile())); }));
 					}
 					else if (i == 1) {
-						itemInfo->addElement(new Button("ThirdRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mouseState) {item->setBlockPathfind(!item->getBlockPathfind()); itemInfo->getElementByName("ThirdRowText_1")->setText("blockPathfind: " + std::to_string(item->getBlockPathfind())); }));
+						itemInfo->addElement(new Button("ThirdRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mousebutton, int& mouseState) {item->setBlockPathfind(!item->getBlockPathfind()); itemInfo->getElementByName("ThirdRowText_1")->setText("blockPathfind: " + std::to_string(item->getBlockPathfind())); }));
 					}
 					else if (i == 2) {
-						itemInfo->addElement(new Button("ThirdRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mouseState) {item->setBlockObject(!item->getBlockObject()); itemInfo->getElementByName("ThirdRowText_2")->setText("blockObject: " + std::to_string(item->getBlockObject())); }));
+						itemInfo->addElement(new Button("ThirdRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mousebutton, int& mouseState) {item->setBlockObject(!item->getBlockObject()); itemInfo->getElementByName("ThirdRowText_2")->setText("blockObject: " + std::to_string(item->getBlockObject())); }));
 					}
 					else if (i == 3) {
-						itemInfo->addElement(new Button("ThirdRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mouseState) {item->setMoveable(!item->getMoveable()); itemInfo->getElementByName("ThirdRowText_3")->setText("moveable: " + std::to_string(item->getMoveable())); }));
+						itemInfo->addElement(new Button("ThirdRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mousebutton, int& mouseState) {item->setMoveable(!item->getMoveable()); itemInfo->getElementByName("ThirdRowText_3")->setText("moveable: " + std::to_string(item->getMoveable())); }));
 					}
 
 				}
@@ -640,21 +769,21 @@ void generate_GUI_Item_Info_Panel() {
 					itemInfo->addElement(new GUIElement("FourthRowText_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst), 150, 40, text));
 
 					if (i == 0) {
-						itemInfo->addElement(new Button("FourthRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mouseState) {item->setPickupable(!item->getPickupable()); itemInfo->getElementByName("FourthRowText_0")->setText("pickupable: " + std::to_string(item->getPickupable())); }));
+						itemInfo->addElement(new Button("FourthRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mousebutton, int& mouseState) {item->setPickupable(!item->getPickupable()); itemInfo->getElementByName("FourthRowText_0")->setText("pickupable: " + std::to_string(item->getPickupable())); }));
 					}
 					else if (i == 1) {
-						itemInfo->addElement(new Button("FourthRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mouseState) {item->setUseable(!item->getUseable()); itemInfo->getElementByName("FourthRowText_1")->setText("useable: " + std::to_string(item->getUseable())); }));
+						itemInfo->addElement(new Button("FourthRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mousebutton, int& mouseState) {item->setUseable(!item->getUseable()); itemInfo->getElementByName("FourthRowText_1")->setText("useable: " + std::to_string(item->getUseable())); }));
 					}
 					else if (i == 2) {
-						itemInfo->addElement(new Button("FourthRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mouseState) {item->setHangeable(!item->getHangeable()); itemInfo->getElementByName("FourthRowText_2")->setText("hangeable: " + std::to_string(item->getHangeable())); }));
+						itemInfo->addElement(new Button("FourthRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mousebutton, int& mouseState) {item->setHangeable(!item->getHangeable()); itemInfo->getElementByName("FourthRowText_2")->setText("hangeable: " + std::to_string(item->getHangeable())); }));
 					}
 					else if (i == 3) {
-						itemInfo->addElement(new Button("FourthRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mouseState) {item->setAlwaysOnTop(!item->getAlwaysOnTop()); itemInfo->getElementByName("FourthRowText_3")->setText("alwaysOnTop: " + std::to_string(item->getAlwaysOnTop())); }));
+						itemInfo->addElement(new Button("FourthRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 26, "", [&](int& mousebutton, int& mouseState) {item->setAlwaysOnTop(!item->getAlwaysOnTop()); itemInfo->getElementByName("FourthRowText_3")->setText("alwaysOnTop: " + std::to_string(item->getAlwaysOnTop())); }));
 					}
 				}
 				if (NonStaticItem* check = dynamic_cast<NonStaticItem*>(item)) {
 					yFirst += offset * 2;
-					auto lambda = ([&](int& mouseState) {
+					auto lambda = ([&](int& mousebutton, int& mouseState) {
 					itemInfoSubPage++;
 					updateItemInfo = true;
 					});
@@ -662,7 +791,7 @@ void generate_GUI_Item_Info_Panel() {
 				}
 			}
 			else {
-				auto lambda = ([&](int& mouseState) {
+				auto lambda = ([&](int& mousebutton, int& mouseState) {
 					itemInfoSubPage--;
 					updateItemInfo = true;
 				});
@@ -681,15 +810,15 @@ void generate_GUI_Item_Info_Panel() {
 
 						if (i == 0) {
 							itemInfo->addElement(new GUIElement("FirstRowText_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
-							itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mouseState) {}));
+							itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mousebutton, int& mouseState) {}));
 						}
 						else if (i == 1) {
 							itemInfo->addElement(new GUIElement("FirstRowText_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
-							itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mouseState) {}));
+							itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mousebutton, int& mouseState) {}));
 						}
 						else if (i == 2) {
 							itemInfo->addElement(new GUIElement("FirstRowText_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
-							itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mouseState) {}));
+							itemInfo->addElement(new Button("FirstRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mousebutton, int& mouseState) {}));
 						}
 
 					}
@@ -707,7 +836,7 @@ void generate_GUI_Item_Info_Panel() {
 							if (i == 0) {
 								itemInfo->addElement(new GUIElement("SecondRowText_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst), 150, 40, text));
 								itemInfo->addElement(new GUIElement("SecondRowTextSection_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
-								itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mouseState) {}));
+								itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mousebutton, int& mouseState) {}));
 							}
 
 						}
@@ -727,12 +856,12 @@ void generate_GUI_Item_Info_Panel() {
 							if (i == 0) {
 								itemInfo->addElement(new GUIElement("SecondRowText_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst), 150, 40, text));
 								itemInfo->addElement(new GUIElement("SecondRowTextSection_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
-								itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mouseState) {}));
+								itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mousebutton, int& mouseState) {}));
 							}
 							else if (i == 1) {
 								itemInfo->addElement(new GUIElement("SecondRowText_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst), 150, 40, text));
 								itemInfo->addElement(new GUIElement("SecondRowTextSection_" + std::to_string(i), findByName(verticesContainer, "itemInfoTextSectionID"), (startX + 50 + 250 * i), (startY + yFirst + offset), 150, 40, ">"));
-								itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mouseState) {}));
+								itemInfo->addElement(new Button("SecondRowButton_" + std::to_string(i), findByName(verticesContainer, "itemInfoButtonID"), findByName(verticesContainer, "itemInfoButtonHoverID"), findByName(verticesContainer, "itemInfoButtonPressedID"), (startX + 50 + 250 * i), (startY + yFirst + offset * 2), 150, 26, "", [](int& mousebutton, int& mouseState) {}));
 							}
 
 						}
@@ -764,15 +893,19 @@ void generate_Palette_Modifier() {
 
 	auto rtt = findByName(renderToTextureContainer, "paletteModifier");
 
+	
 	GUIGroup* groupLeft = new GUIGroup("emptyTiles_left_group", 0, 0, 64 * 4, 64 * 10);
 	paletteModifier->addElement(groupLeft);
 	groupLeft->setRenderToText(rtt, true);
+	groupLeft->set_Skip_Hover(true);
 	// Empty tiles left
 	for (int i = 0; i < (rtt->getHeight() / 64); i++) {
 		for (int j = 0; j < 4; j++) {
 			groupLeft->addElement(new GUIElement("emptyTile_Left_" + std::to_string(i * 4 + j), rtt->getVerticesByName("emptyTileMarker"), 64 * j, 64 * i, 64, 64, ""));
 		}
 	}
+	
+	
 
 	// Left items selection render to texture
 	auto text = getGUIObjectFromLibrary("paletteModifierRendToTextLeft")->getVertices();
@@ -789,7 +922,6 @@ void generate_Palette_Modifier() {
 	leftSide->setRenderToText(findByName(renderToTextureContainer, "paletteModifier"));
 	leftSide->setOffsetY(palette_Modifier_Left_Offset);
 	paletteModifier->addElement(leftSide);
-	removeVertices(text);
 
 	// Left toggle buttons
 	{
@@ -801,10 +933,10 @@ void generate_Palette_Modifier() {
 		tbg->setHoverLambda([tbg](double& x, double& y) {
 			int xStart = (int)((x / 64)) * 64, yStart = (int)(y / 64) * 64;
 			if ((xStart >= 0 && xStart < 256) && (yStart >= 0 && yStart < 1024)) {
-				if ((lControl || lShift) && !tbg->getDoNotResetAfterToggle())
-					tbg->setDoNotResetAfterToggle(true);
-				else if (!(lControl || lShift) && tbg->getDoNotResetAfterToggle())
-					tbg->setDoNotResetAfterToggle(false);
+				if ((lControl || lShift) && !tbg->getResetAfterToggle())
+					tbg->setResetAfterToggle(true);
+				else if (!(lControl || lShift) && tbg->getResetAfterToggle())
+					tbg->setResetAfterToggle(false);
 			}
 			});
 		tbg->setCheckOutside();
@@ -815,6 +947,7 @@ void generate_Palette_Modifier() {
 	GUIGroup* groupRight = new GUIGroup("emptyTiles_right_group", 0, 0, 64 * 4, 64 * 10);
 	paletteModifier->addElement(groupRight);
 	groupRight->setRenderToText(rtt, true);
+	groupRight->set_Skip_Hover(true);
 	// Empty tiles left
 	for (int i = 0; i < (rtt->getHeight() / 64); i++) {
 		for (int j = 0; j < 4; j++) {
@@ -848,6 +981,7 @@ void generate_Palette_Modifier() {
 		tbg->setClickLambda(get_Palette_Modifier_Right_Mouse_Lambda());
 		tbg->setCheckOutside();
 		tbg->setRenderToText(rtt, true);
+		tbg->setRendToTextOffsetX(64 * 4);
 		paletteModifier->addElement(tbg);
 	}
 
@@ -862,15 +996,19 @@ void generate_Palette_Modifier() {
 	paletteModifier->addElement(rightSidePreviewHover);
 
 	// Search icon
-	paletteModifier->addElement(new ExpandingButton("searchIcon", nullptr, nullptr, nullptr, startX + 180, startY + 12, 22, 22, 1.5, "", [](int& mouseState) {}));
+	paletteModifier->addElement(new Button("searchIcon", nullptr, nullptr, nullptr, startX + 180, startY + 12, 22, 22, "", [](int& mousebutton, int& mouseState) {}));
 
 	// Drop down for palettes (right side)
 	{
-		DropDown* d = new DropDown("paletteSelection", getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), nullptr, nullptr, getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), startX + 460, startY + 13, 102, 24);
+		DropDown* d = new DropDown("paletteSelection",
+			getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(),
+			getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), nullptr,
+			nullptr, nullptr, nullptr,
+			startX + 460, startY + 13, 102, 24);
 		d->setPadding(1);
 		for (auto& i : palettes) {
 			if(i.getName().compare("All") != 0)
-				d->add(i.getName(), [&, d]() {
+				d->add(i.getName(), nullptr, [&, d](int& mousebutton, int& mouseState) {
 					tempPalette.setName(i.getName());
 					tempPalette.replacePalette(i.getPalette());
 					tempPalette.findMaxY();
@@ -914,10 +1052,14 @@ void generate_Palette_Modifier() {
 
 	// Drop down for items (left Side)
 	{
-		DropDown* d = new DropDown("itemsSelection", getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), nullptr, nullptr, getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), startX + 210, startY + 13, 102, 24);
+		DropDown* d = new DropDown("itemsSelection", 
+			getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(),
+			getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), nullptr,
+			nullptr, nullptr, nullptr,
+			startX + 210, startY + 13, 102, 24);
 		d->setPadding(1);
 		for (auto& i : palettes) {
-			d->add(i.getName(), [&, d]() {
+			d->add(i.getName(), nullptr, [&, d](int& mousebutton, int& mouseState) {
 				palette_Modifier_Left_Selected_Palette = i.getName();
 				palette_Modifier_Left_Offset = 64;
 				palette_Modifier_Left_page = 0;
@@ -965,7 +1107,7 @@ void generate_Palette_Modifier() {
 			getGUIObjectFromLibrary("saveIconHover")->getVertices(),
 			getGUIObjectFromLibrary("saveIconClicked")->getVertices(),
 			startX + 568, startY + 5, 128, 128, "",
-			[&](int& mouseState) {
+			[&](int& mousebutton, int& mouseState) {
 				if (tempPalette.getName().compare("empty") != 0) {
 					std::sort(tempPalette.getPalette().begin(), tempPalette.getPalette().end(), [](PaletteItem& lhs, PaletteItem& rhs) {
 						if (lhs.getY() < rhs.getY()) return true;
@@ -991,7 +1133,7 @@ void generate_Palette_Modifier() {
 			getGUIObjectFromLibrary("trashIconHover")->getVertices(),
 			getGUIObjectFromLibrary("trashIconClicked")->getVertices(),
 			startX + 308, startY + 350, 128, 128, "",
-			[&](int& mouseState) {
+			[&](int& mousebutton, int& mouseState) {
 				if (ToggleButtonGroup* tbg = dynamic_cast<ToggleButtonGroup*>(paletteModifier->getElementByName("paletteToggleGroupRight"))) {
 					auto tb = tbg->getElementsByClicked();
 					if (tb.size() != 0) {
@@ -1025,7 +1167,7 @@ void generate_Palette_Modifier() {
 			getGUIObjectFromLibrary("scrollbar1ButtonUp")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonUpHover")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonUpClicked")->getVertices(),
-			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mouseState) {
+			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {
 				if (ScrollbarVertical* sb = dynamic_cast<ScrollbarVertical*>(paletteModifier->getElementByName("scrollbarLeft"))) {
 					auto change = sb->getScrollbarMaxLength() / ((sb->getIncrementSize() * sb->getScrollbarMaxLength()) / 64.0);
 					sb->updateScrollbarPosition(sb->getScrollbarPositionRaw() - (change), true);
@@ -1035,13 +1177,13 @@ void generate_Palette_Modifier() {
 			getGUIObjectFromLibrary("scrollbar1ButtonDown")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonDownHover")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonDownClicked")->getVertices(),
-			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mouseState) {
+			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {
 				if (ScrollbarVertical* sb = dynamic_cast<ScrollbarVertical*>(paletteModifier->getElementByName("scrollbarLeft"))) {
 					auto change = sb->getScrollbarMaxLength() / ((sb->getIncrementSize() * sb->getScrollbarMaxLength()) / 64.0);
 					sb->updateScrollbarPosition(sb->getScrollbarPositionRaw() + (change), true);
 				}
 			});
-		auto scrollbar = new ScrollbarVertical("scrollbarLeft", scrollbarXStart, scrollbarYStart, 19, 644, buttonUp, buttonDown,
+		auto scrollbar = new ScrollbarVertical("scrollbarLeftTiles", scrollbarXStart, scrollbarYStart, 19, 644, buttonUp, buttonDown,
 			getGUIObjectFromLibrary("scrollbar1Background")->getVertices(),
 			nullptr,
 			nullptr,
@@ -1058,7 +1200,7 @@ void generate_Palette_Modifier() {
 			getGUIObjectFromLibrary("scrollbar1ButtonUp")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonUpHover")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonUpClicked")->getVertices(),
-			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mouseState) {
+			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {
 				if (ScrollbarVertical* sb = dynamic_cast<ScrollbarVertical*>(paletteModifier->getElementByName("scrollbarRight"))) {
 					auto change = sb->getScrollbarMaxLength() / ((sb->getIncrementSize() * sb->getScrollbarMaxLength()) / 64.0);
 					sb->updateScrollbarPosition(sb->getScrollbarPositionRaw() - (change), true);
@@ -1068,13 +1210,13 @@ void generate_Palette_Modifier() {
 			getGUIObjectFromLibrary("scrollbar1ButtonDown")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonDownHover")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonDownClicked")->getVertices(),
-			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mouseState) {
+			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {
 				if (ScrollbarVertical* sb = dynamic_cast<ScrollbarVertical*>(paletteModifier->getElementByName("scrollbarRight"))) {
 					auto change = sb->getScrollbarMaxLength() / ((sb->getIncrementSize() * sb->getScrollbarMaxLength()) / 64.0);
 					sb->updateScrollbarPosition(sb->getScrollbarPositionRaw() + (change), true);
 				}
 			});
-		auto scrollbar = new ScrollbarVertical("scrollbarRight", scrollbarXStart, scrollbarYStart, 19, 644, buttonUp, buttonDown,
+		auto scrollbar = new ScrollbarVertical("scrollbarRightTiles", scrollbarXStart, scrollbarYStart, 19, 644, buttonUp, buttonDown,
 			getGUIObjectFromLibrary("scrollbar1Background")->getVertices(),
 			nullptr,
 			nullptr,
@@ -1139,9 +1281,9 @@ void generate_Palette_Modifier() {
 				reset_Left_Palette_Modifier_RTT();
 				reset_Right_Palette_Modifier_RTT();
 				if (DropDown* dd = dynamic_cast<DropDown*>(paletteModifier->getElementByName("itemsSelection")))
-					for (auto e : dd->geDropDownElements()) {
+					for (auto e : dd->get_Drop_Down_Elements()) {
 						if (e->getName() == currentPaletteName) {
-							e->runLambda();
+							e->runLambda(MOUSE_LEFT_CLICK, MOUSE_RELEASE);
 							textField->setUpdate(true);
 						}
 					}
@@ -1149,7 +1291,7 @@ void generate_Palette_Modifier() {
 			//palettes
 			});
 		textField->setTriggerOnKeyStroke(true);
-		textField->setAnimationLambda([textField]()
+		textField->setAnimationLambda([textField](bool& update)
 			{
 				__int64 now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 				auto then = textField->getTimeStamp();
@@ -1159,11 +1301,9 @@ void generate_Palette_Modifier() {
 					marker->setDraw(!marker->getDraw());
 				}
 			});
-		textField->setAnimationBool(true);
 		paletteModifier->addElement(textField);
 	}
 	
-	paletteModifier->createObjects();
 }
 
 void generate_Left_Panel_Tiles(Palette& p) {
@@ -1171,77 +1311,73 @@ void generate_Left_Panel_Tiles(Palette& p) {
 	if (ToggleButtonGroup * tgb = dynamic_cast<ToggleButtonGroup*>(leftPanel->getElementByName("paletteToggleGroup"))) {
 		tgb->clearAll();
 
-		if (p.getPalette().size() > 0) {
-			auto rtt = findByName(renderToTextureContainer, "leftPanelTiles");
-			int maxPerPage = (rtt->getHeight() / 64) - 1;
-			auto tilesRTT = leftPanel->getElementByName("tilesRTT");
-			int minY = left_panel_page * (maxPerPage)-(left_panel_page * (tilesRTT->getHeight() / 64)), maxY = minY + (maxPerPage), count = 0;
-			left_panel_Offset_Max = (rtt->getHeight() - tilesRTT->getHeight());
-			if (left_panel_page > 0) maxY++;
-			//if(palette_Modifier_Right_page == 1) min
+		auto rtt = findByName(renderToTextureContainer, "leftPanelTiles");
+		int maxPerPage = (rtt->getHeight() / 64) - 1;
+		auto tilesRTT = leftPanel->getElementByName("tilesRTT");
+		int minY = left_panel_page * (maxPerPage)-(left_panel_page * (tilesRTT->getHeight() / 64)), maxY = minY + (maxPerPage), count = 0;
+		left_panel_Offset_Max = (rtt->getHeight() - tilesRTT->getHeight());
+		if (left_panel_page > 0) maxY++;
+		//if(palette_Modifier_Right_page == 1) min
 
-			for (int y = 0; y < (rtt->getHeight() / 64); y++) {
-				for (int x = 0; x < 4; x++) {
-					ToggleButton* tb = new ToggleButton("toggle_" + std::to_string(count), nullptr, rtt->getVerticesByName("yellowSquareSmall"), rtt->getVerticesByName("redSquareSmall"), x * 64, (y) * 64, x * 64, y * 64, 63, 63, [](int& mouseState) {
-						generate_Left_Panel_Rend_To_Text();
-						},
-						[](double& x, double& y) {
-							generate_Left_Panel_Rend_To_Text();
-						});
-					tb->toggleAlwaysShowBase();
-					tgb->addElement(tb);
-					count++;
+		for (int y = 0; y < (rtt->getHeight() / 64); y++) {
+			for (int x = 0; x < 4; x++) {
+				ToggleButton* tb = new ToggleButton("toggle_" + std::to_string(count), nullptr, rtt->getVerticesByName("yellowSquareSmall"), rtt->getVerticesByName("redSquareSmall"), x * 64, y * 64, 63, 63, [](int& mousebutton, int& mouseState) {
+					leftPanelUpdate = true;
+					},
+					[](double& x, double& y) {
+						leftPanelUpdate = true;
+					});
+				tb->toggleAlwaysShowBase();
+				tgb->addElement(tb);
+				count++;
+			}
+		}
+
+		//tgb->setResetAfterToggle(false);
+
+		for (auto& i : p.getPalette()) {
+			ToggleButton* toggle = nullptr;
+			int pos = 0;
+			if (i.getY() >= minY && i.getY() <= maxY) {
+				pos = ((i.getY() - minY) * 4) + i.getX();
+				pos += 4;
+				toggle = tgb->getElementByName("toggle_" + std::to_string(pos));
+			}
+			else if (minY > 0 && i.getY() == minY - 1) {
+				pos = ((i.getY() + 1 - minY) * 4) + i.getX();
+				toggle = tgb->getElementByName("toggle_" + std::to_string(pos));
+			}
+			if (toggle != nullptr) toggle->addMiscellaneousID("itemID", i.getIDRef());
+			if (!i.isDoubleSize()) {
+				if (toggle != nullptr) {
+					toggle->setButton(rtt->getVerticesByName(itemAtlas.getItemObject(i.getIDRef())->getName()));
 				}
 			}
+			else {
+				if (toggle != nullptr) {
+					auto obj = itemAtlas.getItemObject(i.getIDRef());
+					if (obj) {
+						toggle->setButton(rtt->getVerticesByName(obj->getName()));
+						toggle->setHoverVertices(rtt->getVerticesByName("yellowSquareBig"));
+						toggle->set_Clicked_Vertices(rtt->getVerticesByName("redSquareBig"));
+						toggle->setWidth(127);
+						toggle->setHeight(127);
+						//toggle->addToStartXText(64);
+						//toggle->addToStartYText(64);
+						//toggle->setXDrawOffset(-64);
+						//toggle->setYDrawOffset(-64);
 
-			tgb->setDoNotResetAfterToggle(false);
-
-			for (auto& i : p.getPalette()) {
-				ToggleButton* toggle = nullptr;
-				int pos = 0;
-				if (i.getY() >= minY && i.getY() <= maxY) {
-					pos = ((i.getY() - minY) * 4) + i.getX();
-					pos += 4;
-					toggle = tgb->getElementByName("toggle_" + std::to_string(pos));
-				}
-				else if (minY > 0 && i.getY() == minY - 1) {
-					pos = ((i.getY() + 1 - minY) * 4) + i.getX();
-					toggle = tgb->getElementByName("toggle_" + std::to_string(pos));
-				}
-				if (toggle != nullptr) toggle->addMiscellaneousID("itemID", i.getIDRef());
-				if (!i.isDoubleSize()) {
-					if (toggle != nullptr) {
-						toggle->setButton(rtt->getVerticesByName(itemAtlas.getItemObject(i.getIDRef())->getName()));
-					}
-				}
-				else {
-					if (toggle != nullptr) {
-						auto obj = itemAtlas.getItemObject(i.getIDRef());
-						if (obj) {
-							toggle->setButton(rtt->getVerticesByName(obj->getName()));
-							toggle->setHover(rtt->getVerticesByName("yellowSquareBig"));
-							toggle->setClicked(rtt->getVerticesByName("redSquareBig"));
-							toggle->setWidth(127);
-							toggle->setHeight(127);
-							//toggle->addToStartXText(64);
-							//toggle->addToStartYText(64);
-							toggle->setXDrawOffset(-64);
-							toggle->setYDrawOffset(-64);
-
-							toggle = tgb->getElementByName("toggle_" + std::to_string(pos + 1));
-							if (toggle != nullptr && toggle->getShow()) toggle->toggleShow();
-							toggle = tgb->getElementByName("toggle_" + std::to_string(pos + 4));
-							if (toggle != nullptr && toggle->getShow()) toggle->toggleShow();
-							toggle = tgb->getElementByName("toggle_" + std::to_string(pos + 5));
-							if (toggle != nullptr && toggle->getShow()) toggle->toggleShow();
-						}
+						toggle = tgb->getElementByName("toggle_" + std::to_string(pos + 1));
+						if (toggle != nullptr && toggle->getShow()) toggle->toggleShow();
+						toggle = tgb->getElementByName("toggle_" + std::to_string(pos + 4));
+						if (toggle != nullptr && toggle->getShow()) toggle->toggleShow();
+						toggle = tgb->getElementByName("toggle_" + std::to_string(pos + 5));
+						if (toggle != nullptr && toggle->getShow()) toggle->toggleShow();
 					}
 				}
 			}
-
 		}
 	}
-	generate_Left_Panel_Rend_To_Text();
 }
 
 void generate_Left_Panel_Rend_To_Text() {
@@ -1255,17 +1391,357 @@ void generate_Left_Panel_Rend_To_Text() {
 
 
 	DrawObjects *temp = new DrawObjects("temp");
-	leftPanel->getElementByName("emptyTiles_group")->createObjectNoRestriction(temp);
+	leftPanel->getElementByName("emptyTiles_group")->get_Draw_Object(temp, false);
 	if (left_panel_Selected_Palette != "") {
-		leftPanel->getElementByName("paletteToggleGroup")->createObjectNoRestriction(temp);
+		leftPanel->getElementByName("paletteToggleGroup")->get_Draw_Object(temp, false);
 	}
 	for (auto& o : temp->getObjects()) {
 		o->renderGUI("");
 	}
 
-	temp->clearObjects();
+	delete temp;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
 	glViewport(0, 0, screenWidth, screenHeight);
 	glDisable(GL_DEPTH_TEST);
+}
+
+void generate_Vertices_Creation_Panel()
+{
+	GUIPanels.push_back(verticesCreation);
+
+	verticesCreation->setCheckIfOutside(true);
+
+	int width = screenWidth * 0.8, height = screenHeight * 0.8, startX = ((screenWidth - width) / 2), startY = ((screenHeight - height) / 2);
+	verticesCreation->setDimensions(startX, startY, width, height);
+	if (verticesCreation->getShow()) verticesCreation->toggleShow();
+
+	// Base
+	verticesCreation->addElement(new ScaleableElement("basePanel", startX, startY, width, height, getGUIObjectFromLibrary("verticesCreationPanel")->getVertices()));
+	//verticesCreation->addElement(new GUIElement("basePanel"));
+
+	// Left scrollbar
+	int scrollbarXStart = startX + width * 0.02, scrollbarYStart = startY + height * 0.025, scrollbarWidth = 19, scrollbarHeight = height * 0.95 - scrollbarWidth;
+	auto buttonUp = new Button("up",
+		getGUIObjectFromLibrary("scrollbar1ButtonUp")->getVertices(),
+		getGUIObjectFromLibrary("scrollbar1ButtonUpHover")->getVertices(),
+		getGUIObjectFromLibrary("scrollbar1ButtonUpClicked")->getVertices(),
+		scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {
+			if (ScrollbarVertical* sb = dynamic_cast<ScrollbarVertical*>(paletteModifier->getElementByName("scrollbarRight"))) {
+				auto change = sb->getScrollbarMaxLength() / ((sb->getIncrementSize() * sb->getScrollbarMaxLength()) / 64.0);
+				sb->updateScrollbarPosition(sb->getScrollbarPositionRaw() - (change), true);
+			}
+		});
+	auto buttonDown = new Button("down",
+		getGUIObjectFromLibrary("scrollbar1ButtonDown")->getVertices(),
+		getGUIObjectFromLibrary("scrollbar1ButtonDownHover")->getVertices(),
+		getGUIObjectFromLibrary("scrollbar1ButtonDownClicked")->getVertices(),
+		scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {
+			if (ScrollbarVertical* sb = dynamic_cast<ScrollbarVertical*>(paletteModifier->getElementByName("scrollbarRight"))) {
+				auto change = sb->getScrollbarMaxLength() / ((sb->getIncrementSize() * sb->getScrollbarMaxLength()) / 64.0);
+				sb->updateScrollbarPosition(sb->getScrollbarPositionRaw() + (change), true);
+			}
+		});
+	auto scrollbar = new ScrollbarVertical("selectionAreaScrollBar", scrollbarXStart, scrollbarYStart, scrollbarWidth, scrollbarHeight, buttonUp, buttonDown,
+		getGUIObjectFromLibrary("scrollbar1Background")->getVertices(),
+		nullptr,
+		nullptr,
+		getGUIObjectFromLibrary("scrollbar1Bar")->getVertices(), getGUIObjectFromLibrary("scrollbar1BarHover")->getVertices(), getGUIObjectFromLibrary("scrollbar1BarClicked")->getVertices());
+	verticesCreation->addElement(scrollbar);
+
+	// Vertices selection
+	int verticesSelectionAreaStartX = scrollbarXStart + scrollbarWidth, verticesSelectionAreaStartY = scrollbarYStart, verticesSelectionAreaWidth = width * 0.15, verticesSelectionAreaHeight = scrollbarHeight;
+	//verticesCreation->addElement(new ScaleableElement("selectionArea", verticesSelectionAreaStartX, verticesSelectionAreaStartY, verticesSelectionAreaWidth, verticesSelectionAreaHeight, getGUIObjectFromLibrary("verticesCreationVerticesSelection")->getVertices()));
+
+	auto rtt = findByName(renderToTextureContainer, "verticesCreation");
+	//auto rtt = findByName(renderToTextureContainer, "leftPanelTiles");
+	auto text = getGUIObjectFromLibrary("verticesCreationVerticesSelectionRTT")->getVertices();
+	text->change_All(0, 0, verticesSelectionAreaWidth - 2, verticesSelectionAreaHeight - 2, verticesSelectionAreaWidth - 2, verticesSelectionAreaHeight - 2);
+
+	ScaleableElement* selectionAreaRTT = new ScaleableElement("selectionAreaRTT", verticesSelectionAreaStartX + 1, verticesSelectionAreaStartY + 1, verticesSelectionAreaWidth - 2, verticesSelectionAreaHeight - 2, text);
+	selectionAreaRTT->setRenderToText(findByName(renderToTextureContainer, "verticesCreation"));
+	verticesCreation->addElement(selectionAreaRTT);
+
+	// Vertices selection contents
+	auto group = new GUIGroup("selectionAreaGroup", selectionAreaRTT->getXStart(), selectionAreaRTT->getYStart(), selectionAreaRTT->getWidth(), selectionAreaRTT->getHeight());
+	group->setRenderToText(rtt, true);
+	group->setAnimationLambda([](bool& update)
+		{
+			if (verticesCreationUpdateSelectionArea) {
+				generate_Vertices_Creation_Rend_To_Text();
+				verticesCreationUpdateSelectionArea = false;
+			}
+		});
+	group->setScrollLambda([scrollbar](double& v) {
+		scrollbar->change_Scrollbar_Position(-v*6, true);
+		});
+	verticesCreation->addElement(group);
+
+	rtt = findByName(renderToTextureContainer, "verticesCreationPreview");
+	//auto rtt = findByName(renderToTextureContainer, "leftPanelTiles");
+	text = getGUIObjectFromLibrary("verticesCreationVerticesPreviewRTT")->getVertices();
+	text->change_All(0, 0, 500, selectionAreaRTT->getHeight(), 500, selectionAreaRTT->getHeight());
+
+	ScaleableElement* previewRTT = new ScaleableElement("previewRTT", selectionAreaRTT->getXStart() + selectionAreaRTT->getWidth() + 50, verticesSelectionAreaStartY + 1, 500, selectionAreaRTT->getHeight(), text);
+	previewRTT->setRenderToText(findByName(renderToTextureContainer, "verticesCreationPreview"));
+	previewRTT->setScrollLambda([previewRTT](double& v) {
+		if (selectedObject) {
+			auto obj = selectedObject->getVertices();
+			if (v > 0 && !(obj->getWidth() * (verticesCreationPreviewZoom + 0.1) > 2048. || obj->getHeight() * (verticesCreationPreviewZoom + 0.1) > 2048.))
+				verticesCreationPreviewZoom += .1;
+			else if (v < 0 && verticesCreationPreviewZoom > 0.2)
+				verticesCreationPreviewZoom -= .1;
+			verticesCreationPreviewZoom = round(verticesCreationPreviewZoom * 1000.0) / 1000.;
+		}
+		generate_Vertices_Creation_Preview_Rend_To_Text();
+		});
+	previewRTT->setClickLambda([previewRTT](int& mouseButton, int& mouseState) {
+			if (mouseButton == MOUSE_LEFT_CLICK && mouseState == MOUSE_PRESS) {
+				verticesCreationPreviewClickX = xPos;
+				verticesCreationPreviewClickY = yPos;
+			} else if (mouseButton == MOUSE_LEFT_CLICK && mouseState == MOUSE_RELEASE) {
+					verticesCreationPreviewClickX = 0.;
+					verticesCreationPreviewClickY = 0.;
+			}
+			if (mouseButton == GLFW_MOUSE_BUTTON_MIDDLE && mouseState == GLFW_PRESS) {
+				previewRTT->setOffsetX(2048 / 2 - previewRTT->getWidth() / 2);
+				previewRTT->setOffsetY(2048 / 2 - previewRTT->getHeight() / 2);
+				verticesCreationPreviewZoom = 1.0;
+				generate_Vertices_Creation_Preview_Rend_To_Text();
+				previewRTT->setUpdate(true);
+			}
+		});
+	previewRTT->setHoverLambda([previewRTT](double& xPos, double& yPos) {
+		bool update = false;
+		int value = 0;
+
+		if (verticesCreationPreviewClickX != 0.0 && previewRTT->get_OffsetX() >= 0.0 && previewRTT->get_OffsetX() <= 2048. - previewRTT->getWidth()) {
+			value = previewRTT->get_OffsetX() + (verticesCreationPreviewClickX - xPos);
+			if (value < 0)
+				value = 0;
+			else if (value > 2048 - previewRTT->getWidth())
+				value = 2048. - previewRTT->getWidth();
+			previewRTT->setOffsetX(value);
+			verticesCreationPreviewClickX = xPos;
+			update = true;
+		}
+
+		if (verticesCreationPreviewClickY != 0.0 && previewRTT->get_OffsetY() >= 0.0 && previewRTT->get_OffsetY() <= 2048. - previewRTT->getHeight()) {
+			value = previewRTT->get_OffsetY() + (verticesCreationPreviewClickY - yPos);
+			if (value < 0)
+				value = 0;
+			else if (value > 2048 - previewRTT->getHeight())
+				value = 2048. - previewRTT->getHeight();
+			previewRTT->setOffsetY(value);
+			verticesCreationPreviewClickY = yPos;
+			update = true;
+		}
+
+		if (update)
+			previewRTT->setUpdate(true);
+		});
+	previewRTT->set_Mouse_Enter_Exit_Lamda([](bool& withinArea) {
+		if (!withinArea) {
+				verticesCreationPreviewClickX = 0.;
+				verticesCreationPreviewClickY = 0.;
+			}
+		});
+	/*previewRTT->set_Key_Stroke_Lambda([previewRTT](int& key, int& action, int& mods) {
+			if () {
+				verticesCreationPreviewZoom = 1.0;
+				generate_Vertices_Creation_Preview_Rend_To_Text();
+			}
+		});
+		*/
+	verticesCreation->addElement(previewRTT);
+
+	//-------------------------------------------------------------------
+	//							Name
+	//-------------------------------------------------------------------
+
+	int widthStart = previewRTT->getXStart() + previewRTT->getWidth(), widthLeft = (startX + width) - widthStart, fieldWidth = widthLeft * 0.3;
+
+	TextArea* ta = new TextArea("verticesPreviewTextAreaName", nullptr, widthStart + widthLeft / 2 - fieldWidth / 2 - 50, previewRTT->getYStart(), 50, 22, "Name:");
+	ta->setCenteredText(3);
+	verticesCreation->addElement(ta);
+
+	TextField* textField = new TextField("verticesPreviewTextFieldName", widthStart + widthLeft / 2 - fieldWidth / 2, previewRTT->getYStart(), fieldWidth, 22,
+		getGUIObjectFromLibrary("textField1")->getVertices(), 
+		getGUIObjectFromLibrary("textField1Focused")->getVertices());
+	verticesCreation->addElement(textField);
+
+	Button* button = new Button("verticesPreviewButtonName",
+		getGUIObjectFromLibrary("Button1")->getVertices(),
+		getGUIObjectFromLibrary("Button1Hover")->getVertices(),
+		getGUIObjectFromLibrary("Button1Pressed")->getVertices(),
+		widthStart + widthLeft / 2 - 45, textField->getYStart() + textField->getHeight(), 90, 22, "Change",
+		[](int& mouseButton, int& mouseState) {
+
+		}
+	);
+	verticesCreation->addElement(button);
+
+	//-------------------------------------------------------------------
+	//							xStart
+	//-------------------------------------------------------------------
+	fieldWidth = widthLeft * 0.2;
+	textField = new TextField("verticesPreviewTextFieldXStart", widthStart + widthLeft / 4 - fieldWidth / 2, height * 0.25, fieldWidth, 22,
+		getGUIObjectFromLibrary("textField1")->getVertices(),
+		getGUIObjectFromLibrary("textField1Focused")->getVertices());
+	textField->setCenteredText(1);
+	verticesCreation->addElement(textField);
+
+	ta = new TextArea("verticesPreviewTextAreaXStart", nullptr, widthStart + widthLeft / 4 - fieldWidth / 2 - 55, textField->getYStart(), 50, 22, "xStart:");
+	ta->setCenteredText(1);
+	verticesCreation->addElement(ta);
+
+	button = new Button("verticesPreviewButtonXStart",
+		getGUIObjectFromLibrary("Button1")->getVertices(),
+		getGUIObjectFromLibrary("Button1Hover")->getVertices(),
+		getGUIObjectFromLibrary("Button1Pressed")->getVertices(),
+		textField->getXStart() + textField->getWidth() / 2 - 45, textField->getYStart() + textField->getHeight(), 90, 22, "Change",
+		[](int& mouseButton, int& mouseState) {
+
+		}
+	);
+	verticesCreation->addElement(button);
+
+	//-------------------------------------------------------------------
+	//							yStart
+	//-------------------------------------------------------------------
+	textField = new TextField("verticesPreviewTextFieldYStart", widthStart + (widthLeft / 4)*3 - fieldWidth / 2, textField->getYStart(), fieldWidth, 22,
+		getGUIObjectFromLibrary("textField1")->getVertices(),
+		getGUIObjectFromLibrary("textField1Focused")->getVertices());
+	textField->setCenteredText(1);
+	verticesCreation->addElement(textField);
+
+	ta = new TextArea("verticesPreviewTextAreaYStart", nullptr, textField->getXStart() - 55, textField->getYStart(), 50, 22, "yStart:");
+	ta->setCenteredText(1);
+	verticesCreation->addElement(ta);
+
+	button = new Button("verticesPreviewButtonYStart",
+		getGUIObjectFromLibrary("Button1")->getVertices(),
+		getGUIObjectFromLibrary("Button1Hover")->getVertices(),
+		getGUIObjectFromLibrary("Button1Pressed")->getVertices(),
+		textField->getXStart() + textField->getWidth() / 2 - 45, textField->getYStart() + textField->getHeight(), 90, 22, "Change",
+		[](int& mouseButton, int& mouseState) {
+
+		}
+	);
+	verticesCreation->addElement(button);
+
+	//-------------------------------------------------------------------
+	//							Width
+	//-------------------------------------------------------------------
+	fieldWidth = widthLeft * 0.2;
+	textField = new TextField("verticesPreviewTextFieldWidth", widthStart + widthLeft / 4 - fieldWidth / 2, height * 0.40, fieldWidth, 22,
+		getGUIObjectFromLibrary("textField1")->getVertices(),
+		getGUIObjectFromLibrary("textField1Focused")->getVertices());
+	textField->setCenteredText(1);
+	verticesCreation->addElement(textField);
+
+	ta = new TextArea("verticesPreviewTextAreaWidth", nullptr, widthStart + widthLeft / 4 - fieldWidth / 2 - 55, textField->getYStart(), 50, 22, "Width:");
+	ta->setCenteredText(1);
+	verticesCreation->addElement(ta);
+
+	button = new Button("verticesPreviewButtonWidth",
+		getGUIObjectFromLibrary("Button1")->getVertices(),
+		getGUIObjectFromLibrary("Button1Hover")->getVertices(),
+		getGUIObjectFromLibrary("Button1Pressed")->getVertices(),
+		textField->getXStart() + textField->getWidth() / 2 - 45, textField->getYStart() + textField->getHeight(), 90, 22, "Change",
+		[](int& mouseButton, int& mouseState) {
+
+		}
+	);
+	verticesCreation->addElement(button);
+
+	//-------------------------------------------------------------------
+	//							Height
+	//-------------------------------------------------------------------
+	textField = new TextField("verticesPreviewTextFieldHeight", widthStart + (widthLeft / 4) * 3 - fieldWidth / 2, textField->getYStart(), fieldWidth, 22,
+		getGUIObjectFromLibrary("textField1")->getVertices(),
+		getGUIObjectFromLibrary("textField1Focused")->getVertices());
+	textField->setCenteredText(1);
+	verticesCreation->addElement(textField);
+
+	ta = new TextArea("verticesPreviewTextAreaHeight", nullptr, textField->getXStart() - 55, textField->getYStart(), 50, 22, "Height:");
+	ta->setCenteredText(1);
+	verticesCreation->addElement(ta);
+
+	button = new Button("verticesPreviewButtonHeight",
+		getGUIObjectFromLibrary("Button1")->getVertices(),
+		getGUIObjectFromLibrary("Button1Hover")->getVertices(),
+		getGUIObjectFromLibrary("Button1Pressed")->getVertices(),
+		textField->getXStart() + textField->getWidth() / 2 - 45, textField->getYStart() + textField->getHeight(), 90, 22, "Change",
+		[](int& mouseButton, int& mouseState) {
+
+		}
+	);
+	verticesCreation->addElement(button);
+
+	//-------------------------------------------------------------------
+	//							Texture name
+	//-------------------------------------------------------------------
+	fieldWidth = widthLeft * 0.2;
+	DropDown* dd = new DropDown("verticesPreviewDropDownTextureName",
+		getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(),
+		getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), nullptr,
+		nullptr, nullptr, nullptr,
+		widthStart + widthLeft / 4 - fieldWidth / 2, height * 0.55, fieldWidth, 22);
+	auto tb = dd->getButton();
+	tb->setClickLambda([dd, tb](int& mouseButton, int& mouseState)
+		{
+			if (selectedObject) {
+				dd->toggleShowDropDown();
+				dd->setUpdate(true);
+			}
+			else {
+				if (tb->getClicked())
+					tb->set_Clicked(false);
+				if (tb->getToggle())
+					tb->setToggle(false);
+				tb->setV(tb->getHoverVertices());
+				tb->setUpdate(true);
+			}
+		});
+
+	for (auto& text : paths) {
+		dd->add(text, [](double& xPos, double& yPos) {}, [text, dd](int& mouseButton, int& mouseState) 
+			{
+				if (text != paths[selectedObject->getVertices()->getTextPos()]) {
+					dd->getButton()->setText(text);
+					dd->getButton()->setUpdate(true);
+					selectedObject->getVertices()->setTextPos(findByName(paths, text));
+					selectedObject->set_Update(true);
+
+					update_All_Libraries(objLibraries);
+
+					generate_Vertices_Creation_Preview_Rend_To_Text();
+					itemAtlas.generateAtlas();
+
+					if (left_panel_Selected_Palette != "") {
+						for (auto& p : palettes) {
+							if (p.getName() == left_panel_Selected_Palette) {
+								generate_Left_Panel_Tiles(p);
+								leftPanelUpdate = true;
+								break;
+							}
+						}
+					}
+				}
+				dd->toggleShowDropDown();
+				dd->setUpdate(true);
+			});
+	}
+
+	verticesCreation->addElement(dd);
+
+	ta = new TextArea("verticesPreviewTextAreaTextureName", nullptr, widthStart + widthLeft / 4 - fieldWidth / 2 - 65, dd->getYStart(), 65, 22, "Texture:");
+	ta->setCenteredText(1);
+	verticesCreation->addElement(ta);
+
+	scrollbar->setLambda(get_Vertices_Creation_Selection_Area_Scrollbar_Scroll_Lambda(scrollbar, selectionAreaRTT, group, verticesCreation, rtt, verticesCreationSelectionAreaOffset));
+	
 };
+
+

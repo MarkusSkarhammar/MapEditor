@@ -1,7 +1,7 @@
 #include "RendToText.h"
 #include "Global.h"
 
-RendToText::RendToText(std::string name, double width, double height) : name(name), width(width), height(height), list(rendToTextLibrary.getLibrary(width, height))
+RendToText::RendToText(std::string name, double width, double height) : name(name), width(width), height(height), list(rendToTextLibrary.get_Library_Ref(width, height))
 {
 
 	// Framebuffer
@@ -71,10 +71,10 @@ std::vector<ObjectLibrary*>& RendToTextObjLibrary::setupNewLibrary(int width, in
 	}
 	auto element = new RendToTextObjLibraryElement(width, height);
 	libraries.push_back(element);
-	return element->getLibrary();
+	return element->get_Library_Ref();
 }
 
-std::vector<ObjectLibrary*>& RendToTextObjLibrary::getLibrary(int width, int height)
+std::vector<ObjectLibrary*> RendToTextObjLibrary::getLibrary(int width, int height)
 {
 	std::vector<RendToTextObjLibraryElement*>::iterator it = std::find_if(libraries.begin(), libraries.end(), [width, height](RendToTextObjLibraryElement* lib) {
 		return (lib->getWidth() == width && lib->getHeight() == height);
@@ -86,10 +86,62 @@ std::vector<ObjectLibrary*>& RendToTextObjLibrary::getLibrary(int width, int hei
 		return setupNewLibrary(width, height);
 }
 
+std::vector<ObjectLibrary*>& RendToTextObjLibrary::get_Library_Ref(int width, int height)
+{
+	std::vector<RendToTextObjLibraryElement*>::iterator it = std::find_if(libraries.begin(), libraries.end(), [width, height](RendToTextObjLibraryElement* lib) {
+		return (lib->getWidth() == width && lib->getHeight() == height);
+		});
+	if (it != libraries.end()) {
+		return (*it)->get_Library_Ref();
+	}
+	else
+		return setupNewLibrary(width, height);
+}
+
+ObjectLibrary* RendToTextObjLibrary::get_Specific_Library(int VAO, int VBO)
+{
+	
+	for (auto rttlib : libraries) {
+		for (auto lib : rttlib->getLibrary()) {
+			if (lib->getVAO() == VAO && lib->getVBO() == VBO)
+				return lib;
+		}
+	}
+	return nullptr;
+}
+
+LetterLibrary* RendToTextObjLibrary::get_Letter_Library(int width, int height)
+{
+	std::vector<RendToTextObjLibraryElement*>::iterator it = std::find_if(libraries.begin(), libraries.end(), [width, height](RendToTextObjLibraryElement* lib) {
+		return (lib->getWidth() == width && lib->getHeight() == height);
+		});
+	if (it != libraries.end()) {
+		return (*it)->get_Letter_Library();
+	}
+	else
+		return nullptr;
+}
+
 RendToTextObjLibrary::RendToTextObjLibraryElement::RendToTextObjLibraryElement(int width, int height) : width(width), height(height)
 {
 	for (auto& v : objLibraries) {
 		library.push_back(new ObjectLibrary(v, width, height));
+	}
+	letterLib = new LetterLibrary("Letters");
+	for (auto& obLib : library) {
+		if (obLib->getName() == "Letters") {
+			for (auto& ob : obLib->getObjects()) {
+				letterLib->insertLetter(ob->getName(), obLib->getVAO(), ob->getVertices()->getTextPos(), ob->getVertices()->getID(), 0, 0, 0, 0);
+			}
+		}
+	}
+	for (auto& letter : letterLibrary.get_Map()) {
+		auto& listOther = letter.second;
+		auto& list = letterLib->getLetterInformation(letter.first);
+		list[3] = listOther[3];
+		list[4] = listOther[4];
+		list[5] = listOther[5];
+		list[6] = listOther[6];
 	}
 }
 
@@ -98,4 +150,5 @@ RendToTextObjLibrary::RendToTextObjLibraryElement::~RendToTextObjLibraryElement(
 	for (auto& lib : library) {
 			delete lib;
 	}
+    delete letterLib;
 }

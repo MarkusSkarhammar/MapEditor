@@ -39,12 +39,6 @@ void DrawObjects::setObjects(std::vector<DrawObject*> input)
 
 void DrawObjects::clearObjects()
 {
-	for (auto& o : objects) {
-		delete o;
-	}
-	for (auto& o : aObjects) {
-		delete o;
-	}
 	aObjects.clear();
 	objects.clear();
 }
@@ -106,7 +100,7 @@ void checkAnimations()
 						if (object) {
 							x = 0.0 + (width * object->getXPosition());
 							y = 0.0 - (height * object->getYPosition());
-							if (x < xCameraPos + 1.0f * zoom && x >= xCameraPos - 1.1f * zoom && y <= yCameraPos + 1.2f * zoom && y > yCameraPos - 1.0f * zoom && object->getDraw()) {
+							if (x < xCameraPos + 1.0f * zoomWorld && x >= xCameraPos - 1.1f * zoomWorld && y <= yCameraPos + 1.2f * zoomWorld && y > yCameraPos - 1.0f * zoomWorld && object->getDraw()) {
 								for (auto& i : t->getAllItems()) {
 									if (AnimationObject* check = dynamic_cast<AnimationObject*>(i->getObject())) {
 										check->checkAnimation();
@@ -133,19 +127,25 @@ void restoreElement(Vertices*& v) {
 	
 }
 
-void DrawObject::rendToText()
+void DrawObject::rendToText(bool useWorldZoom)
 {
 	if (rtt != nullptr) {
 		normalRender = false;
 		glUseProgram(program2);
 		glBindTexture(GL_TEXTURE_2D, rtt->getTextureID());
+		glUniform1i(gLayer, 0);
 
 		Model = glm::mat4(1.0f);
-		Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + x, yCameraPos + 1.0f - y, (zoom - 1.0)));
+		if(useWorldZoom)
+			Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + x, yCameraPos + 1.0f - y, (zoomWorld - 1.0)));
+		else
+			Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + x, yCameraPos + 1.0f - y, (zoom - 1.0)));
 
 		// Handle scaling
 		if (scale != 1.0)
 			Model = glm::scale(Model, glm::vec3(scale, scale, scale));
+		else if (scaleX != 1.0 || scaleY != 1.0)
+			Model = glm::scale(Model, glm::vec3(scaleX, scaleY, 1.0));
 		
 		//glUniformMatrix4fv(projection2, 1, GL_FALSE, glm::value_ptr(Projection));
 		//glUniformMatrix4fv(view2, 1, GL_FALSE, glm::value_ptr(View));
@@ -170,6 +170,7 @@ void DrawObject::renderWorldTile(double& x, double& y) {
 
 
 	Model = glm::mat4(1.0f);
+	//double test = yCameraPos = round(yCameraPos * 1000) / 1000.;
 	Model = glm::translate(Model, glm::vec3(x, y, 0.0f));
 
 	// Handle scaling
@@ -199,44 +200,53 @@ void DrawObject::renderWorldTile(double& x, double& y) {
 
 void DrawObject::renderGUI(string name)
 {
-	glUniform1i(GUI, 1);
-	rendToText();
+	if (draw) {
+		glUniform1i(GUI, 1);
+		bool doZoom = false;
+		if (zoom == 1.0)
+			doZoom = true;
 
-	if (normalRender) {
+		rendToText(doZoom);
 
-		Model = glm::mat4(1.0f);
-		if (name.compare("GUI_Preview_Tiles_") == 0) Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + x, yCameraPos + 1.0f - y, 0.0));
-		else if(name.compare("world") == 0) Model = glm::translate(Model, glm::vec3(x, y, 0.0f));
-		else Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + x, yCameraPos + 1.0f - y, (zoom - 1.0)));
+		if (normalRender) {
 
-		// Handle scaling
-		if (scale != 1.0)
-			Model = glm::scale(Model, glm::vec3(scale, scale, scale));
+			Model = glm::mat4(1.0f);
+			if (name.compare("GUI_Preview_Tiles_") == 0) Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + x, yCameraPos + 1.0f - y, 0.0));
+			else if (name.compare("world") == 0) Model = glm::translate(Model, glm::vec3(x, y, 0.0f));
+			else if (doZoom) Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + x, yCameraPos + 1.0f - y, (zoomWorld - 1.0)));
+			else Model = glm::translate(Model, glm::vec3(xCameraPos - 1.0f + x, yCameraPos + 1.0f - y, (zoom - 1.0)));
 
-		//glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(Model));
-		glBindBuffer(GL_UNIFORM_BUFFER, UBOCamera);
-		glBufferSubData(GL_UNIFORM_BUFFER, 2*sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(Model));
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		glUniform1i(gLayer, texturePos);
+			// Handle scaling
+			if (scale != 1.0)
+				Model = glm::scale(Model, glm::vec3(scale, scale, 1.0));
+			else if (scaleX != 1.0 || scaleY != 1.0)
+				Model = glm::scale(Model, glm::vec3(scaleX, scaleY, 1.0));
 
-		if (textOffsetX >= 0 || textOffsetY >= 0) {
-			//textOffsetValues = { object->getTextOffsetX(), object->getTextOffsetY() };
-			//glUniform2f(textOffset2, textOffsetX, textOffsetY);
-			glm::vec2 offset = glm::vec2(textOffsetX, textOffsetY);
-			glBindBuffer(GL_UNIFORM_BUFFER, UBOTextureStuff);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(offset));
-			glBindBuffer(GL_UNIFORM_BUFFER, 1);
+			//glUniformMatrix4fv(model, 1, GL_FALSE, glm::value_ptr(Model));
+			glBindBuffer(GL_UNIFORM_BUFFER, UBOCamera);
+			glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(Model));
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			glUniform1i(gLayer, texturePos);
+
+			if (textOffsetX >= 0 || textOffsetY >= 0) {
+				//textOffsetValues = { object->getTextOffsetX(), object->getTextOffsetY() };
+				//glUniform2f(textOffset2, textOffsetX, textOffsetY);
+				glm::vec2 offset = glm::vec2(textOffsetX, textOffsetY);
+				glBindBuffer(GL_UNIFORM_BUFFER, UBOTextureStuff);
+				glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(offset));
+				glBindBuffer(GL_UNIFORM_BUFFER, 1);
+			}
 		}
+
+		glBindVertexArray(VAO);
+
+		glDrawArrays(GL_TRIANGLES, 0 + (4 * id % 1024), 3);
+		glDrawArrays(GL_TRIANGLES, 1 + (4 * id % 1024), 3);
+
+		glUniform1i(GUI, 0);
+
+		resetRenderMode();
 	}
-
-	glBindVertexArray(VAO);
-
-	glDrawArrays(GL_TRIANGLES, 0 + (4 * id % 1024), 3);
-	glDrawArrays(GL_TRIANGLES, 1 + (4 * id % 1024), 3);
-
-	glUniform1i(GUI, 0);
-
-	resetRenderMode();
 }
 
 void DrawObject::renderOutlineTile()
@@ -425,3 +435,27 @@ void DrawObject::resetRenderMode()
 		glBindTexture(GL_TEXTURE_2D_ARRAY, gTileArrayTexture);
 	}
 }
+
+TextDrawObject::~TextDrawObject()
+{
+	clear();
+}
+
+void TextDrawObject::renderGUI(std::string name)
+{
+	if(getDraw())
+		for (auto ob : objects) {
+			ob->renderGUI(name);
+		}
+}
+
+void TextDrawObject::clear()
+{
+	for (auto ob : objects) {
+		delete ob;
+	}
+	objects.clear();
+	objects.shrink_to_fit();
+}
+
+

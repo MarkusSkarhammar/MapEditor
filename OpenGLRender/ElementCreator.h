@@ -17,16 +17,12 @@ using std::string;
 
 // Bottom bar
 void generate_GUI_Bottom_Bar();
-void generate_GUI_Bottom_Bar_text(DrawObjects *ob, std::string xText, std::string yText, std::string zText);
 
 // Text
-void generate_GUI_Text(DrawObjects *ob, double x, double y, std::string text);
-void generate_GUI_Text(std::vector<DrawObject*>& vec, double x, double y, std::string text);
-void generate_GUI_Text(DrawObjects* ob, double x, double y, int textStartOffset, int rowLength, std::string text, string textType);
+void generate_GUI_Text(TextDrawObject* ob, double x, double y, int textStartOffset, int rowLength, int height, std::string text, string textType, bool ellipsis, int centeredText, RendToText* rtt = nullptr);
 
 // left panel
 void generate_GUI_Left_Panel(size_t displayState);
-void generate_GUI_Left_Panel_Text_(DrawObjects *ob);
 void generate_Left_Panel_Tiles(Palette& p);
 
 // Preview tiles
@@ -40,6 +36,9 @@ void generate_Palette_Modifier();
 
 // Render to text stuff
 void generate_Left_Panel_Rend_To_Text();
+
+// Vertices Creation
+void generate_Vertices_Creation_Panel();
 
 #endif
 

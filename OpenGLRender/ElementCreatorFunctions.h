@@ -30,14 +30,14 @@ void palette_Modifier_Check_Clicked_Buttons(Palette &p, std::unordered_map<int, 
 * The lambda that is to be triggered on a mouseclick on the left palette modifier.
 *
 */
-std::function<void(int& mouseState)> get_Palette_Modifier_Left_Mouse_Lambda();
+std::function<void(int& mousebutton, int& mouseState)> get_Palette_Modifier_Left_Mouse_Lambda();
 
 /**
 * The lambda that is to be triggered on a mouseclick on the right palette modifier.
 *
 *@return the generated lambda function.
 */
-std::function<void(int& mouseState)> get_Palette_Modifier_Right_Mouse_Lambda();
+std::function<void(int& mousebutton, int& mouseState)> get_Palette_Modifier_Right_Mouse_Lambda();
 
 /**
 * The lambda function that is to be triggered on a scroll event.
@@ -85,4 +85,16 @@ std::function<void()> get_Palette_Modifier_Scrollbar_Scroll_Lambda(ScrollbarVert
 void prepare_Palette_Modifier_Rend_To_Text(GUIPanel* panel, RendToText* rtt, GUIElement* rttElement, GUIElement* tbg, Palette& p, int& page, double& offset_Max, std::unordered_map<int, int>& map);
 
 void generate_Palette_Modifier_Rend_To_Text();
+
+void generate_Vertices_Creation_Rend_To_Text();
+
+void setup_Vertices_Generation_Selection_Area();
+void update_Vertices_Generation_Selection_Area(std::string state);
+
+std::function<void()> get_Vertices_Creation_Selection_Area_Scrollbar_Scroll_Lambda(ScrollbarVertical* sb, GUIElement* rttElement, GUIElement* elementforRTT, GUIPanel* panel, RendToText* rtt, double& offset);
+
+void generate_Vertices_Creation_Preview_Rend_To_Text();
+
+void update_Vertices_Creation_Info(Object* ob);
+
 #endif
