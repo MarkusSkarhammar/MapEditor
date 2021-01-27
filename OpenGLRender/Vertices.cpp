@@ -201,6 +201,51 @@ Vertices::Vertices(Vertices* other) : v(other->getV()), vt(other->getVT())
 	glBufferSubData(GL_ARRAY_BUFFER, v.size() * sizeof(float), vt.size() * sizeof(float), &vt[0]);
 }
 
+Vertices::Vertices(Vertices* other, bool thisIsATempVertices) : v(other->getV()), vt(other->getVT())
+{
+	xStartText = other->xStartText;
+	yStartText = other->yStartText;
+	widthText = other->widthText;
+	heightText = other->heightText;
+	textureSizeHeight = other->textureSizeHeight;
+	textureSizeWidth = other->textureSizeWidth;
+}
+
+void Vertices::setXStartText(float v)
+{
+	xStartText = v;
+	update();
+}
+
+void Vertices::setYStartText(float v)
+{
+	yStartText = v;
+	update();
+}
+
+void Vertices::setWidthText(float v)
+{
+	widthText = v;
+	update();
+}
+
+void Vertices::setHeightText(float v)
+{
+	heightText = v;
+	update();
+}
+
+void Vertices::set_All(float xStart, float yStart, float width, float heigth)
+{
+	xStartText = xStart;
+	yStartText = yStart;
+	widthText = width;
+	heightText = height;
+	this->width = width;
+	this->height = height;
+	update();
+}
+
 void Vertices::copyAnotherVerticesText(Vertices* other)
 {
 
@@ -289,6 +334,33 @@ void Vertices::change_All(float xStartText, float yStartText, float widthText, f
 
 	//Second triangle
 	v.at(++vPos) = (widthStart + widthPos); v.at(++vPos) = (heightStart - heightPos); // Bottom-right
+
+	auto tPos = (ID * 8);
+	//first triangle
+	vt.at(tPos) = (textWidthStart); vt.at(++tPos) = (textHeightStart); // Top-left
+	vt.at(++tPos) = (textWidthEnd); vt.at(++tPos) = (textHeightStart); // Top-right
+	vt.at(++tPos) = (textWidthStart); vt.at(++tPos) = (textHeightEnd); // Bottom-left
+
+	//Second triangle
+	vt.at(++tPos) = (textWidthEnd); vt.at(++tPos) = (textHeightEnd); // Bottom-right
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(float) + vt.size() * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, v.size() * sizeof(float), &v[0]);
+
+	glBufferSubData(GL_ARRAY_BUFFER, v.size() * sizeof(float), vt.size() * sizeof(float), &vt[0]);
+}
+
+void Vertices::update()
+{
+	float widthStart = 0.0f;
+	float heightStart = 0.0f;
+
+	float textWidthStart = (xStartText / textureSizeWidth);
+	float textHeightStart = (yStartText / textureSizeHeight);
+	float textWidthEnd = textWidthStart + (widthText / textureSizeWidth);
+	float textHeightEnd = textHeightStart + (heightText / textureSizeHeight);
+
 
 	auto tPos = (ID * 8);
 	//first triangle

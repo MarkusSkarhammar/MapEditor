@@ -878,7 +878,7 @@ void prepare_Palette_Modifier_Rend_To_Text(GUIPanel* panel, RendToText* rtt, GUI
 			for (int x = 0; x < 4; x++) {
 				ToggleButton* tb;
 				if (tbgE->getName() == "paletteToggleGroupRight") {
-					tb = new ToggleButton("toggle_" + std::to_string(count), nullptr, yellowSmallSquare, redSmallSquare, (x + 4) * 64, (y) * 64, 63, 63, [](int& mousebutton, int& mouseState) {
+					tb = new ToggleButton("toggle_" + std::to_string(count), nullptr, yellowSmallSquare, redSmallSquare, nullptr, (x + 4) * 64, (y) * 64, 63, 63, [](int& mousebutton, int& mouseState) {
 						generate_Palette_Modifier_Rend_To_Text();
 						},
 						[](double& x, double& y) {
@@ -886,7 +886,7 @@ void prepare_Palette_Modifier_Rend_To_Text(GUIPanel* panel, RendToText* rtt, GUI
 						});
 				}
 				else {
-					tb = new ToggleButton("toggle_" + std::to_string(count), nullptr, yellowSmallSquare, redSmallSquare, x * 64, y * 64, 63, 63, [](int& mousebutton, int& mouseState) {
+					tb = new ToggleButton("toggle_" + std::to_string(count), nullptr, yellowSmallSquare, redSmallSquare, nullptr, x * 64, y * 64, 63, 63, [](int& mousebutton, int& mouseState) {
 						generate_Palette_Modifier_Rend_To_Text();
 						},
 						[](double& x, double& y) {
@@ -1034,7 +1034,7 @@ void setup_Vertices_Generation_Selection_Area()
 			for (auto obL : objLibraries) {
 				height = 17;
 				auto dd = new DropDown(obL->getName(),
-					verticesCreatiobSelectionDropDown, verticesCreatiobSelectionDropDownHover, verticesCreatiobSelectionDropDownClicked,
+					verticesCreatiobSelectionDropDown, verticesCreatiobSelectionDropDownHover, verticesCreatiobSelectionDropDownClicked, nullptr,
 					verticesCreationVerticesSelectionDropdownChildMiddle, verticesCreationVerticesSelectionDropdownChildMiddleHover, verticesCreationVerticesSelectionDropdownChildMiddleClicked,
 					verticesCreationVerticesSelectionDropdownChildBottom, verticesCreationVerticesSelectionDropdownChildBottomHover, verticesCreationVerticesSelectionDropdownChildBottomClicked,
 					xStart, yStart, 200, height);
@@ -1258,12 +1258,22 @@ void update_Vertices_Creation_Info(Object* ob)
 {
 	std::string name = "", xStart = "", yStart = "", width = "", height = "", textureName = "";
 	if (!selectedObject || selectedObject != ob) {
-		selectedObject = ob;
+		if (selectedObject && tempSelectedObject) {
+			auto tempV = tempSelectedObject->getVertices();
+			if (selectedObject != tempSelectedObject) {
+				selectedObject->getVertices()->set_All(tempV->getXStartText(), tempV->getYStartText(), tempV->getWidthText(), tempV->getHeightText());
+				selectedObject->set_Update(true);
+				update_All_Libraries(objLibraries);
+			}
+			delete tempSelectedObject;
+			tempSelectedObject = nullptr;
+		}
+		selectedObject = ob; tempSelectedObject = new Object(ob, true);
 		name = selectedObject->getName();
-		xStart = std::to_string(selectedObject->getVertices()->getXStartText());
-		yStart = std::to_string(selectedObject->getVertices()->getYStartText());
-		width = std::to_string(selectedObject->getVertices()->getWidthText());
-		height = std::to_string(selectedObject->getVertices()->getHeightText());
+		xStart = std::to_string(int(selectedObject->getVertices()->getXStartText()));
+		yStart = std::to_string(int(selectedObject->getVertices()->getYStartText()));
+		width = std::to_string(int(selectedObject->getVertices()->getWidthText()));
+		height = std::to_string(int(selectedObject->getVertices()->getHeightText()));
 		textureName = paths[selectedObject->getVertices()->getTextPos()];
 	}
 	else if (selectedObject = ob) {

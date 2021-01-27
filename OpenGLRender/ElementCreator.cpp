@@ -2,7 +2,6 @@
 #include "Palette.h"
 #pragma warning(disable: 4244)
 
-
 void generate_GUI_Bottom_Bar()
 {
 	GUIPanels.push_back(bottomBar);
@@ -35,35 +34,35 @@ void generate_GUI_Bottom_Bar()
 	ToggleButtonGroup* group = new ToggleButtonGroup("toggles", 64 * 5, screenHeightPixels - 30, screenWidthPixels, 30);
 	group->setResetAfterToggle(true);
 
-	ToggleButton* tb = new ToggleButton("eraser", getGUIObjectFromLibrary("bottomBarEraser")->getVertices(), getGUIObjectFromLibrary("bottomBarEraserHover")->getVertices(), getGUIObjectFromLibrary("bottomBarEraserPressed")->getVertices(), 64 * 5, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) { 
+	ToggleButton* tb = new ToggleButton("eraser", getGUIObjectFromLibrary("bottomBarEraser")->getVertices(), getGUIObjectFromLibrary("bottomBarEraserHover")->getVertices(), getGUIObjectFromLibrary("bottomBarEraserPressed")->getVertices(), getGUIObjectFromLibrary("BottomBarTBFocus")->getVertices(), 64 * 5, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) {
 		eraseToggle = !eraseToggle; 
 		/*if (!eraseToggle) 
 			getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); */
 		});
 	tb->toggleCleanReset();
 	group->addElement(tb);
-	tb = new ToggleButton("destroyer", getGUIObjectFromLibrary("bottomBarDestroyer")->getVertices(), getGUIObjectFromLibrary("bottomBarDestroyerHover")->getVertices(), getGUIObjectFromLibrary("bottomBarDestroyerPressed")->getVertices(), 64 * 5 + 40, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) { 
+	tb = new ToggleButton("destroyer", getGUIObjectFromLibrary("bottomBarDestroyer")->getVertices(), getGUIObjectFromLibrary("bottomBarDestroyerHover")->getVertices(), getGUIObjectFromLibrary("bottomBarDestroyerPressed")->getVertices(), getGUIObjectFromLibrary("BottomBarTBFocus")->getVertices(), 64 * 5 + 40, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) {
 		destroyToggle = !destroyToggle; 
 		/*if (!destroyToggle) 
 			getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); */
 		});
 	tb->toggleCleanReset();
 	group->addElement(tb);
-	tb = new ToggleButton("tileDestroyer", getGUIObjectFromLibrary("bottomBarTileDestroyer")->getVertices(), getGUIObjectFromLibrary("bottomBarTileDestroyerHover")->getVertices(), getGUIObjectFromLibrary("bottomBarTileDestroyerPressed")->getVertices(), 64 * 5 + 80, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) {
+	tb = new ToggleButton("tileDestroyer", getGUIObjectFromLibrary("bottomBarTileDestroyer")->getVertices(), getGUIObjectFromLibrary("bottomBarTileDestroyerHover")->getVertices(), getGUIObjectFromLibrary("bottomBarTileDestroyerPressed")->getVertices(), getGUIObjectFromLibrary("BottomBarTBFocus")->getVertices(), 64 * 5 + 80, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) {
 		destroyTileToggle = !destroyTileToggle; 
 		/*if (!destroyTileToggle) 
 			getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); */
 		});
 	tb->toggleCleanReset();
 	group->addElement(tb);
-	tb = new ToggleButton("cut", getGUIObjectFromLibrary("bottomBarCut")->getVertices(), getGUIObjectFromLibrary("bottomBarCutHover")->getVertices(), getGUIObjectFromLibrary("bottomBarCutPressed")->getVertices(), 64 * 5 + 120, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) {
+	tb = new ToggleButton("cut", getGUIObjectFromLibrary("bottomBarCut")->getVertices(), getGUIObjectFromLibrary("bottomBarCutHover")->getVertices(), getGUIObjectFromLibrary("bottomBarCutPressed")->getVertices(), getGUIObjectFromLibrary("BottomBarTBFocus")->getVertices(), 64 * 5 + 120, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) {
 		cutToggle = !cutToggle; 
 		/*if (!cutToggle) 
 			getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); */
 			});
 	tb->toggleCleanReset();
 	group->addElement(tb);
-	tb = new ToggleButton("copy", getGUIObjectFromLibrary("bottomBarCopy")->getVertices(), getGUIObjectFromLibrary("bottomBarCopyHover")->getVertices(), getGUIObjectFromLibrary("bottomBarCopyPressed")->getVertices(), 64 * 5 + 160, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) {
+	tb = new ToggleButton("copy", getGUIObjectFromLibrary("bottomBarCopy")->getVertices(), getGUIObjectFromLibrary("bottomBarCopyHover")->getVertices(), getGUIObjectFromLibrary("bottomBarCopyPressed")->getVertices(), getGUIObjectFromLibrary("BottomBarTBFocus")->getVertices(), 64 * 5 + 160, screenHeightPixels - 30, 30, 30, [&](int& mousebutton, int& mouseState) {
 		copyToggle = !copyToggle; 
 		/*if (!copyToggle) 
 			getObjectByName(objects, "GUI_Preview_Tiles_")->clearObjects(); */
@@ -383,7 +382,7 @@ void generate_GUI_Left_Panel(size_t displayState)
 	leftPanel->addElement(tbg);
 
 	DropDown* d = new DropDown("itemsSelection",
-		getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(),
+		getGUIObjectFromLibrary("DropDown1TB")->getVertices(), getGUIObjectFromLibrary("DropDown1TBHover")->getVertices(), getGUIObjectFromLibrary("DropDown1TBClicked")->getVertices(), getGUIObjectFromLibrary("DropDown1TBFocus")->getVertices(),
 		getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), nullptr,
 		nullptr, nullptr, nullptr,
 		xStart + 10, yStart + 30, 102, 24);
@@ -442,11 +441,13 @@ void generate_GUI_Left_Panel(size_t displayState)
 		int scrollbarXStart = xStart + 10 + tilesRTT->getWidth(), scrollbarYStart = yStart + 54;
 		auto buttonUp = new Button("up",
 			getGUIObjectFromLibrary("scrollbar1ButtonUp")->getVertices(),
+			nullptr,
 			getGUIObjectFromLibrary("scrollbar1ButtonUpHover")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonUpClicked")->getVertices(),
 			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {});
 		auto buttonDown = new Button("down",
 			getGUIObjectFromLibrary("scrollbar1ButtonDown")->getVertices(),
+			nullptr,
 			getGUIObjectFromLibrary("scrollbar1ButtonDownHover")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonDownClicked")->getVertices(),
 			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {});
@@ -996,12 +997,12 @@ void generate_Palette_Modifier() {
 	paletteModifier->addElement(rightSidePreviewHover);
 
 	// Search icon
-	paletteModifier->addElement(new Button("searchIcon", nullptr, nullptr, nullptr, startX + 180, startY + 12, 22, 22, "", [](int& mousebutton, int& mouseState) {}));
+	paletteModifier->addElement(new Button("searchIcon", nullptr, nullptr, nullptr, nullptr, startX + 180, startY + 12, 22, 22, "", [](int& mousebutton, int& mouseState) {}));
 
 	// Drop down for palettes (right side)
 	{
 		DropDown* d = new DropDown("paletteSelection",
-			getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(),
+			getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), nullptr,
 			getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), nullptr,
 			nullptr, nullptr, nullptr,
 			startX + 460, startY + 13, 102, 24);
@@ -1053,7 +1054,7 @@ void generate_Palette_Modifier() {
 	// Drop down for items (left Side)
 	{
 		DropDown* d = new DropDown("itemsSelection", 
-			getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(),
+			getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), nullptr,
 			getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), nullptr,
 			nullptr, nullptr, nullptr,
 			startX + 210, startY + 13, 102, 24);
@@ -1104,6 +1105,7 @@ void generate_Palette_Modifier() {
 	{
 		auto saveIcon = new Button("saveIcon",
 			getGUIObjectFromLibrary("saveIcon")->getVertices(),
+			nullptr,
 			getGUIObjectFromLibrary("saveIconHover")->getVertices(),
 			getGUIObjectFromLibrary("saveIconClicked")->getVertices(),
 			startX + 568, startY + 5, 128, 128, "",
@@ -1130,6 +1132,7 @@ void generate_Palette_Modifier() {
 		// Trash icon
 		auto trashIcon = new Button("trashIcon",
 			getGUIObjectFromLibrary("trashIcon")->getVertices(),
+			nullptr,
 			getGUIObjectFromLibrary("trashIconHover")->getVertices(),
 			getGUIObjectFromLibrary("trashIconClicked")->getVertices(),
 			startX + 308, startY + 350, 128, 128, "",
@@ -1165,6 +1168,7 @@ void generate_Palette_Modifier() {
 		int scrollbarXStart = startX + 10, scrollbarYStart = startY + 37;
 		auto buttonUp = new Button("up",
 			getGUIObjectFromLibrary("scrollbar1ButtonUp")->getVertices(),
+			nullptr,
 			getGUIObjectFromLibrary("scrollbar1ButtonUpHover")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonUpClicked")->getVertices(),
 			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {
@@ -1175,6 +1179,7 @@ void generate_Palette_Modifier() {
 			});
 		auto buttonDown = new Button("down",
 			getGUIObjectFromLibrary("scrollbar1ButtonDown")->getVertices(),
+			nullptr,
 			getGUIObjectFromLibrary("scrollbar1ButtonDownHover")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonDownClicked")->getVertices(),
 			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {
@@ -1198,6 +1203,7 @@ void generate_Palette_Modifier() {
 		int scrollbarXStart = startX + 649, scrollbarYStart = startY + 37;
 		auto buttonUp = new Button("up",
 			getGUIObjectFromLibrary("scrollbar1ButtonUp")->getVertices(),
+			nullptr,
 			getGUIObjectFromLibrary("scrollbar1ButtonUpHover")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonUpClicked")->getVertices(),
 			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {
@@ -1208,6 +1214,7 @@ void generate_Palette_Modifier() {
 			});
 		auto buttonDown = new Button("down",
 			getGUIObjectFromLibrary("scrollbar1ButtonDown")->getVertices(),
+			nullptr,
 			getGUIObjectFromLibrary("scrollbar1ButtonDownHover")->getVertices(),
 			getGUIObjectFromLibrary("scrollbar1ButtonDownClicked")->getVertices(),
 			scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {
@@ -1321,7 +1328,7 @@ void generate_Left_Panel_Tiles(Palette& p) {
 
 		for (int y = 0; y < (rtt->getHeight() / 64); y++) {
 			for (int x = 0; x < 4; x++) {
-				ToggleButton* tb = new ToggleButton("toggle_" + std::to_string(count), nullptr, rtt->getVerticesByName("yellowSquareSmall"), rtt->getVerticesByName("redSquareSmall"), x * 64, y * 64, 63, 63, [](int& mousebutton, int& mouseState) {
+				ToggleButton* tb = new ToggleButton("toggle_" + std::to_string(count), nullptr, rtt->getVerticesByName("yellowSquareSmall"), rtt->getVerticesByName("redSquareSmall"), nullptr, x * 64, y * 64, 63, 63, [](int& mousebutton, int& mouseState) {
 					leftPanelUpdate = true;
 					},
 					[](double& x, double& y) {
@@ -1424,6 +1431,7 @@ void generate_Vertices_Creation_Panel()
 	int scrollbarXStart = startX + width * 0.02, scrollbarYStart = startY + height * 0.025, scrollbarWidth = 19, scrollbarHeight = height * 0.95 - scrollbarWidth;
 	auto buttonUp = new Button("up",
 		getGUIObjectFromLibrary("scrollbar1ButtonUp")->getVertices(),
+		nullptr,
 		getGUIObjectFromLibrary("scrollbar1ButtonUpHover")->getVertices(),
 		getGUIObjectFromLibrary("scrollbar1ButtonUpClicked")->getVertices(),
 		scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {
@@ -1434,6 +1442,7 @@ void generate_Vertices_Creation_Panel()
 		});
 	auto buttonDown = new Button("down",
 		getGUIObjectFromLibrary("scrollbar1ButtonDown")->getVertices(),
+		nullptr,
 		getGUIObjectFromLibrary("scrollbar1ButtonDownHover")->getVertices(),
 		getGUIObjectFromLibrary("scrollbar1ButtonDownClicked")->getVertices(),
 		scrollbarXStart, scrollbarYStart, 19, 10, "", [](int& mousebutton, int& mouseState) {
@@ -1572,6 +1581,7 @@ void generate_Vertices_Creation_Panel()
 
 	Button* button = new Button("verticesPreviewButtonName",
 		getGUIObjectFromLibrary("Button1")->getVertices(),
+		getGUIObjectFromLibrary("Button1Focus")->getVertices(),
 		getGUIObjectFromLibrary("Button1Hover")->getVertices(),
 		getGUIObjectFromLibrary("Button1Pressed")->getVertices(),
 		widthStart + widthLeft / 2 - 45, textField->getYStart() + textField->getHeight(), 90, 22, "Change",
@@ -1597,11 +1607,17 @@ void generate_Vertices_Creation_Panel()
 
 	button = new Button("verticesPreviewButtonXStart",
 		getGUIObjectFromLibrary("Button1")->getVertices(),
+		getGUIObjectFromLibrary("Button1Focus")->getVertices(),
 		getGUIObjectFromLibrary("Button1Hover")->getVertices(),
 		getGUIObjectFromLibrary("Button1Pressed")->getVertices(),
 		textField->getXStart() + textField->getWidth() / 2 - 45, textField->getYStart() + textField->getHeight(), 90, 22, "Change",
-		[](int& mouseButton, int& mouseState) {
-
+		[textField](int& mouseButton, int& mouseState) {
+			if (selectedObject && std::stod(textField->getText()) != selectedObject->getVertices()->getXStartText()) {
+				selectedObject->getVertices()->setXStartText(std::stod(textField->getText()));
+				selectedObject->set_Update(true);
+				update_All_Libraries(objLibraries);
+				generate_Vertices_Creation_Preview_Rend_To_Text();
+			}
 		}
 	);
 	verticesCreation->addElement(button);
@@ -1621,11 +1637,17 @@ void generate_Vertices_Creation_Panel()
 
 	button = new Button("verticesPreviewButtonYStart",
 		getGUIObjectFromLibrary("Button1")->getVertices(),
+		getGUIObjectFromLibrary("Button1Focus")->getVertices(),
 		getGUIObjectFromLibrary("Button1Hover")->getVertices(),
 		getGUIObjectFromLibrary("Button1Pressed")->getVertices(),
 		textField->getXStart() + textField->getWidth() / 2 - 45, textField->getYStart() + textField->getHeight(), 90, 22, "Change",
-		[](int& mouseButton, int& mouseState) {
-
+		[textField](int& mouseButton, int& mouseState) {
+			if (selectedObject && std::stod(textField->getText()) != selectedObject->getVertices()->getYStartText()) {
+				selectedObject->getVertices()->setYStartText(std::stod(textField->getText()));
+				selectedObject->set_Update(true);
+				update_All_Libraries(objLibraries);
+				generate_Vertices_Creation_Preview_Rend_To_Text();
+			}
 		}
 	);
 	verticesCreation->addElement(button);
@@ -1646,11 +1668,17 @@ void generate_Vertices_Creation_Panel()
 
 	button = new Button("verticesPreviewButtonWidth",
 		getGUIObjectFromLibrary("Button1")->getVertices(),
+		getGUIObjectFromLibrary("Button1Focus")->getVertices(),
 		getGUIObjectFromLibrary("Button1Hover")->getVertices(),
 		getGUIObjectFromLibrary("Button1Pressed")->getVertices(),
 		textField->getXStart() + textField->getWidth() / 2 - 45, textField->getYStart() + textField->getHeight(), 90, 22, "Change",
-		[](int& mouseButton, int& mouseState) {
-
+		[textField](int& mouseButton, int& mouseState) {
+			if (selectedObject && std::stod(textField->getText()) != selectedObject->getVertices()->getWidthText()) {
+				selectedObject->getVertices()->setWidthText(std::stod(textField->getText()));
+				selectedObject->set_Update(true);
+				update_All_Libraries(objLibraries);
+				generate_Vertices_Creation_Preview_Rend_To_Text();
+			}
 		}
 	);
 	verticesCreation->addElement(button);
@@ -1670,11 +1698,17 @@ void generate_Vertices_Creation_Panel()
 
 	button = new Button("verticesPreviewButtonHeight",
 		getGUIObjectFromLibrary("Button1")->getVertices(),
+		getGUIObjectFromLibrary("Button1Focus")->getVertices(),
 		getGUIObjectFromLibrary("Button1Hover")->getVertices(),
 		getGUIObjectFromLibrary("Button1Pressed")->getVertices(),
 		textField->getXStart() + textField->getWidth() / 2 - 45, textField->getYStart() + textField->getHeight(), 90, 22, "Change",
-		[](int& mouseButton, int& mouseState) {
-
+		[textField](int& mouseButton, int& mouseState) {
+			if (selectedObject && std::stod(textField->getText()) != selectedObject->getVertices()->getHeightText()) {
+				selectedObject->getVertices()->setHeightText(std::stod(textField->getText()));
+				selectedObject->set_Update(true);
+				update_All_Libraries(objLibraries);
+				generate_Vertices_Creation_Preview_Rend_To_Text();
+			}
 		}
 	);
 	verticesCreation->addElement(button);
@@ -1684,7 +1718,7 @@ void generate_Vertices_Creation_Panel()
 	//-------------------------------------------------------------------
 	fieldWidth = widthLeft * 0.2;
 	DropDown* dd = new DropDown("verticesPreviewDropDownTextureName",
-		getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(),
+		getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("DropDown1TBFocus")->getVertices(),
 		getGUIObjectFromLibrary("paletteModifierDropDownElement")->getVertices(), getGUIObjectFromLibrary("paletteModifierDropDownElementHover")->getVertices(), nullptr,
 		nullptr, nullptr, nullptr,
 		widthStart + widthLeft / 4 - fieldWidth / 2, height * 0.55, fieldWidth, 22);
@@ -1739,6 +1773,31 @@ void generate_Vertices_Creation_Panel()
 	ta = new TextArea("verticesPreviewTextAreaTextureName", nullptr, widthStart + widthLeft / 4 - fieldWidth / 2 - 65, dd->getYStart(), 65, 22, "Texture:");
 	ta->setCenteredText(1);
 	verticesCreation->addElement(ta);
+
+	//-------------------------------------------------------------------
+	//							Create and Save
+	//-------------------------------------------------------------------
+
+	button = new Button("verticesPreviewButtonCreate",
+		getGUIObjectFromLibrary("Button1")->getVertices(),
+		getGUIObjectFromLibrary("Button1Focus")->getVertices(),
+		getGUIObjectFromLibrary("Button1Hover")->getVertices(),
+		getGUIObjectFromLibrary("Button1Pressed")->getVertices(),
+		widthStart + widthLeft / 4, startY + height - height / 20, 100, 22, "Create new",
+		[](int& mouseButton, int& mouseState) {
+			
+		}
+	);
+	verticesCreation->addElement(button);
+
+	//-------------------------------------------------------------------
+	//							Create new group
+	//-------------------------------------------------------------------
+
+	int widthGroup = 200, xStartGroup = screenWidthPixels / 2 - widthGroup;
+		/*
+	GUIGroup* group = new GUIGroup("vertiesCreateNewGroup", selectionAreaRTT->getXStart(), selectionAreaRTT->getYStart(), selectionAreaRTT->getWidth(), selectionAreaRTT->getHeight());
+	verticesCreation->addElement(group);*/
 
 	scrollbar->setLambda(get_Vertices_Creation_Selection_Area_Scrollbar_Scroll_Lambda(scrollbar, selectionAreaRTT, group, verticesCreation, rtt, verticesCreationSelectionAreaOffset));
 	

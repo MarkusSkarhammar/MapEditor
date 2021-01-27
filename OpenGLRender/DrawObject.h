@@ -93,6 +93,16 @@ private:
 	std::vector<DrawObject*> objects;
 };
 
+class DrawObjectGroup : public DrawObject {
+public:
+	DrawObjectGroup(): DrawObject(0., 0., 0, 0, 0) {};
+	void add(DrawObject* dObj) { dObjs.push_back(dObj); };
+	void clear() { dObjs.clear(); dObjs.shrink_to_fit(); };
+	void renderGUI(std::string name);
+private:
+	std::vector<DrawObject*> dObjs;
+};
+
 class DrawObjects {
 public:
 	DrawObjects(std::string name) : name(name) {};

@@ -386,6 +386,7 @@ void keyboard_button_callback(GLFWwindow* window, int key, int scancode, int act
 		if (action == GLFW_PRESS) {
 			if (lShift) {
 				verticesCreation->toggleShow();
+
 				if (verticesCreationFirstShow) {
 					setup_Vertices_Generation_Selection_Area();
 					generate_Vertices_Creation_Rend_To_Text();

@@ -373,10 +373,14 @@ void generateTextures() {
 			GL_UNSIGNED_BYTE,      //type
 			(void*)img.accessPixels());                //pointer to data
 		img.clear();
+		
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		
+		
+		
 		//glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 7);
 		//GL_BGRA
 		/*glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -384,7 +388,7 @@ void generateTextures() {
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);*/
 	}
-	glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+	//glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 
 	//GLfloat Largest;
 
@@ -573,6 +577,7 @@ void init() {
 	//Generate Textures
 	generateTextures();
 
+	
 	// Get a handle for our "MVP" uniform
 	//model = glGetUniformLocation(program, "model");
 
@@ -585,7 +590,7 @@ void init() {
 	//generate_Palette_Modifier();
 
 	generate_Vertices_Creation_Panel();
-
+	
 
 	world = new World("Chunje", 14, 50, 50, 50);
 }

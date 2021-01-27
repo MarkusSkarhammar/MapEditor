@@ -11,6 +11,8 @@ class ObjectLibrary;
 class Object {
 public:
 	Object(int ID, std::string name, Vertices* v, ObjectLibrary* lib);
+	Object(Object* other);
+	Object(Object* other, bool tempObject);
 	~Object();
 	std::string getName() { return name; };
 	int getID() { return ID; };
@@ -20,6 +22,8 @@ public:
 	void decrement_ID_And_Verteces_ID();
 	bool get_Update() { return update; };
 	void set_Update(bool b);
+	bool operator==(const Object* other);
+	bool operator!=(const Object* other);
 private:
 	int ID{ -1 };
 	std::string name{ "" };

@@ -459,3 +459,10 @@ void TextDrawObject::clear()
 }
 
 
+void DrawObjectGroup::renderGUI(std::string name)
+{
+	if (getDraw())
+		for (auto& dObj : dObjs) {
+			dObj->renderGUI(name);
+		}
+}

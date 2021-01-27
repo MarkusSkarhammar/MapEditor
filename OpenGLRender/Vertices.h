@@ -15,17 +15,18 @@ public:
 	Vertices(Vertices* other, float textureSizeWidth, float textureSizeHeight, std::vector<float>& v, std::vector<float>& vt, int VAO, int VBO);
 	Vertices(std::string name, float width, float height, Vertices* other, bool rtt = false);
 	Vertices(Vertices* other);
+	Vertices(Vertices* other, bool thisIsATempVertices);
 	std::string getName() { return name; };
 	int getID() { return ID; };
 	void decrementID() { ID--; };
 	float getXStartText() { return xStartText; };
-	void setXStartText(float v) { xStartText = v; };
+	void setXStartText(float v);
 	float getYStartText() { return yStartText; };
-	void setYStartText(float v) { yStartText = v; };
+	void setYStartText(float v);
 	float getWidthText() { return widthText; };
-	void setWidthText(float v) { widthText = v; };
+	void setWidthText(float v);
 	float getHeightText() { return heightText; };
-	void setHeightText(float v) { heightText = v; };
+	void setHeightText(float v);
 	float getWidth() { return width; };
 	void setWidth(float v) { width = v; };
 	float getHeight() { return height; };
@@ -37,6 +38,7 @@ public:
 	bool isDoubleSize() { return doubleSize; };
 	int getTextPos() { return textPos; };
 	void setTextPos(int newPos) { textPos = newPos; };
+	void set_All(float xStart, float yStart, float width, float heigth);
 	GLuint getVAO() { return VAO; };
 	GLuint getVBO() { return VBO; };
 	std::vector<float>& getV() { return v; };
@@ -51,6 +53,8 @@ private:
 	bool doubleSize { false };
 	float xStartText{ 0.f }, yStartText{ 0.f }, widthText{ 0.f }, heightText{ 0.f }, width{ 0.f }, height{ 0.f }, textureSizeWidth{ 2048.f }, textureSizeHeight{ 2048.f };
 	std::vector<float>& v, &vt;
+
+	void update();
 };
 
 void removeVertices(Vertices* v);

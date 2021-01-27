@@ -401,7 +401,7 @@ double verticesCreationSelectionAreaPageSize{2000};
 bool verticesCreationSelectionAreaPageChange{0};
 bool verticesCreationFirstShow{1};
 
-Object* selectedObject = nullptr;
+Object* selectedObject = nullptr, *tempSelectedObject = nullptr;
 double verticesCreationPreviewZoom{1.0};
 double verticesCreationPreviewClickX{ 0. };
 double verticesCreationPreviewClickY{ 0. };

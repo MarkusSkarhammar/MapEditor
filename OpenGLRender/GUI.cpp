@@ -88,7 +88,7 @@ bool GUIElement::testHover(double& xPosRef, double& yPosRef)
 	*/
 }
 
-bool GUIElement::testClicked(double & xPos, double & yPos, int mouseButton, int mouseState, bool& isClickedAbove)
+bool GUIElement::testClicked(double & xPos, double & yPos, int mouseButton, int mouseState, bool& isClickedAbove, GUIElement*& focusElement)
 {
 	bool test =
 		(
@@ -98,8 +98,20 @@ bool GUIElement::testClicked(double & xPos, double & yPos, int mouseButton, int 
 			yPos <= yStart + (height * scale)
 			);
 	if (show && test) {
-		if(!isClicked && mouseState == MOUSE_PRESS)
-			isClickedAbove = true;
+		isClickedAbove = true;
+		if (mouseState == MOUSE_PRESS) {
+			isClicked = !isClicked;
+		}
+		else {
+			if (get_FocusAble()) {
+				if (focusElement && focusElement != this) {
+					if (getFocus())
+						setFocus(false);
+					focusElement->setFocus(false);
+					focusElement = nullptr;
+				}
+			}
+		}
 		handleClicked(mouseButton, mouseState);
 	}
 	return test;
@@ -108,10 +120,12 @@ bool GUIElement::testClicked(double & xPos, double & yPos, int mouseButton, int 
 void GUIElement::createObject()
 {
 	if (!rendToText) {
-
+		bool update = false;
 		if (v) {
-			if(!dObj)
-				dObj = new DrawObject(((xStart + xDrawOffset ) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + yDrawOffset) / (double(screenHeightPixels) / 2)), v->getID(), v->getVAO(), v->getTextPos());
+			if (!dObj) {
+				dObj = new DrawObject(((xStart + xDrawOffset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + yDrawOffset) / (double(screenHeightPixels) / 2)), v->getID(), v->getVAO(), v->getTextPos());
+				update = true;
+			}
 			else {
 				dObj->setXPosition(((xStart + xDrawOffset) / (double(screenWidthPixels) / 2)));
 				dObj->setYPosition(((yStart + yDrawOffset) / (double(screenHeightPixels) / 2)));
@@ -127,12 +141,43 @@ void GUIElement::createObject()
 			dObj->set_Scale_Y(scaleY);
 			
 		}
+		if (focusVertices) {
+			if (!focusDObj) {
+				focusDObj = new DrawObject(((xStart + xDrawOffset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + yDrawOffset) / (double(screenHeightPixels) / 2)), focusVertices->getID(), focusVertices->getVAO(), focusVertices->getTextPos());
+				focusDObj->setDraw(false);
+				update = true;
+			}
+			else
+			{
+				focusDObj->setXPosition(((xStart + xDrawOffset) / (double(screenWidthPixels) / 2)));
+				focusDObj->setYPosition(((yStart + yDrawOffset) / (double(screenHeightPixels) / 2)));
+				focusDObj->setID(focusVertices->getID());
+				focusDObj->set_VAO(focusVertices->getVAO());
+				focusDObj->set_Text_Pos(focusVertices->getTextPos());
+			}
+			focusDObj->setOffsetX(xOffset / textureWidth);
+			focusDObj->setOffsetY(yOffset / textureHeight);
+			if (scaleX != 1.0)
+				focusDObj->set_Scale_X(scaleX);
+			if (scaleY != 1.0)
+				focusDObj->set_Scale_Y(scaleY);
+		}
 		if (text.size() > 0) {
 			if (!dObjText)
 				dObjText = new TextDrawObject(text);
 			// Text
 			generate_GUI_Text(dObjText, xStart, yStart, 0 + textOffset, width - textOffset, height, text, textType, ellipsis, isCenteredText);
 		}
+		if(update)
+			if (DrawObjectGroup* group = dynamic_cast<DrawObjectGroup*>(dObjs)) {
+				group->clear();
+				if(dObj)
+					group->add(dObj);
+				if (focusDObj)
+					group->add(focusDObj);
+				if (dObjText)
+					group->add(dObjText);
+			}
 	}
 }
 
@@ -172,6 +217,17 @@ void GUIElement::createObjectNoRestriction() {
 		generate_GUI_Text(dObjText, xStart, yStart, 0 + textOffset, width - textOffset, height, text, textType, ellipsis, isCenteredText, rtt);
 	}
 	
+}
+
+void GUIElement::get_Draw_Object(DrawObjects*& objs, bool skipIfRTT)
+{
+	createObject();
+
+	if (skipIfRTT && !rendToText)
+		objs->addObject(dObjs);
+	else if (!skipIfRTT)
+		objs->addObject(dObjs);
+
 }
 
 DrawObject*& GUIElement::get_Draw_Object()
@@ -227,8 +283,12 @@ bool GUIElement::getClicked()
 void GUIElement::toggleClicked()
 { 
 	int mouseButton = MOUSE_LEFT_CLICK, mouseState = MOUSE_RELEASE; handleClicked(mouseButton, mouseState);
-};
+}
 
+void GUIElement::click(int& mouseButton, int& mouseState)
+{
+	handleClicked(mouseButton, mouseState);
+}
 
 void GUIElement::setText(std::string s)
 {
@@ -256,6 +316,21 @@ void GUIElement::handleKeyStroke(int& key, int& pressed, int& mods)
 {
 	if (focus && keyStrokeLambda != NULL)
 		keyStrokeLambda(key, pressed, mods);
+}
+
+bool GUIElement::getFocus()
+{
+	return focus;
+}
+
+void GUIElement::setFocus(bool b)
+{
+	focus = b;
+	if (focusDObj)
+		if (focus)
+			focusDObj->setDraw(true);
+		else
+			focusDObj->setDraw(false);
 }
 
 void GUIElement::change_Position(int xStart, int yStart)
@@ -309,7 +384,7 @@ void GUIPanel::addElement(GUIElement * e)
 	elements.push_back(e);
 	testedLabel = false;
 	e->get_Draw_Object(ob);
-	e->get_Draw_Object_Text(ob);
+	//e->get_Draw_Object_Text(ob);
 }
 
 GUIElement* GUIPanel::getElementByName(std::string name)
@@ -358,12 +433,24 @@ void GUIPanel::checkHover(double & xPos, double & yPos)
 
 void GUIPanel::checkClicked(double & xPos, double & yPos, int mouseButton, int mouseState)
 {
-	if (checkIfOutside || xPos >= xStart && xPos <= xStart + width && yPos >= yStart && yPos <= yStart + height) {
+	if (xPos >= xStart && xPos <= xStart + width && yPos >= yStart && yPos <= yStart + height) {
+		focus = true;
 		for (auto e = elements.end()-1; e != elements.begin(); e-- ) {
 			if (!isClicked)
-				(*e)->testClicked(xPos, yPos, mouseButton, mouseState, isClicked);
+				(*e)->testClicked(xPos, yPos, mouseButton, mouseState, isClicked, focusElement);
 			else
 				break;
+		}
+		if (!isClicked && focusElement && mouseState == MOUSE_PRESS) {
+			focusElement->setFocus(false);
+			focusElement = nullptr;
+		}
+	}
+	else {
+		focus = false;
+		if (focusElement) {
+			focusElement->setFocus(false);
+			focusElement = nullptr;
 		}
 	}
 	isClicked = false;
@@ -380,9 +467,41 @@ void GUIPanel::checkScroll(double& xPos, double& yPos, double& scroll)
 
 void GUIPanel::checkKeyStroke(int& key, int& action, int& mods)
 {
-	for (auto e : elements) {
-		if(e->getFocus())
-			e->handleKeyStroke(key, action, mods);
+	if (focus) {
+		if (key != 258)
+			for (auto e : elements) {
+				if (e->getFocus())
+					e->handleKeyStroke(key, action, mods);
+			}
+		else if(action == GLFW_PRESS){
+			GUIElement* first = nullptr;
+			GUIElement* current = nullptr;
+			for (auto& e : elements) {
+				if (e->getElements().size() > 0) {
+					for (auto& e2 : e->getElements()) {
+						if (e2->get_FocusAble())
+							check_Focus(e2);
+					}
+				}
+				else if (e->get_FocusAble())
+					check_Focus(e);
+			}
+		}
+	}
+}
+
+void GUIPanel::check_Focus(GUIElement* e) 
+{
+
+	if (!e->getFocus()) {
+		if (!focusElement) {
+			focusElement = e;
+			e->setFocus(true);
+		}
+	}
+	else if(e == focusElement) {
+		focusElement = nullptr;
+		e->setFocus(false);
 	}
 }
 
@@ -404,6 +523,12 @@ void GUIPanel::checkUpdates()
 	*/
 }
 
+void GUIPanel::toggleShow()
+{
+	show = !show;
+	set_Focus(show);
+}
+
 bool GUIPanel::containsLabel()
 {
 	if (!testedLabel) {
@@ -421,13 +546,27 @@ void GUIPanel::create_Draw_Objects()
 	ob->clearObjects();
 	for (auto e : elements) {
 		e->get_Draw_Object(ob);
-		e->get_Draw_Object_Text(ob);
+		//e->get_Draw_Object_Text(ob);
 	}
 }
 
-Button::Button(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::string text = "", std::function<void(int& mouseButton, int& mouseState)> lambda = [](int& mouseButton, int& mouseState) {}) : button(button), hover(hover), clicked(clicked), GUIElement(name, button, xStart, yStart, width, height, text)
+void GUIPanel::set_Focus(bool b)
+{
+	focus = b;
+	if (!b && focusElement) {
+		focusElement->setFocus(false);
+		focusElement = nullptr;
+	}
+}
+
+Button::Button(std::string name, Vertices* button, Vertices* buttonFocus, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::string text = "", std::function<void(int& mouseButton, int& mouseState)> lambda = [](int& mouseButton, int& mouseState) {}) : button(button), hover(hover), clicked(clicked), GUIElement(name, button, xStart, yStart, width, height, text)
 {
 	setV(button);
+
+	if (buttonFocus) {
+		focusAble = true;
+		set_Focus_Vertices(buttonFocus);
+	}
 
 	clickLambda = lambda;
 
@@ -440,65 +579,18 @@ Button::Button(std::string name, Vertices* button, Vertices* hover, Vertices* cl
 	ellipsis = true;
 }
 
-/*
-void Button::createObject(DrawObjects *ob)
+void Button::handleKeyStroke(int& key, int& action, int& mods)
 {
-	if (show && !rendToText) {
-		if (v && show) {
-
-			auto* o = new DrawObject(((xStart + xDrawOffset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + yDrawOffset) / (double(screenHeightPixels) / 2)), v->getID(), v->getVAO(), v->getTextPos());
-			if (rtt != nullptr) o->setRendToText(rtt);
-			o->setOffsetX(xOffset / textureWidth);
-			o->setOffsetY(yOffset / textureHeight);
-			o->set_Scale_X(scaleX);
-			o->set_Scale_Y(scaleY);
-			ob->addObject(o);
-
-		}
-		if (text.size() > 0) {
-			// Text
-			generate_GUI_Text(ob, xStart, yStart, 0 + textOffset, width - textOffset, text, textType, ellipsis, isCenteredText);
-		}
+	if (focus && (key == 335 || key == 257)) {
+		if (action == GLFW_PRESS) 
+			handleClicked(MOUSE_LEFT_CLICK, MOUSE_PRESS);
+		else if(action == GLFW_RELEASE)
+			handleClicked(MOUSE_LEFT_CLICK, MOUSE_RELEASE);
 	}
-	
 }
+
 /*
-void Button::createObjectNoRestriction(DrawObjects *ob)
-{
-	
-	if (show && getV()) {
-		if (button || (button && getV() == button)) {
-			auto* o = new DrawObject(((xStartText) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText) / (double(screenHeightPixels) / 2)), button->getID(), button->getVertecesHandler()->getVAO(), button->getVertecesHandler()->getTextureID());
-			if (rtt != nullptr) o->setRendToText(rtt);
-			o->setOffsetX(xOffset / textureWidth);
-			o->setOffsetY(yOffset / textureHeight);
-			ob.addObject(o);
-		}
-		if (getV() && !(getV() == button)) {
-			auto* o = new DrawObject(((xStartText + xDrawOffset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText + yDrawOffset) / (double(screenHeightPixels) / 2)), getV()->getID(), getV()->getVertecesHandler()->getVAO(), getV()->getVertecesHandler()->getTextureID());
-			if (rtt != nullptr) o->setRendToText(rtt);
-			o->setOffsetX(xOffset / textureWidth);
-			o->setOffsetY(yOffset / textureHeight);
-			ob.addObject(o);
-		}
-		if (text.size() > 0) {
-			VertecesHandler*& vhText = VertecesHandler::findByName(verteces, "Letters_");
-
-			if (!isCenteredText) {
-				// Text
-				generate_GUI_Text(ob, vhText, ((xStartText + (width / 2) - (text.size() * 16) / 4 ) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText + (height / 2) - 8) / (double(screenHeightPixels) / 2)), text, width - 36);
-			}
-			else {
-				// Text
-				generate_GUI_Text(ob, vhText, ((xStartText + (width / 2)) / (double(screenWidthPixels) / 2)), 0.0 + ((yStartText) / (double(screenHeightPixels) / 2)), text, width - 36);
-			}
-		}
-	}
-	
-}
-*/
-
-bool Button::testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove)
+bool Button::testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove, GUIElement* focusElement)
 {
 	bool test =
 		(
@@ -509,21 +601,28 @@ bool Button::testClicked(double& xPos, double& yPos, int mouseButton, int mouseS
 			);
 	if (show && test) {
 		if (mouseButton == MOUSE_LEFT_CLICK) {
-			isClickedAbove = true;
-			isClicked = true;
-		}else if(mouseButton == MOUSE_LEFT_CLICK)
-			isClicked = false;
+			if (mouseState == MOUSE_PRESS) {
+				isClickedAbove = true;
+				isClicked = true;
+				setFocus(true);
+				if (focusElement) {
+					focusElement->setFocus(false);
+					focusElement = nullptr;
+				}
+				focusElement = this;
+			}
+			else if(MOUSE_RELEASE){
+				isClicked = false;
+				setFocus(false);
+				if (focusElement && focusElement == this)
+					focusElement = nullptr;
+			}
+		}
 		handleClicked(mouseButton, mouseState);
-	}
-	else if (show && isClicked && !test) {
-		handleClicked(mouseButton, mouseState);
-		isClicked = false;
-		setV(button);
-		this->setUpdate(true);
 	}
 	return isClicked;
 }
-
+*/
 void Button::handleHover(double& xPosRef, double& yPosRef)
 {
 	if ((!getV() || getV() == button) && isHover) {
@@ -551,23 +650,34 @@ void Button::handleClicked(int& mouseButton, int& mouseState)
 	else if (mouseButton == MOUSE_LEFT_CLICK && mouseState == MOUSE_RELEASE && getV() == clicked) {
 		if (isHover)
 			setV(hover);
-		else
+		else {
 			setV(button);
+		}
 		setUpdate(true);
 		if (clickLambda != NULL)
 			clickLambda(mouseButton, mouseState);
 	}
 }
-ToggleButton::ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::function<void(int& mouseButton, int& mouseState)> lambda) : button(button), hover(hover), clicked(clicked), GUIElement(name, button, xStart, yStart, width, height)
+ToggleButton::ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, Vertices* buttonFocus, int xStart, int yStart, int width, int height, std::function<void(int& mouseButton, int& mouseState)> lambda) : button(button), hover(hover), clicked(clicked), GUIElement(name, button, xStart, yStart, width, height)
 {
+	if (buttonFocus) {
+		set_FocusAble(true);
+		set_Focus_Vertices(buttonFocus);
+	}
+
 	clickLambda = lambda;
 	if (v->getWidth() != width || v->getHeight() != height) {
 		scaleX = width / v->getWidth();
 		scaleY = height / v->getHeight();
 	}
 }
-ToggleButton::ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::function<void(int& mouseButton, int& mouseState)> lambda, std::function<void(double& x, double& y)> hoverLambda) : button(button), hover(hover), clicked(clicked), GUIElement(name, button, xStart, yStart, width, height)
+ToggleButton::ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, Vertices* buttonFocus, int xStart, int yStart, int width, int height, std::function<void(int& mouseButton, int& mouseState)> lambda, std::function<void(double& x, double& y)> hoverLambda) : button(button), hover(hover), clicked(clicked), GUIElement(name, button, xStart, yStart, width, height)
 {
+	if (buttonFocus) {
+		set_FocusAble(true);
+		set_Focus_Vertices(buttonFocus);
+	}
+
 	clickLambda = lambda;
 	setHoverLambda(hoverLambda);
 }
@@ -614,6 +724,26 @@ void ToggleButton::createObject()
 				dObj->set_Scale_X(scaleX);
 			if (scaleY != 1.0)
 				dObj->set_Scale_Y(scaleY);
+		}
+		if (focusVertices) {
+			if (!focusDObj) {
+				focusDObj = new DrawObject(((xStart + xDrawOffset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + yDrawOffset) / (double(screenHeightPixels) / 2)), focusVertices->getID(), focusVertices->getVAO(), focusVertices->getTextPos());
+				focusDObj->setDraw(false);
+			}
+			else
+			{
+				focusDObj->setXPosition(((xStart + xDrawOffset) / (double(screenWidthPixels) / 2)));
+				focusDObj->setYPosition(((yStart + yDrawOffset) / (double(screenHeightPixels) / 2)));
+				focusDObj->setID(focusVertices->getID());
+				focusDObj->set_VAO(focusVertices->getVAO());
+				focusDObj->set_Text_Pos(focusVertices->getTextPos());
+			}
+			focusDObj->setOffsetX(xOffset / textureWidth);
+			focusDObj->setOffsetY(yOffset / textureHeight);
+			if (scaleX != 1.0)
+				focusDObj->set_Scale_X(scaleX);
+			if (scaleY != 1.0)
+				focusDObj->set_Scale_Y(scaleY);
 		}
 
 		// Text
@@ -732,6 +862,11 @@ void ToggleButton::get_Draw_Object(DrawObjects*& objs, bool skipIfRTT) {
 			objs->addObject(dObj);
 		else if (!skipIfRTT)
 			objs->addObject(dObj);
+	if (focusDObj)
+		if (skipIfRTT && !rendToText)
+			objs->addObject(focusDObj);
+		else if (!skipIfRTT)
+			objs->addObject(focusDObj);
 };
 
 void ToggleButton::resetToggle()
@@ -781,6 +916,17 @@ void ToggleButton::setPressed(bool b)
 	setUpdate(true);
 }
 
+void ToggleButton::handleKeyStroke(int& key, int& action, int& mods)
+{
+	if (focus && (key == 335 || key == 257)) {
+		if (action == GLFW_PRESS) {
+			isClicked = !isClicked;
+			handleClicked(MOUSE_LEFT_CLICK, MOUSE_PRESS);
+		}
+		else if (action == GLFW_RELEASE)
+			handleClicked(MOUSE_LEFT_CLICK, MOUSE_RELEASE);
+	}
+}
 
 void ToggleButton::handleHover(double& xPosRef, double& yPosRef)
 {
@@ -813,14 +959,12 @@ void ToggleButton::handleClicked(int& mouseButton, int& mouseState)
 		setUpdate(true);
 	}
 	else if (mouseButton == MOUSE_LEFT_CLICK && mouseState == MOUSE_RELEASE && (getV() == clicked || button == clicked)) {
-		if (!isClicked) {
-			isClicked = true;
+		if (isClicked) {
 			toggle = true;
 			setV(clicked);
 			setUpdate(true);
 		}
 		else {
-			isClicked = false;
 			toggle = false;
 			setV(hover);
 			setUpdate(true);
@@ -1042,7 +1186,7 @@ bool ToggleButtonGroup::testHover(double & xPos, double & yPos)
 **
 ** return: If an element within the group was clicked or not.
 **/
-bool ToggleButtonGroup::testClicked(double & xPos, double & yPos, int mouseButton, int mouseState, bool& isClickedAbove)
+bool ToggleButtonGroup::testClicked(double & xPos, double & yPos, int mouseButton, int mouseState, bool& isClickedAbove, GUIElement*& focusElement)
 {
 	ToggleButton* before = currentlyPressed;
 	double x = xPos, y = yPos;
@@ -1059,7 +1203,7 @@ bool ToggleButtonGroup::testClicked(double & xPos, double & yPos, int mouseButto
 					testClickedAt(x, y, mouseState, isClickedAbove);
 					break;
 				}else*/
-				if ((wasClicked = e->testClicked(x, y, mouseButton, mouseState, isClickedAbove))) {
+				if ((wasClicked = e->testClicked(x, y, mouseButton, mouseState, isClickedAbove, focusElement))) {
 					if (before && before->getName().compare(e->getName()) == 0 && !e->getToggle())
 						currentlyPressed = nullptr;
 					else if ((!before || before->getName().compare(e->getName()) != 0))
@@ -1122,11 +1266,11 @@ void ToggleButtonGroup::setUpdate(bool b)
 	}
 }
 
-void ToggleButtonGroup::testClickedAt(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove)
+void ToggleButtonGroup::testClickedAt(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove, GUIElement*& focusElement)
 {
 	for (auto& e : toggleButtons) {
 		if (xPos >= e->getXStart() && xPos <= e->getXStart() + e->getWidth() && yPos >= e->getYStart() && yPos <= e->getYStart() + e->getHeight()) {
-			if (e->testClicked(xPos, yPos, mouseButton, mouseState, isClickedAbove))
+			if (e->testClicked(xPos, yPos, mouseButton, mouseState, isClickedAbove, focusElement))
 				currentlyPressed = e;
 			if (isClickedAbove) {
 				break;
@@ -1149,6 +1293,43 @@ void ToggleButtonGroup::resetClickedOrder()
 	}
 }
 
+std::vector<GUIElement*> ToggleButtonGroup::getElements()
+{
+	std::vector<GUIElement*> list;
+	for (auto& tb : toggleButtons) {
+		list.push_back(dynamic_cast<GUIElement*>(tb));
+	}
+	return list;
+}
+
+void ToggleButtonGroup::handleKeyStroke(int& key, int& action, int& mods)
+{
+	if ((key == 335 || key == 257)) {
+
+		for (auto& tb : toggleButtons) {
+			if (tb->getFocus()) {
+				if (action == GLFW_PRESS) {
+					tb->set_Clicked(!tb->getClicked());
+					tb->click(MOUSE_LEFT_CLICK, MOUSE_PRESS);
+				}
+				else if (action == GLFW_RELEASE)
+					tb->click(MOUSE_LEFT_CLICK, MOUSE_RELEASE);
+			}
+			else
+				tb->resetToggle();
+		}
+	}
+}
+
+bool ToggleButtonGroup::getFocus()
+{
+	for (auto& tb : toggleButtons) {
+		if (tb->getFocus())
+			return true;
+	}
+	return false;
+}
+
 void ToggleButtonGroup::handleHover()
 {
 }
@@ -1158,7 +1339,7 @@ void ToggleButtonGroup::handleClicked(int& mouseButton, int & mouseState)
 }
 
 DropDown::DropDown(std::string name, 
-	Vertices* topSection, Vertices* topSectionHover, Vertices* topSectionClicked,
+	Vertices* topSection, Vertices* topSectionHover, Vertices* topSectionClicked, Vertices* topSectionFocus,
 	Vertices* middleSection, Vertices* middleSectionHover, Vertices* middleSectionClicked,
 	Vertices* bottomSection, Vertices* bottomSectionHover, Vertices* bottomSectionClicked,
 	int xStart, int yStart, int width, int height) :
@@ -1167,7 +1348,10 @@ DropDown::DropDown(std::string name,
 	bottomSection(bottomSection), bottomSectionHover(bottomSectionHover), bottomSectionClicked(bottomSectionClicked),
 	GUIElement(name, xStart, yStart, width, height)
 {
-	tb = new ToggleButton("tb", topSection, topSectionHover, topSectionClicked, xStart, yStart, width, height, [this](int& mousebutton, int& mouseState) {
+	if (topSectionFocus)
+		set_FocusAble(true);
+
+	tb = new ToggleButton("tb", topSection, topSectionHover, topSectionClicked, topSectionFocus, xStart, yStart, width, height, [this](int& mousebutton, int& mouseState) {
 		this->toggleShowDropDown();
 		this->setUpdate(true);
 		});
@@ -1347,11 +1531,11 @@ bool DropDown::testHover(double & xPosRef, double & yPosRef)
 }
 
 
-bool DropDown::testClicked(double & xPos, double & yPos, int mouseButton, int mouseState, bool& isClickedAbove)
+bool DropDown::testClicked(double & xPos, double & yPos, int mouseButton, int mouseState, bool& isClickedAbove, GUIElement*& focusElement)
 {
 	if (showOthers) {
 		for (auto i : items) {
-			if (i->testClicked(xPos, yPos, mouseButton, mouseState, isClickedAbove) && mouseState == MOUSE_RELEASE) {
+			if (i->testClicked(xPos, yPos, mouseButton, mouseState, isClickedAbove, focusElement) && mouseState == MOUSE_RELEASE) {
 				if (onlyOneClickable && lastClicked && lastClicked != i) {
 					lastClicked->setV(lastClicked->get_Section_Vertices());
 					lastClicked->set_Clicked(false);
@@ -1367,7 +1551,7 @@ bool DropDown::testClicked(double & xPos, double & yPos, int mouseButton, int mo
 			}
 		}
 	}
-	tb->testClicked(xPos, yPos, mouseButton, mouseState, isClickedAbove);
+	tb->testClicked(xPos, yPos, mouseButton, mouseState, isClickedAbove, focusElement);
 	return false;
 }
 
@@ -1445,6 +1629,15 @@ void DropDown::reset_Drop_Down()
 		lastHover = nullptr;
 	}
 }
+
+std::vector<GUIElement*> DropDown::getElements()
+{
+	std::vector<GUIElement*> list;
+	list.push_back(tb);
+	list.insert(list.end(), items.begin(), items.end());
+	return list;
+}
+
 
 void DropDown::handleHover(double& xPosRef, double& yPosRef)
 {
@@ -1774,8 +1967,7 @@ void DropDownElement::handleClicked(int& mouseButton, int& mouseState)
 {
 	
 	if (mouseButton == MOUSE_LEFT_CLICK && mouseState == MOUSE_RELEASE) {
-		if (!isClicked) {
-			isClicked = true;
+		if (isClicked) {
 			if (clicked)
 				setV(clicked);
 			else
@@ -1783,7 +1975,6 @@ void DropDownElement::handleClicked(int& mouseButton, int& mouseState)
 			setUpdate(true);
 		}
 		else {
-			isClicked = false;
 			setV(hover);
 			setUpdate(true);
 		}
@@ -1807,41 +1998,14 @@ void GUIText::createObject(DrawObjects & ob)
 	}
 }
 
-ExpandingButton::ExpandingButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, float scaling, std::string text, std::function<void(int& mousebutton, int& mouseState)> lambda) : scaling(scaling), Button(name, button, hover, clicked, xStart, yStart, width, height, text, lambda)
-{
-}
-
-void ExpandingButton::createObject(DrawObjects *ob)
-{
-	/*
-	if (getV()) {
-		if (getV() == button) {
-			DrawObject* o = new DrawObject((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), button->getID(), button->getVertecesHandler()->getVAO(), button->getVertecesHandler()->getTextureID());
-			ob.addObject(o);
-		}
-		else {
-			int differenceWidth = 0, differenceHeight = 0;
-			if (scaling > 1.0) {
-				differenceWidth = -( (scaling * width) - width) / 2;
-				differenceHeight = -((scaling * height) - height) / 2;
-			}
-			else if(scaling < 1.0){
-				differenceWidth = -(scaling * width);
-				differenceHeight = -(scaling * height);
-			}
-			DrawObject* o = new DrawObject(( (xStart + differenceWidth ) / (double(screenWidthPixels) / 2)), 0.0 + ( (yStart + differenceHeight) / (double(screenHeightPixels) / 2)), getV()->getID(), getV()->getVertecesHandler()->getVAO(), getV()->getVertecesHandler()->getTextureID());
-			o->setScale(scaling);
-			ob.addObject(o);
-		}
-	}
-	*/
-}
-
 void GUILabel::createObject()
 {
+	bool update = false;
 	if (getV()) {
-		if(!dObj)
+		if (!dObj) {
 			dObj = new DrawObject((xStart / (double(screenWidthPixels) / 2)), 0.0 + (yStart / (double(screenHeightPixels) / 2)), v->getID(), v->getVAO(), v->getTextPos());
+			update = true;
+		}
 		else {
 			dObj->setXPosition(((xStart + xDrawOffset) / (double(screenWidthPixels) / 2)));
 			dObj->setYPosition(((yStart + yDrawOffset) / (double(screenHeightPixels) / 2)));
@@ -1857,6 +2021,16 @@ void GUILabel::createObject()
 			dObjText = new TextDrawObject(text);
 		generate_GUI_Text(dObjText, xStart, yStart + 5, textStartOffset, width - 16, height, text, textType, ellipsis, isCenteredText);
 	}
+	if (update)
+		if (DrawObjectGroup* group = dynamic_cast<DrawObjectGroup*>(dObjs)) {
+			group->clear();
+			if (dObj)
+				group->add(dObj);
+			if (focusDObj)
+				group->add(focusDObj);
+			if (dObjText)
+				group->add(dObjText);
+		}
 }
 
 GUIGroup::~GUIGroup()
@@ -1893,15 +2067,13 @@ void GUIGroup::createObjectNoRestriction()
 
 void GUIGroup::get_Draw_Object(DrawObjects*& objs, bool skipIfRTT)
 {
-	for (auto e : elements) {
-		e->get_Draw_Object(objs, skipIfRTT);
-	}
-}
-
-void GUIGroup::get_Draw_Object_Text(DrawObjects*& objs, bool skipIfRTT)
-{
-	for (auto e : elements) {
-		e->get_Draw_Object_Text(objs, skipIfRTT);
+	if (DrawObjectGroup* group = dynamic_cast<DrawObjectGroup*>(this->dObjs)) {
+		group->clear();
+		for (auto e : elements) {
+			e->createObject();
+			group->add(e->get_Draw_Object_Group());
+		}
+		objs->addObject(group);
 	}
 }
 
@@ -1982,7 +2154,7 @@ bool GUIGroup::testHover(double& xPosRef, double& yPosRef)
 	return test;
 }
 
-bool GUIGroup::testClicked(double & xPos, double & yPos, int mouseButton, int mouseState, bool & isClickedAbove)
+bool GUIGroup::testClicked(double & xPos, double & yPos, int mouseButton, int mouseState, bool & isClickedAbove, GUIElement*& focusElement)
 {
 	double x = xPos, y = yPos;
 	if (rendToText) {
@@ -1993,7 +2165,7 @@ bool GUIGroup::testClicked(double & xPos, double & yPos, int mouseButton, int mo
 	bool wasClicked = false;
 	if (test) {
 		for (auto e : elements) {
-			e->testClicked(x, y, mouseButton, mouseState, isClickedAbove);
+			e->testClicked(x, y, mouseButton, mouseState, isClickedAbove, focusElement);
 		}
 		if (clickLambda != NULL) {
 			clickLambda(mouseButton, mouseState);
@@ -2269,10 +2441,10 @@ bool ScrollbarVertical::testHover(double& xPosRef, double& yPosRef)
 	
 }
 
-bool ScrollbarVertical::testClicked(double& xPosRef, double& yPosRef, int mouseButton, int mouseState, bool& isClickedAbove)
+bool ScrollbarVertical::testClicked(double& xPosRef, double& yPosRef, int mouseButton, int mouseState, bool& isClickedAbove, GUIElement* focusElement)
 {
-	topButton->testClicked(xPosRef, yPosRef, mouseButton, mouseState, isClickedAbove);
-	bottomButton->testClicked(xPosRef, yPosRef, mouseButton, mouseState, isClickedAbove);
+	topButton->testClicked(xPosRef, yPosRef, mouseButton, mouseState, isClickedAbove, focusElement);
+	bottomButton->testClicked(xPosRef, yPosRef, mouseButton, mouseState, isClickedAbove, focusElement);
 	bool test = (xPosRef >= xStart && xPosRef <= xStart + width && yPosRef >= yStart + scrollbarPosition && yPosRef <= yStart + scrollbarPosition + scrollbarLength);
 	if (mouseButton == MOUSE_LEFT_CLICK && mouseState == MOUSE_PRESS && !isClicked && test) {
 		isClicked = true;
@@ -2432,8 +2604,11 @@ void ScaleableElement::handleClicked(int& mouseButton, int& mouseState)
 		clickLambda(mouseButton, mouseState);
 }
 
-TextField::TextField(std::string name, int xStart, int yStart, int width, int height, Vertices* field, Vertices* fieldFocus) : field(field), fieldFocus(fieldFocus), GUIElement(name, xStart, yStart, width, height)
+TextField::TextField(std::string name, int xStart, int yStart, int width, int height, Vertices* field, Vertices* fieldFocus) : field(field), GUIElement(name, xStart, yStart, width, height)
 {
+	set_FocusAble(true);
+	set_Focus_Vertices(fieldFocus);
+
 	setV(field);
 	textStartYOffset = (height - textSize) / 2;
 	rowLength = width - (textStartXOffset + textSize);
@@ -2441,6 +2616,19 @@ TextField::TextField(std::string name, int xStart, int yStart, int width, int he
 	change_Size(width, height);
 
 	isCenteredText = 3;
+
+	setAnimationLambda([this](bool& update)
+		{
+			if (this->getFocus() && marker) {
+				__int64 now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+				auto then = this->getTimeStamp();
+				auto marker = this->getMarker();
+				if ((then == 0 || (now - then) > 500)) {
+					this->setTimeStamp(now);
+					marker->setDraw(!marker->getDraw());
+				}
+			}
+		});
 }
 
 TextField::~TextField()
@@ -2474,69 +2662,89 @@ void TextField::createObject()
 			dObj->set_Scale_Y(scaleY);
 
 		}
+		if (focusVertices) {
+			if (!focusDObj) {
+				focusDObj = new DrawObject(((xStart + xDrawOffset) / (double(screenWidthPixels) / 2)), 0.0 + ((yStart + yDrawOffset) / (double(screenHeightPixels) / 2)), focusVertices->getID(), focusVertices->getVAO(), focusVertices->getTextPos());
+				focusDObj->setDraw(false);
+			}
+			else
+			{
+				focusDObj->setXPosition(((xStart + xDrawOffset) / (double(screenWidthPixels) / 2)));
+				focusDObj->setYPosition(((yStart + yDrawOffset) / (double(screenHeightPixels) / 2)));
+				focusDObj->setID(focusVertices->getID());
+				focusDObj->set_VAO(focusVertices->getVAO());
+				focusDObj->set_Text_Pos(focusVertices->getTextPos());
+			}
+			focusDObj->setOffsetX(xOffset / textureWidth);
+			focusDObj->setOffsetY(yOffset / textureHeight);
+			if (scaleX != 1.0)
+				focusDObj->set_Scale_X(scaleX);
+			if (scaleY != 1.0)
+				focusDObj->set_Scale_Y(scaleY);
+		}
 		{ // Do text stuff
-			float xStartText = ((xStart + xDrawOffset + textStartXOffset) / (double(screenWidthPixels) / 2)), yStartText = 0.0 + ((yStart + yDrawOffset + textStartYOffset) / (double(screenHeightPixels) / 2)), x = xStart, y = yStart;
-			std::string textType = "Black";
+			int textStartOffset = 0, textWidth = 0;
+			double x = xStart, y = yStart;
 
-			/*
-			if (!marker) {
-				auto& letterInformation = letterLibrary.getLetterInformation(std::string(1, '|') + textType);
-				if(letterInformation.size() > 0)
-					marker = new DrawObject(0, 0, letterInformation[2], letterInformation[0], letterInformation[1]);
-			}
-			*/
-
-			std::vector<DrawObject*> objects;
-			int character = 0, pos = 0, textLength = letterLibrary.getWidthInPixels(text, textType);
-			float offset = 0.0f, maxOffset = x + (rowLength / (double(screenWidthPixels) / 2));
-
-			if (textLength > rowLength)
-				offset -= ((textLength - rowLength) / (double(screenWidthPixels) / 2));
-
-			if (!dObjText)
+			if (!dObjText) {
 				dObjText = new TextDrawObject(text);
-			generate_GUI_Text(dObjText, xStart, yStart, 5, width, height, text, textType, ellipsis, isCenteredText);
-			/*
-			for (auto& letter : text) {
-				character = letter;
-				auto& letterInformation = letterLibrary.getLetterInformation(std::string(1, letter) + textType);
+				markerPos = text.size();
+			}
+			else if(dObjText->get_Text() != text) {
+				markerPos = text.size();
+			}
+			generate_GUI_Text(dObjText, x, y, textStartOffset, width, height, text, textType, ellipsis, isCenteredText);
+
+			if (!marker && dObjText) {
+				auto& letterInformation = letterLibrary.getLetterInformation(std::string(1, '|') + textType);
 				if (letterInformation.size() > 0) {
-					offset -= ((letterInformation[3]) / (double(screenWidthPixels) / 2));
-					if (pos == 0)
-						xStartText -= ((letterInformation[3]) / (double(screenWidthPixels) / 2));
-					objects.push_back(new DrawObject(x + offset, y, letterInformation[2], letterInformation[0], letterInformation[1]));
-					offset += ((letterInformation[4] + 1) / (double(screenWidthPixels) / 2));
-				}
-				if (offset > maxOffset) {
-					
-				}
-				pos++;
-				if (pos == markerPos && focus && marker->getDraw()) {
-					marker->setXPosition(x + offset - (3 / (double(screenWidthPixels) / 2)));
-					marker->setYPosition(y);
-					objects.push_back(new DrawObject(marker));
+					marker = new DrawObject(0, 0, letterInformation[2], letterInformation[0], letterInformation[1]);
+					marker->setDraw(false);
 				}
 			}
-
-			pos = 0;
-			for (auto o : objects) {
-				if (o->getXPosition() >= xStartText && o->getXPosition() <= maxOffset) {
-					ob->addObject(objects[pos]);
-					objects[pos] = nullptr;
+			
+			auto textSize = Get_Text_Size(text, textType);
+			if (marker) {
+				textWidth = letterLibrary.getLetterInformation(std::string(1, '1') + textType)[5];
+				if (isCenteredText == 1) {
+					x += (width / 2) - (textSize / 2);
+					y += (height - textWidth) / 2.;
 				}
-				else
-					delete o;
-				pos++;
+				else {
+					if (isCenteredText == 2)
+						x += (width / 2.) - (textSize / 2.);
+					else {
+						x += textStartOffset;
+					}
+					if (isCenteredText == 3)
+						y += (height - textWidth) / 2.;
+				}
+				x += Get_Text_Size_At_Pos(text, markerPos, textType);
+				x /= (double(screenWidthPixels) / 2); y /= (double(screenHeightPixels) / 2);
+				marker->setXPosition(x);
+				marker->setYPosition(y);
 			}
-
-			if ((text.size() == 0 || markerPos == 0) && focus && marker->getDraw()) {
-				marker->setXPosition(x - (3 / (double(screenWidthPixels) / 2)));
-				marker->setYPosition(yStartText);
-				ob->addObject(new DrawObject(marker));
-			}
-			*/
 		}
 	}
+}
+
+void TextField::get_Draw_Object_Text(DrawObjects*& objs, bool skipIfRTT)
+{
+	if (!dObjText)
+		if (!rendToText)
+			createObject();
+		else
+			createObjectNoRestriction();
+	if (dObjText)
+		if (skipIfRTT && !rendToText)
+			objs->addObject(dObjText);
+		else if (!skipIfRTT)
+			objs->addObject(dObjText);
+	if (marker)
+		if (skipIfRTT && !rendToText)
+			objs->addObject(marker);
+		else if (!skipIfRTT)
+			objs->addObject(marker);
 }
 
 void TextField::change_Width(int width)
@@ -2557,6 +2765,22 @@ void TextField::change_Size(int width, int height)
 	}
 }
 
+void TextField::setFocus(bool b)
+{
+	focus = b;
+	if(focusDObj)
+		if (focus) {
+			if (marker)
+				marker->setDraw(true);
+			focusDObj->setDraw(true);
+		}
+		else {
+			if (marker)
+				marker->setDraw(false);
+			focusDObj->setDraw(false);
+		}
+}
+
 /**
 * Handle incoming clicks.
 *
@@ -2564,14 +2788,16 @@ void TextField::change_Size(int width, int height)
 */
 void TextField::handleClicked(int& mouseButton, int& mouseState)
 {
-	if (mouseState == 1 && !focus) {
-		focus = true;
-		setV(fieldFocus);
-		setUpdate(true);
-	}
-	else if(mouseState == 1 && focus){
-		focus = false;
-		setV(field);
+	if(mouseButton == MOUSE_LEFT_CLICK && mouseState == MOUSE_RELEASE){
+		if (!focus) {
+			if (marker)
+				marker->setDraw(false);
+			setV(field);
+		}
+		else {
+			if (marker)
+				marker->setDraw(true);
+		}
 		setUpdate(true);
 	}
 }
@@ -2629,7 +2855,8 @@ void TextField::handleKeyStroke(int& key, int& action, int& mods)
 	}
 	else if (focus && action == GLFW_RELEASE && repeat == true) {
 		repeat = false;
-		lambda();
+		if(lambda)
+			lambda();
 	}
 }
 
@@ -2641,19 +2868,31 @@ void TextField::handleKeyStroke(int& key, int& action, int& mods)
 *@param mouseState The state of the mouse (left click == 1, right click = 0, middle click = 2).
 *@param isClickedAbove Determines if this element is the top most element and thus preventing checks on other elements.
 */
-bool TextField::testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove)
+
+bool TextField::testClicked(double & xPos, double & yPos, int mouseButton, int mouseState, bool& isClickedAbove, GUIElement*& focusElement)
 {
-	bool test = (xPos >= xStart && xPos <= xStart + width && yPos >= yStart && yPos <= yStart + height);
-	if ((mouseState == 1 || mouseState == 0) && test) {
+	bool test =
+		(
+			xPos >= xStart &&
+			xPos <= xStart + (width * scale) &&
+			yPos >= yStart &&
+			yPos <= yStart + (height * scale)
+			);
+	if (show && test) {
+		if (mouseState == MOUSE_PRESS) {
+			if (!isClicked)
+				isClickedAbove = true;
+			setFocus(!getFocus());
+			if (focusElement && focusElement != this) {
+				focusElement->setFocus(false);
+				focusElement = nullptr;
+			}
+			if (getFocus())
+				focusElement = this;
+		}
 		handleClicked(mouseButton, mouseState);
-		setV(fieldFocus);
 	}
-	else if(focus){
-		focus = false;
-		setV(field);
-		setUpdate(true);
-	}
-	return false;
+	return test;
 }
 
 TextArea::TextArea(std::string name, Vertices* v, int xStart, int yStart, int width, int height, std::string text) : GUIElement(name, v, xStart, yStart, width, height, text)
@@ -2689,4 +2928,35 @@ void TextArea::createObject()
 
 		}
 	}
+}
+
+GUIDialog::GUIDialog(std::string name, Vertices* base, Vertices* topBar, Vertices* buttonClose, Vertices* buttonCloseHover, Vertices* buttonCloseClick, int xStart, int yStart, int width, int height, int topBarHeight, int topBarButtonWidth) : base(base), topBar(topBar), GUIElement(name, v, xStart, yStart, width, height, "")
+{
+	closeBtn = new Button("closeButton", buttonClose, nullptr, buttonCloseHover, buttonCloseClick, xStart + width - topBarButtonWidth, yStart, topBarButtonWidth, topBarHeight, "X",
+		[](int& mouseButton, int& mouseState)
+		{
+
+		});
+}
+
+GUIDialog::~GUIDialog()
+{
+	if (dObjs)
+		delete dObjs;
+	if (closeBtn)
+		delete closeBtn;
+}
+
+void GUIDialog::get_Draw_Object(DrawObjects*& objs, bool skipIfRTT)
+{
+	if (!dObjs)
+		createObject();
+	else
+		createObjectNoRestriction();
+
+	if (dObjs)
+		if (skipIfRTT && !rendToText)
+			objs->addObject(dObjs);
+		else if (!skipIfRTT)
+			objs->addObject(dObjs);
 }

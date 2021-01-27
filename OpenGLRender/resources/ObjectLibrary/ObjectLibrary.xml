@@ -1903,5 +1903,86 @@
 			<attribute height="26" />
 			<attribute textureName="GUI_1" />
 		</Object>
+		<Object id="65" name="Button1Focus">
+			<attribute xStartText="897" />
+			<attribute yStartText="278" />
+			<attribute widthText="150" />
+			<attribute heightText="26" />
+			<attribute width="150" />
+			<attribute height="26" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="66" name="DropDown1TB">
+			<attribute xStartText="1163" />
+			<attribute yStartText="766" />
+			<attribute widthText="102" />
+			<attribute heightText="24" />
+			<attribute width="102" />
+			<attribute height="24" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="67" name="DropDown1TBHover">
+			<attribute xStartText="1060" />
+			<attribute yStartText="766" />
+			<attribute widthText="102" />
+			<attribute heightText="24" />
+			<attribute width="102" />
+			<attribute height="24" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="68" name="DropDown1TBClicked">
+			<attribute xStartText="1266" />
+			<attribute yStartText="766" />
+			<attribute widthText="102" />
+			<attribute heightText="24" />
+			<attribute width="102" />
+			<attribute height="24" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="69" name="DropDown1TBFocus">
+			<attribute xStartText="957" />
+			<attribute yStartText="766" />
+			<attribute widthText="102" />
+			<attribute heightText="24" />
+			<attribute width="102" />
+			<attribute height="24" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="70" name="BottomBarTBFocus">
+			<attribute xStartText="596" />
+			<attribute yStartText="0" />
+			<attribute widthText="30" />
+			<attribute heightText="30" />
+			<attribute width="30" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="71" name="ExitButton1">
+			<attribute xStartText="627" />
+			<attribute yStartText="0" />
+			<attribute widthText="41" />
+			<attribute heightText="30" />
+			<attribute width="41" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="72" name="ExitButton1Hover">
+			<attribute xStartText="669" />
+			<attribute yStartText="0" />
+			<attribute widthText="41" />
+			<attribute heightText="30" />
+			<attribute width="41" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
+		<Object id="73" name="ExitButton1Click">
+			<attribute xStartText="711" />
+			<attribute yStartText="0" />
+			<attribute widthText="41" />
+			<attribute heightText="30" />
+			<attribute width="41" />
+			<attribute height="30" />
+			<attribute textureName="GUI_1" />
+		</Object>
   </Library>
 </Libraries>

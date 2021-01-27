@@ -103,6 +103,22 @@ Object::Object(int ID, std::string name, Vertices* v, ObjectLibrary* lib): ID(ID
 {
 }
 
+Object::Object(Object* other)
+{
+	ID = other->getID();
+	name = other->getName();
+	v = new Vertices(other->getVertices());
+	lib = other->getLib();
+}
+
+Object::Object(Object* other, bool tempObject)
+{
+	ID = other->getID();
+	name = other->getName();
+	v = new Vertices(other->getVertices(), true);
+	lib = other->getLib();
+}
+
 Object::~Object()
 {
 	if(v)
@@ -125,6 +141,23 @@ void Object::set_Update(bool b)
 	update = b; 
 	if (b)
 		lib->set_Update(b);
+}
+
+bool Object::operator==(const Object* other)
+{
+	if (ID == other->ID && lib == other->lib 
+		&& v->getXStartText() == other->v->getXStartText() 
+		&& v->getYStartText() == other->v->getYStartText() 
+		&& v->getWidth() == other->v->getWidth() 
+		&& v->getHeight() == other->v->getHeight()
+		&& v->getTextPos() == v->getTextPos())
+		return true;
+	return false;
+}
+
+bool Object::operator!=(const Object* other)
+{
+	return !(this==other);
 }
 
 void setupObjectLibraries()
@@ -287,7 +320,9 @@ void update_All_Libraries(std::vector<ObjectLibrary*> updatedList)
 						for (auto& obj : objectsToUpdate) {
 							auto search = getObjectFromLibrary(libRTT->getObjects(), obj->getName());
 							if (search) {
-								search->getVertices()->setTextPos(obj->getVertices()->getTextPos());
+								auto objV = obj->getVertices();
+								search->getVertices()->setTextPos(objV->getTextPos());
+								search->getVertices()->set_All(objV->getXStartText(), objV->getYStartText(), objV->getWidthText(), objV->getHeightText());
 							}
 						}
 					}

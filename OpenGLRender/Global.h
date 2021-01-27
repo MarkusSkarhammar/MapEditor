@@ -486,7 +486,7 @@ extern double verticesCreationSelectionAreaPageSize;
 extern bool verticesCreationSelectionAreaPageChange;
 extern bool verticesCreationFirstShow;
 
-extern Object* selectedObject;
+extern Object* selectedObject, * tempSelectedObject;
 extern double verticesCreationPreviewZoom;
 extern double verticesCreationPreviewClickX;
 extern double verticesCreationPreviewClickY;
@@ -648,6 +648,29 @@ static int Get_Text_Size(std::string text, std::string textType) {
 			size += letterInformation[4] - letterInformation[3] + 1;
 		}
 	}
+	return size;
+}
+
+static int Get_Text_Size_At_Pos(std::string text, int targetPos, std::string textType) {
+	int character = 0;
+	int size = 0;
+	int pos = 0;
+	if (text.size() > 0 && targetPos <= text.size())
+		for (int pos = 0; pos <= targetPos; pos++) {
+			character = text[pos];
+			auto& letterInformation = letterLibrary.getLetterInformation(std::string(1, character) + textType);
+			if (letterInformation.size() > 0) {
+				if (pos != targetPos && pos + 1 != text.size())
+					size += letterInformation[4] - letterInformation[3] + 1;
+				else {
+					if (pos != text.size() && targetPos != text.size())
+						size += -letterInformation[3] - 1;
+					else
+						size += letterInformation[4] - letterInformation[3] - 1;
+					return size;
+				}
+			}
+		}
 	return size;
 }
 

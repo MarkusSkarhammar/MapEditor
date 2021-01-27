@@ -18,7 +18,6 @@ void render(game_state const& interpolated_state, GLFWwindow* window) {
 		from = 7;
 		to = z;
 	}
-	std::string currentName = "";
 
 	//----------------------------------------------------------
 	//						Draw game stuff

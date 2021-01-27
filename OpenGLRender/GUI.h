@@ -14,24 +14,14 @@ public:
 	GUIElement(std::string name);
 	GUIElement(std::string name, int xStart, int yStart, int width, int height) : name(name), xStart(xStart), yStart(yStart), width(width), height(height) { };
 	GUIElement(std::string name, Vertices* v, int xStart, int yStart, int width, int height, std::string text);
-	virtual ~GUIElement() { if (dObj) delete dObj; if (dObjText) delete dObjText; };
+	virtual ~GUIElement() { if (dObjs) delete dObjs; if (dObj) delete dObj; if (dObjText) delete dObjText; if (focusDObj) delete focusDObj; };
 	virtual bool testHover(double& xPos, double& yPos);
-	virtual bool testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClicked);
+	virtual bool testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClicked, GUIElement*& focusElement);
 	virtual void createObject();
 	virtual void createObjectNoRestriction();
-	virtual void get_Draw_Object(DrawObjects*& objs, bool skipIfRTT = true) {
-		if (!dObj)
-			if (!rendToText)
-				createObject();
-			else
-				createObjectNoRestriction();
-		if(dObj) 
-			if (skipIfRTT && !rendToText)
-				objs->addObject(dObj);
-			else if (!skipIfRTT)
-				objs->addObject(dObj);
-	};
+	virtual void get_Draw_Object(DrawObjects*& objs, bool skipIfRTT = true);
 	DrawObject*& get_Draw_Object();
+	DrawObject*& get_Draw_Object_Group() { return dObjs; };
 	virtual void get_Draw_Object_Text(DrawObjects*& objs, bool skipIfRTT = true) {
 		if (!dObjText)
 			if (!rendToText)
@@ -58,6 +48,7 @@ public:
 	void setHover(bool b) { isHover = b; };
 	bool getClicked();
 	void toggleClicked();
+	void click(int& mouseButton, int& mouseState);
 	void set_Clicked(bool b) { isClicked = b; };
 	void setText(std::string s);
 	void setCenteredText(int b) { isCenteredText = b; };
@@ -114,8 +105,13 @@ public:
 	int getMiscellaneousID(int pos) { return miscellaneousIDs.at(pos).second; };
 	std::vector<std::pair<std::string, int>>& getMiscellaneousIDsList() { return miscellaneousIDs; };
 	virtual std::vector<GUIElement*> getElements() { return std::vector<GUIElement*>(); };
-	bool getFocus() { return focus; };
-	void setFocus(bool b) { focus = b; };
+	virtual bool getFocus();
+	virtual void setFocus(bool b);
+	bool get_FocusAble() { return focusAble; };
+	void set_FocusAble(bool b) { focusAble = b; };
+	DrawObject* get_Focus_Draw_Object() { return focusDObj; };
+	void set_Focus_Vertices(Vertices* v) { focusVertices = v; };
+	Vertices* get_Focus_Vertices() { return focusVertices; };
 	void setAnimationBool(bool b) { doAnimation = b; };
 	bool getAnimationBool() { return doAnimation; };
 	void setTimeStamp(__int64 time) { timeStamp = time; };
@@ -130,16 +126,16 @@ public:
 	std::string get_Text_Type() { return textType; };
 protected:
 	std::string name{ "" }, text{ "" }, textType{ "Black" };
-	DrawObject* dObj = nullptr;
+	DrawObject* dObjs = new DrawObjectGroup(), * dObj = nullptr, * focusDObj = nullptr;
 	TextDrawObject* dObjText = nullptr;
 	RendToText* rtt = nullptr;
-	bool isClicked{ false }, isHover{ false }, ellipsis{ false }, show{ true }, rendToText{ false }, checkOutsideOfArea{ false }, update{ false }, focus{ false }, doAnimation{ false },
+	bool isClicked{ false }, isHover{ false }, ellipsis{ false }, show{ true }, rendToText{ false }, checkOutsideOfArea{ false }, update{ false }, focusAble{ false }, focus{ false }, doAnimation{ false },
 		withinArea{ false }, skipHover{ false };
 	int xStart{ 0 }, yStart{ 0 }, width{ 0 }, height{ 0 }, xOffset{ 0 }, yOffset{ 0 }, xRendToTextOffset{ 0 }, yRendToTextOffset{ 0 }, xDrawOffset{ 0 }, yDrawOffset{ 0 }, textOffset{ 0 }, isCenteredText{ false };
 	double textureWidth{ 2048.f }, textureHeight{ 2048.f }, scale{ 1.0 }, scaleX{ 1.0 }, scaleY{ 1.0 };
 	__int64 timeStamp{ 0 };
 	std::vector<std::pair<std::string, int>> miscellaneousIDs = {};
-	Vertices* v = nullptr;
+	Vertices* v = nullptr, *focusVertices = nullptr;
 	std::function<void(double& v)> scrollLambda{ NULL };
 	std::function<void(double& xPos, double& yPos)> hoverLambda{ NULL };
 	std::function<void(int& mouseButton, int& mouseState)> clickLambda{ NULL };
@@ -164,29 +160,19 @@ private:
 
 class Button : public GUIElement {
 public:
-	Button(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::string text, std::function<void(int& mouseButton, int& mouseState)> lambda);
-	//void createObject(DrawObjects* ob);
-	//void createObjectNoRestriction(DrawObjects* ob);
-	bool testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClicked);
+	Button(std::string name, Vertices* button, Vertices* buttonFocus, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::string text, std::function<void(int& mouseButton, int& mouseState)> lambda);
+	void handleKeyStroke(int& key, int& action, int& mods);
 protected:
-	Vertices *button{ nullptr }, *hover{ nullptr }, *clicked{ nullptr };
+	Vertices* button{ nullptr }, * hover{ nullptr }, * clicked{ nullptr };
 private:
 	void handleHover(double& xPosRef, double& yPosRef);
 	void handleClicked(int& mouseButton, int& mouseState);
 };
 
-class ExpandingButton : public Button {
-public:
-	ExpandingButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, float scale, std::string text, std::function<void(int& mousebutton, int& mouseState)> lambda);
-	void createObject(DrawObjects* ob);
-private:
-	float scaling{ 1.0 };
-};
-
 class ToggleButton : public GUIElement {
 public:
-	ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::function<void(int& mouseButton, int& mouseState)> lambda);
-	ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, int xStart, int yStart, int width, int height, std::function<void(int& mouseButton, int& mouseState)> lambda, std::function<void(double& x, double& y)> hoverLambda);
+	ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, Vertices* buttonFocus, int xStart, int yStart, int width, int height, std::function<void(int& mouseButton, int& mouseState)> lambda);
+	ToggleButton(std::string name, Vertices* button, Vertices* hover, Vertices* clicked, Vertices* buttonFocus, int xStart, int yStart, int width, int height, std::function<void(int& mouseButton, int& mouseState)> lambda, std::function<void(double& x, double& y)> hoverLambda);
 	virtual ~ToggleButton();
 	void createObject();
 	void createObjectNoRestriction();
@@ -223,6 +209,7 @@ public:
 	void set_Clicked_Vertices(Vertices* v) { clicked = v; };
 	void setClickedOrder(int order) { if(clickedOrder == 0) clickedOrder = order; };
 	int& getClickedOrder() { return clickedOrder; };
+	void handleKeyStroke(int& key, int& action, int& mods);
 private:
 	Vertices *button, *hover, *clicked;
 	DrawObject* base = nullptr;
@@ -252,7 +239,7 @@ public:
 	void addElementOrReplace(GUIElement* e);
 	bool getUpdate();
 	bool testHover(double& xPos, double& yPos);
-	bool testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove);
+	bool testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove, GUIElement*& focusElement);
 	void resetAll();
 	void resetHover();
 	void clearAll();
@@ -260,12 +247,15 @@ public:
 	void setCheckOutside() { checkOutside = true; };
 	void setResetAfterToggle(bool v) { resetAfterToggle = v; for (auto b : toggleButtons) { if((resetAfterToggle && !b->getCleanReset()) || (!resetAfterToggle && b->getCleanReset())) b->toggleCleanReset(); } };
 	bool getResetAfterToggle() { return resetAfterToggle; }
-	void testClickedAt(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove);
+	void testClickedAt(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove, GUIElement*& focusElement);
 	void setClickedOrder(ToggleButton* tb);
 	void setClickedOrder(int order) { clickedOrder = order; };
 	int& getClickedOrder() { return clickedOrder; };
 	void resetClickedOrder();
 	ToggleButton* getCurrentlyPressed() { return currentlyPressed; };
+	std::vector<GUIElement*> getElements();
+	void handleKeyStroke(int& key, int& action, int& mods);
+	bool getFocus();
 private:
 	std::vector<ToggleButton*> toggleButtons;
 	ToggleButton* currentlyPressed{nullptr};
@@ -294,17 +284,21 @@ public:
 	void checkKeyStroke(int& key, int& action, int& mods);
 	void checkUpdates();
 	void setCheckIfOutside(bool value) { checkIfOutside = value; };
-	void toggleShow() { show = !show; };
+	void toggleShow();
 	bool getShow() { return show; };
 	bool containsLabel();
 	void create_Draw_Objects();
 	std::string get_Name() { return name; };
+	void set_Focus(bool b);
 private:
 	int xStart{ 0 }, yStart{ 0 }, width{ 0 }, height{ 0 };
-	bool checkIfOutside{ false }, isClicked{ false }, show{ false }, testedLabel{ false }, isLabel{ false };
+	bool checkIfOutside{ false }, isClicked{ false }, show{ false }, testedLabel{ false }, isLabel{ false }, focus{ false };
 	DrawObjects *ob{ nullptr };
 	std::string name;
 	std::vector<GUIElement*> elements;
+	GUIElement* focusElement = nullptr;
+
+	void check_Focus(GUIElement* e);
 };
 
 class DropDownElement : public GUIElement {
@@ -338,7 +332,7 @@ private:
 
 class DropDown : public GUIElement {
 public:
-	DropDown(std::string name, Vertices* topSection, Vertices* topSectionHover, Vertices* topSectionClicked,
+	DropDown(std::string name, Vertices* topSection, Vertices* topSectionHover, Vertices* topSectionClicked, Vertices* topSectionFocus,
 		Vertices* middleSection, Vertices* middleSectionHover, Vertices* middleSectionClicked,
 		Vertices* bottomSection, Vertices* bottomSectionHover, Vertices* bottomSectionClicked,
 		int xStart, int yStart, int width, int height);
@@ -349,7 +343,7 @@ public:
 	void get_Draw_Object(DrawObjects*& objs, bool skipIfRTT = true);
 	void get_Draw_Object_Text(DrawObjects*& objs, bool skipIfRTT = true);
 	bool testHover(double& xPos, double& yPos);
-	bool testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove);
+	bool testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove, GUIElement*& focusElement);
 	void setPadding(int i) { padding = i; };
 	bool getUpdate();
 	void setUpdate(bool value);
@@ -370,6 +364,7 @@ public:
 	bool get_Close_After_Select() { return closeAfterSelect; };
 	void set_Size_Based_On_Text(bool b) { baseSizeOnText = b; };
 	bool get_Size_Based_On_Text() { return baseSizeOnText; };
+	std::vector<GUIElement*> getElements();
 private:
 	std::vector<DropDownElement*> items;
 	int currentSelected{ -1 }, padding{ 0 }, xChildOffset{ 0 }, highestY{ 0 }, childTextOffsetX{ 0 }, childWidth{ 0 };
@@ -420,13 +415,12 @@ public:
 	void createObject();
 	void createObjectNoRestriction();
 	void get_Draw_Object(DrawObjects*& objs, bool skipIfRTT = true);
-	void get_Draw_Object_Text(DrawObjects*& objs, bool skipIfRTT = true);
 	void addElement(GUIElement* e);
 	GUIElement* getElementByName(std::string name);
 	void removeElementByName(std::string name);
 	std::vector<GUIElement*> getElements() { return elements; };
 	bool testHover(double& xPos, double& yPos);
-	bool testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove);
+	bool testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove, GUIElement*& focusElement);
 	void updateStartX(int x);
 	void setStartY(int y);
 	int getAmount();
@@ -451,7 +445,7 @@ public:
 	void get_Draw_Object(DrawObjects*& objs, bool skipIfRTT = true);
 	void get_Draw_Object_Text(DrawObjects*& objs, bool skipIfRTT = true);
 	bool testHover(double& xPos, double& yPos);
-	bool testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove);
+	bool testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove, GUIElement* focusElement);
 	bool getUpdate();
 	void setUpdate(bool b);
 	void updateScrollbarLengthAndPosition(int length, int pos);
@@ -489,8 +483,9 @@ public:
 	TextField(std::string name, int xStart, int yStart, int width, int height, Vertices *field, Vertices *fieldFocus);
 	~TextField();
 	void createObject();
+	void get_Draw_Object_Text(DrawObjects*& objs, bool skipIfRTT = true);
 	void handleKeyStroke(int& key, int& action, int& mods);
-	bool testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove);
+	bool testClicked(double& xPos, double& yPos, int mouseButton, int mouseState, bool& isClickedAbove, GUIElement*& focusElement);
 	DrawObject*& getMarker() { return marker; };
 	void setTextStartXOffset(int offset) { textStartXOffset = offset; };
 	int getTextStartXOffset() { return textStartXOffset; };
@@ -504,10 +499,11 @@ public:
 	void change_Width(int width);
 	void change_Height(int height);
 	void change_Size(int width, int height);
+	void setFocus(bool b);
 private:
 	int textStartXOffset{ 3 }, textStartYOffset{ 0 }, markerPos{ 0 }, textSize{ 16 }, rowLength{ 0 };
 	bool triggerOnKeyStroke{ false }, repeat{ false };
-	Vertices *field, *fieldFocus;
+	Vertices *field;
 	DrawObject* marker{ nullptr };
 	std::function<void()> lambda{ NULL };
 
@@ -519,6 +515,17 @@ public:
 	TextArea(std::string name, Vertices* v, int xStart, int yStart, int width, int height, std::string text);
 	void createObject();
 private:
+};
+
+class GUIDialog : public GUIElement {
+public:
+	GUIDialog(std::string name, Vertices* base, Vertices* topBar, Vertices* buttonClose, Vertices* buttonCloseHover, Vertices* buttonCloseClick, int xStart, int yStart, int width, int height, int topBarHeight, int topBarButtonWidth);
+	~GUIDialog();
+	void get_Draw_Object(DrawObjects*& objs, bool skipIfRTT = true);
+private:
+	DrawObject* dObjs = new DrawObjectGroup();
+	Vertices* base, * topBar;
+	Button* closeBtn = nullptr;
 };
 
 #endif
